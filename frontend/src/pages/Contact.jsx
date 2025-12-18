@@ -15,7 +15,7 @@ import {
     HiArrowRight,
     HiQuestionMarkCircle
 } from 'react-icons/hi';
-import { FaFacebookF, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import {FaWhatsapp } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { FaGithub, FaLinkedin, FaBehance } from 'react-icons/fa';
 const Contact = () => {
