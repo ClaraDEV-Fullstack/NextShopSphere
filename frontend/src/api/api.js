@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/api';
+// Use environment variable for API URL, fallback to localhost for development
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
 
 const api = axios.create({
     baseURL: API_URL,
     headers: { 'Content-Type': 'application/json' },
+    timeout: 10000, // 10 second timeout
 });
 
 // Add auth token
@@ -22,22 +24,37 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
+        // If error is 401 and we haven't retried yet
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
+
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+
                 const response = await axios.post(`${API_URL}/accounts/token/refresh/`, {
                     refresh: refreshToken,
                 });
 
-                localStorage.setItem('accessToken', response.data.access);
-                originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+                const newAccessToken = response.data.access;
+                localStorage.setItem('accessToken', newAccessToken);
+
+                // Update the failed request with new token
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                 return api(originalRequest);
             } catch (refreshError) {
+                // Clear tokens and redirect to login
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
-                window.location.href = '/login';
+                localStorage.removeItem('user');
+
+                // Only redirect if not already on login page
+                if (window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
                 return Promise.reject(refreshError);
             }
         }
@@ -89,8 +106,6 @@ export const authAPI = {
     logout: (refresh) => api.post('/accounts/logout/', { refresh }),
     getProfile: () => api.get('/accounts/profile/'),
     updateProfile: (data) => api.patch('/accounts/profile/', data),
-
-    // Upload avatar
     updateProfilePicture: (formData) => {
         return api.post('/accounts/profile/avatar/', formData, {
             headers: {
@@ -98,10 +113,7 @@ export const authAPI = {
             },
         });
     },
-
-    // Delete avatar
     deleteProfilePicture: () => api.delete('/accounts/profile/avatar/'),
-    // Change password
     changePassword: (passwordData) => api.post('/accounts/change-password/', passwordData),
 };
 
@@ -135,12 +147,17 @@ export const wishlistAPI = {
     clear: () => api.delete('/wishlist/clear/'),
 };
 
-// Payments API (Mock)
+// Payments API
 export const paymentsAPI = {
     process: (paymentData) => api.post('/payments/process/', paymentData),
     getAll: () => api.get('/payments/'),
     getById: (id) => api.get(`/payments/${id}/`),
     getByOrder: (orderId) => api.get(`/payments/order/${orderId}/`),
+};
+
+// Health Check API
+export const healthAPI = {
+    check: () => api.get('/health/'),
 };
 
 export default api;

@@ -33,12 +33,18 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 
+# Health check endpoint for container orchestration
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'service': 'nextshopsphere-api'})
+
 urlpatterns = [
     # =============================================
     # ADMIN
     # =============================================
     path('admin/', admin.site.urls),
-    path('api/auth/', include('accounts.urls')),
+    # Health check
+    path('api/health/', health_check, name='health_check'),
+
     # =============================================
     # API ENDPOINTS
     # =============================================
@@ -49,6 +55,7 @@ urlpatterns = [
     # - /api/accounts/profile/
     # - /api/accounts/logout/
     path('api/accounts/', include('accounts.urls')),
+    path('api/auth/', include('accounts.urls')),
 
     # Products - /api/
     # - /api/products/
