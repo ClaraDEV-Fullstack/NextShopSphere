@@ -14,6 +14,11 @@ import {
     HiStar,
     HiTag
 } from 'react-icons/hi';
+
+import {
+    HiRefresh,
+    HiSupport
+} from 'react-icons/hi';
 import { productsAPI, categoriesAPI } from '../api/api';
 import ProductCard from '../components/products/ProductCard';
 import Loader from '../components/common/Loader';
@@ -133,252 +138,448 @@ const Home = () => {
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute inset-0" style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                    }} />
+            <section className="relative min-h-[100vh] md:min-h-[80vh] bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
+
+                {/* Animated Curvy Blob Shapes */}
+                <div className="absolute inset-0 overflow-hidden">
+                    {/* Large Blob - Top Right */}
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.1, 1],
+                            rotate: [0, 5, 0],
+                            x: [0, 20, 0],
+                        }}
+                        transition={{
+                            duration: 15,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        className="absolute -top-20 -right-20 md:-top-40 md:-right-40 w-[300px] md:w-[600px] h-[300px] md:h-[600px] opacity-30"
+                    >
+                        <svg viewBox="0 0 600 600" className="w-full h-full">
+                            <path
+                                fill="url(#blob-gradient-1)"
+                                d="M432.4,363.6c-47.5,60.3-155.2,107.1-231.8,85.5C124,427.5,78.6,337.5,71.4,253.5c-7.2-84,23.4-162,89.1-198c65.7-36,166.5-30,232.2,18c65.7,48,96.3,138,39.7,290.1Z"
+                            />
+                            <defs>
+                                <linearGradient id="blob-gradient-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.4" />
+                                    <stop offset="100%" stopColor="#f97316" stopOpacity="0.2" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </motion.div>
+
+                    {/* Medium Blob - Bottom Left */}
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.15, 1],
+                            rotate: [0, -10, 0],
+                            y: [0, 30, 0],
+                        }}
+                        transition={{
+                            duration: 18,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        className="absolute -bottom-16 -left-16 md:-bottom-32 md:-left-32 w-[250px] md:w-[500px] h-[250px] md:h-[500px] opacity-25"
+                    >
+                        <svg viewBox="0 0 500 500" className="w-full h-full">
+                            <path
+                                fill="url(#blob-gradient-2)"
+                                d="M421.9,293.1c-21.3,67.6-85.3,132.9-161.1,141.3c-75.8,8.4-163.5-40.2-196.5-113.4C31.4,247.8,53.1,150,110.2,93.4c57.1-56.6,149.6-72,215.4-36.4C391.4,92.6,443.2,225.5,421.9,293.1z"
+                            />
+                            <defs>
+                                <linearGradient id="blob-gradient-2" x1="0%" y1="100%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.4" />
+                                    <stop offset="100%" stopColor="#6366f1" stopOpacity="0.2" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </motion.div>
+
+                    {/* Small Blob - Center Right (Hidden on mobile) */}
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 15, 0],
+                        }}
+                        transition={{
+                            duration: 12,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        className="hidden md:block absolute top-1/3 right-1/4 w-[300px] h-[300px] opacity-20"
+                    >
+                        <svg viewBox="0 0 300 300" className="w-full h-full">
+                            <path
+                                fill="url(#blob-gradient-3)"
+                                d="M254.4,182.3c-12.1,41.7-51.9,80.5-98.3,86.8c-46.4,6.3-99.3-19.9-119.2-66.5C17,156,29.9,89,69.3,50.8c39.4-38.2,105.4-47.7,147.5-22.1C258.9,54.3,266.5,140.6,254.4,182.3z"
+                            />
+                            <defs>
+                                <linearGradient id="blob-gradient-3" x1="50%" y1="0%" x2="50%" y2="100%">
+                                    <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.3" />
+                                    <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </motion.div>
+
+                    {/* Extra Small Blob - Top Left */}
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.3, 1],
+                            y: [0, -20, 0],
+                            x: [0, 20, 0],
+                        }}
+                        transition={{
+                            duration: 10,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        className="absolute top-10 left-10 md:top-20 md:left-1/4 w-[100px] md:w-[200px] h-[100px] md:h-[200px] opacity-20"
+                    >
+                        <svg viewBox="0 0 200 200" className="w-full h-full">
+                            <path
+                                fill="url(#blob-gradient-4)"
+                                d="M169.6,121.5c-8.1,27.8-34.6,53.7-65.5,57.9c-30.9,4.2-66.2-13.3-79.5-44.3c-13.3-31-4.7-75.7,22.6-101.5C74.4,7.8,123.4-0.9,156.8,18.1C190.2,37.1,177.7,93.7,169.6,121.5z"
+                            />
+                            <defs>
+                                <linearGradient id="blob-gradient-4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor="#f472b6" stopOpacity="0.3" />
+                                    <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </motion.div>
                 </div>
 
-                <div className="max-w-7xl mx-auto px-4 py-20 md:py-28 relative">
-                    {/* Background decorative elements */}
-                    <div className="absolute inset-0 overflow-hidden z-0">
-                        {[...Array(8)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="absolute rounded-full bg-yellow-400/10"
-                                style={{
-                                    width: `${Math.random() * 300 + 100}px`,
-                                    height: `${Math.random() * 300 + 100}px`,
-                                    top: `${Math.random() * 100}%`,
-                                    left: `${Math.random() * 100}%`,
-                                }}
-                            />
-                        ))}
-                    </div>
+                {/* Curved Wave Dividers */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    {/* Top Wave */}
+                    <svg
+                        className="absolute -top-1 left-0 w-full opacity-10"
+                        viewBox="0 0 1440 320"
+                        preserveAspectRatio="none"
+                    >
+                        <path
+                            fill="white"
+                            d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+                        />
+                    </svg>
 
-                    <div className="relative z-10">
-                        <div className="grid md:grid-cols-2 gap-12 items-center">
-                            <div className="text-center md:text-left">
-                                <motion.span
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5 }}
-                                    className="inline-block px-4 py-2 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6 border border-yellow-400/30"
-                                >
-                                    🎉 Free shipping on orders over $50
-                                </motion.span>
+                    {/* Bottom Wave */}
+                    <svg
+                        className="absolute -bottom-1 left-0 w-full"
+                        viewBox="0 0 1440 320"
+                        preserveAspectRatio="none"
+                    >
+                        <path
+                            className="fill-white dark:fill-secondary-900"
+                            d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,181.3C960,203,1056,213,1152,197.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+                        />
+                    </svg>
+                </div>
 
-                                <motion.h1
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: 0.1 }}
-                                    className="text-4xl md:text-6xl font-bold leading-tight mb-6"
-                                >
-                                    Discover Your
-                                    <motion.span
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.3 }}
-                                        className="block text-yellow-300"
-                                    >
-                                        Perfect Style
-                                    </motion.span>
-                                </motion.h1>
+                {/* Floating Circles - Hidden on small mobile */}
+                <div className="absolute inset-0 hidden sm:block">
+                    {[...Array(6)].map((_, i) => (
+                        <motion.div
+                            key={i}
+                            animate={{
+                                y: [0, -30, 0],
+                                opacity: [0.1, 0.3, 0.1],
+                            }}
+                            transition={{
+                                duration: 5 + i * 2,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: i * 0.5,
+                            }}
+                            className="absolute rounded-full border border-white/20"
+                            style={{
+                                width: `${60 + i * 40}px`,
+                                height: `${60 + i * 40}px`,
+                                left: `${10 + i * 15}%`,
+                                top: `${20 + (i % 3) * 25}%`,
+                            }}
+                        />
+                    ))}
+                </div>
 
-                                <motion.p
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: 0.2 }}
-                                    className="text-lg md:text-xl text-white/80 mb-8 max-w-lg"
-                                >
-                                    Shop the latest trends in electronics, fashion, beauty, and more.
-                                    Quality products at unbeatable prices.
-                                </motion.p>
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-primary-900/90 via-primary-800/60 to-primary-900/40 md:to-transparent z-[1]" />
 
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: 0.4 }}
-                                    className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
-                                >
-                                    <motion.div
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <Link
-                                            to="/products"
-                                            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-primary-900 font-semibold rounded-xl hover:from-yellow-300 hover:to-yellow-400 transition-all shadow-lg hover:shadow-xl hover:shadow-yellow-500/20"
-                                        >
-                                            <HiShoppingBag className="w-5 h-5" />
-                                            Shop Now
-                                        </Link>
-                                    </motion.div>
+                {/* Main Content Container */}
+                <div className="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-0">
+                    <div className="h-full flex flex-col lg:grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center justify-center">
 
-                                    <motion.div
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <Link
-                                            to="/products?on_sale=true"
-                                            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-white/10 transition-all"
-                                        >
-                                            <HiTag className="w-5 h-5" />
-                                            View Deals
-                                        </Link>
-                                    </motion.div>
-                                </motion.div>
-                            </div>
-
-                            {/* Hero Stats */}
+                        {/* Left Content */}
+                        <div className="flex flex-col justify-center text-center lg:text-left order-2 lg:order-1">
+                            {/* Badge */}
                             <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.7, delay: 0.2 }}
-                                className="hidden md:grid grid-cols-2 gap-6"
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="mb-4 md:mb-6"
                             >
-                                {/* Happy Customers */}
-                                <motion.div
-                                    whileHover={{ y: -5 }}
-                                    className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 hover:border-yellow-400/30 transition-all duration-300"
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-white/10 backdrop-blur-md rounded-full text-xs md:text-sm font-medium border border-white/20">
+                        <span className="flex h-2 w-2 relative">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
+                        </span>
+                        Free shipping on orders over $50
+                    </span>
+                            </motion.div>
+
+                            {/* Heading */}
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.1 }}
+                                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] mb-4 md:mb-6"
+                            >
+                                <span className="block">Elevate Your</span>
+                                <span className="block mt-1 md:mt-2 bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                        Shopping Experience
+                    </span>
+                            </motion.h1>
+
+                            {/* Description */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.2 }}
+                                className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 mb-6 md:mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+                            >
+                                Discover premium products across electronics, fashion, beauty & more.
+                                Curated collections with unbeatable prices and fast delivery.
+                            </motion.p>
+
+                            {/* CTA Buttons */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.3 }}
+                                className="flex flex-row gap-2 sm:gap-3 md:gap-4 mb-6 md:mb-10 justify-center lg:justify-start"
+                            >
+                                <Link
+                                    to="/products"
+                                    className="group inline-flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 bg-white text-primary-900 font-semibold rounded-full hover:bg-yellow-400 transition-all duration-300 shadow-xl shadow-black/20 hover:shadow-yellow-400/30 text-xs sm:text-sm md:text-base"
                                 >
-                                    {/* Decorative background element */}
-                                    <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-yellow-400/10 group-hover:bg-yellow-400/20 transition-colors duration-300"></div>
+                                    <HiShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                                    <span>Shop Now</span>
+                                    <HiArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
+                                </Link>
 
-                                    <div className="relative z-10">
-                                        <div className="text-5xl font-bold text-yellow-300 mb-2 group-hover:text-yellow-200 transition-colors duration-300">
-                                            50K+
-                                        </div>
-                                        <div className="text-white/80 group-hover:text-white transition-colors duration-300">
-                                            Happy Customers
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                            <div className="w-10 h-1 bg-yellow-400 rounded-full group-hover:w-16 transition-all duration-300"></div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-
-                                {/* Products */}
-                                <motion.div
-                                    whileHover={{ y: -5 }}
-                                    className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 hover:border-blue-400/30 transition-all duration-300"
+                                <Link
+                                    to="/products?on_sale=true"
+                                    className="group inline-flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-full border border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 text-xs sm:text-sm md:text-base"
                                 >
-                                    {/* Decorative background element */}
-                                    <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-blue-400/10 group-hover:bg-blue-400/20 transition-colors duration-300"></div>
+                                    <HiTag className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                                    <span>View Deals</span>
+                                </Link>
+                            </motion.div>
 
-                                    <div className="relative z-10">
-                                        <div className="text-5xl font-bold text-yellow-300 mb-2 group-hover:text-yellow-200 transition-colors duration-300">
-                                            1000+
-                                        </div>
-                                        <div className="text-white/80 group-hover:text-white transition-colors duration-300">
-                                            Products
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                            <div className="w-10 h-1 bg-blue-400 rounded-full group-hover:w-16 transition-all duration-300"></div>
-                                        </div>
+                            {/* Trust Badges */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.4 }}
+                                className="flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-6 text-xs md:text-sm text-white/70"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <div className="flex -space-x-1.5 md:-space-x-2">
+                                        {[1, 2, 3, 4].map((i) => (
+                                            <div
+                                                key={i}
+                                                className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-primary-800 flex items-center justify-center text-[10px] md:text-xs font-bold text-primary-900"
+                                            >
+                                                {String.fromCharCode(64 + i)}
+                                            </div>
+                                        ))}
                                     </div>
-                                </motion.div>
+                                    <span className="ml-1 md:ml-2">50K+ Happy Customers</span>
+                                </div>
 
-                                {/* Brands */}
-                                <motion.div
-                                    whileHover={{ y: -5 }}
-                                    className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 hover:border-green-400/30 transition-all duration-300"
-                                >
-                                    {/* Decorative background element */}
-                                    <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-green-400/10 group-hover:bg-green-400/20 transition-colors duration-300"></div>
-
-                                    <div className="relative z-10">
-                                        <div className="text-5xl font-bold text-yellow-300 mb-2 group-hover:text-yellow-200 transition-colors duration-300">
-                                            100+
-                                        </div>
-                                        <div className="text-white/80 group-hover:text-white transition-colors duration-300">
-                                            Brands
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                            <div className="w-10 h-1 bg-green-400 rounded-full group-hover:w-16 transition-all duration-300"></div>
-                                        </div>
+                                <div className="flex items-center gap-1 md:gap-2">
+                                    <div className="flex text-yellow-400">
+                                        {[...Array(5)].map((_, i) => (
+                                            <HiStar key={i} className="w-3 h-3 md:w-4 md:h-4 fill-current" />
+                                        ))}
                                     </div>
-                                </motion.div>
-
-                                {/* Rating */}
-                                <motion.div
-                                    whileHover={{ y: -5 }}
-                                    className="group relative overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 hover:border-purple-400/30 transition-all duration-300"
-                                >
-                                    {/* Decorative background element */}
-                                    <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-purple-400/10 group-hover:bg-purple-400/20 transition-colors duration-300"></div>
-
-                                    <div className="relative z-10">
-                                        <div className="text-5xl font-bold text-yellow-300 mb-2 group-hover:text-yellow-200 transition-colors duration-300">
-                                            4.9⭐
-                                        </div>
-                                        <div className="text-white/80 group-hover:text-white transition-colors duration-300">
-                                            Rating
-                                        </div>
-                                        <div className="mt-3 flex justify-center">
-                                            <div className="w-10 h-1 bg-purple-400 rounded-full group-hover:w-16 transition-all duration-300"></div>
-                                        </div>
-                                    </div>
-                                </motion.div>
+                                    <span>4.9/5 Rating</span>
+                                </div>
                             </motion.div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Wave SVG */}
-                <div className="absolute bottom-0 left-0 right-0">
-                    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
-                              className="fill-white dark:fill-secondary-900"/>
-                    </svg>
+                        {/* Right Content - Hero Image */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="relative flex items-center justify-center order-1 lg:order-2 w-full"
+                        >
+                            {/* Main Image Container */}
+                            <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[400px] lg:max-w-lg xl:max-w-xl">
+                                {/* Glow Effect Behind Image */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-500/30 rounded-[30px] md:rounded-[40px] blur-2xl md:blur-3xl transform scale-90" />
+
+                                {/* Decorative Ring - Hidden on small mobile */}
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                                    className="hidden sm:block absolute -inset-3 md:-inset-4 rounded-[40px] md:rounded-[50px] border-2 border-dashed border-white/10"
+                                />
+
+                                {/* Image */}
+                                <motion.div
+                                    whileHover={{ y: -10 }}
+                                    transition={{ duration: 0.4 }}
+                                    className="relative"
+                                >
+                                    <img
+                                        src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                                        alt="Premium Shopping Experience"
+                                        className="w-full h-[200px] sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[500px] object-cover rounded-[30px] md:rounded-[40px] shadow-2xl"
+                                    />
+
+                                    {/* Overlay Gradient */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-primary-900/60 via-transparent to-transparent rounded-[30px] md:rounded-[40px]" />
+                                </motion.div>
+
+                                {/* Floating Product Card - Top Right */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.6 }}
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 md:-top-4 md:-right-4 xl:-right-8 bg-white rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4 shadow-xl"
+                                >
+                                    <div className="flex items-center gap-2 md:gap-3">
+                                        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg md:rounded-xl flex items-center justify-center">
+                                            <HiShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
+                                        </div>
+                                        <div className="hidden sm:block">
+                                            <p className="text-[10px] md:text-xs text-gray-500">New Arrivals</p>
+                                            <p className="text-xs md:text-sm font-bold text-gray-900">1000+ Products</p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+
+                                {/* Floating Discount Card - Bottom Left */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.8 }}
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 md:-bottom-4 md:-left-4 xl:-left-8 bg-white rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4 shadow-xl"
+                                >
+                                    <div className="flex items-center gap-2 md:gap-3">
+                                        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center">
+                                            <HiTag className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
+                                        </div>
+                                        <div className="hidden sm:block">
+                                            <p className="text-[10px] md:text-xs text-gray-500">Special Offer</p>
+                                            <p className="text-xs md:text-sm font-bold text-gray-900">Up to 50% OFF</p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+
+                                {/* Floating Rating Card - Bottom Right (Hidden on small mobile) */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: 1 }}
+                                    whileHover={{ scale: 1.05 }}
+                                    className="hidden sm:block absolute bottom-10 md:bottom-16 -right-2 md:-right-4 xl:-right-8 bg-white/95 backdrop-blur-sm rounded-lg md:rounded-xl px-2 md:px-4 py-1.5 md:py-2 shadow-lg"
+                                >
+                                    <div className="flex items-center gap-1 md:gap-2">
+                                        <div className="flex text-yellow-500">
+                                            {[...Array(5)].map((_, i) => (
+                                                <HiStar key={i} className="w-3 h-3 md:w-4 md:h-4 fill-current" />
+                                            ))}
+                                        </div>
+                                        <span className="text-xs md:text-sm font-semibold text-gray-900">4.9</span>
+                                        <span className="hidden md:inline text-xs text-gray-500">(2.5k reviews)</span>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
             </section>
 
             {/* Features Bar */}
-            <section className="bg-white dark:bg-secondary-900 py-8 border-b border-secondary-100 dark:border-secondary-800">
+            <section className="bg-white dark:bg-secondary-900 py-6 md:py-8 border-b border-secondary-100 dark:border-secondary-800">
                 <div className="max-w-7xl mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                                <HiTruck className="w-6 h-6 text-primary-600" />
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            viewport={{ once: true }}
+                            className="flex items-center gap-3 md:gap-4"
+                        >
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
+                                <HiTruck className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
                             </div>
-                            <div>
-                                <div className="font-semibold text-secondary-900 dark:text-white">Free Shipping</div>
-                                <div className="text-sm text-secondary-500">On orders over $50</div>
+                            <div className="min-w-0">
+                                <div className="font-semibold text-secondary-900 dark:text-white text-sm md:text-base truncate">Free Shipping</div>
+                                <div className="text-xs md:text-sm text-secondary-500 truncate">On orders over $50</div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                <HiShieldCheck className="w-6 h-6 text-green-600" />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                            viewport={{ once: true }}
+                            className="flex items-center gap-3 md:gap-4"
+                        >
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                                <HiShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
                             </div>
-                            <div>
-                                <div className="font-semibold text-secondary-900 dark:text-white">Secure Payment</div>
-                                <div className="text-sm text-secondary-500">100% protected</div>
+                            <div className="min-w-0">
+                                <div className="font-semibold text-secondary-900 dark:text-white text-sm md:text-base truncate">Secure Payment</div>
+                                <div className="text-xs md:text-sm text-secondary-500 truncate">100% protected</div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-                                <HiCreditCard className="w-6 h-6 text-orange-600" />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            viewport={{ once: true }}
+                            className="flex items-center gap-3 md:gap-4"
+                        >
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                                <HiCreditCard className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
                             </div>
-                            <div>
-                                <div className="font-semibold text-secondary-900 dark:text-white">Easy Returns</div>
-                                <div className="text-sm text-secondary-500">30 day returns</div>
+                            <div className="min-w-0">
+                                <div className="font-semibold text-secondary-900 dark:text-white text-sm md:text-base truncate">Easy Returns</div>
+                                <div className="text-xs md:text-sm text-secondary-500 truncate">30 day returns</div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                                <HiStar className="w-6 h-6 text-purple-600" />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.3 }}
+                            viewport={{ once: true }}
+                            className="flex items-center gap-3 md:gap-4"
+                        >
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                                <HiStar className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                             </div>
-                            <div>
-                                <div className="font-semibold text-secondary-900 dark:text-white">24/7 Support</div>
-                                <div className="text-sm text-secondary-500">Dedicated help</div>
+                            <div className="min-w-0">
+                                <div className="font-semibold text-secondary-900 dark:text-white text-sm md:text-base truncate">24/7 Support</div>
+                                <div className="text-xs md:text-sm text-secondary-500 truncate">Dedicated help</div>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>
-
             {/* ============ FEATURED CATEGORIES SECTION ============ */}
             {categories.length > 0 && (
                 <section className="py-10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">

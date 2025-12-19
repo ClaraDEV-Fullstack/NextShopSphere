@@ -23,6 +23,9 @@ ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_str.split(",") if h.strip()]
 csrf_origins_str = os.getenv("CSRF_TRUSTED_ORIGINS", "")
 CSRF_TRUSTED_ORIGINS = [h.strip() for h in csrf_origins_str.split(",") if h.strip()]
 
+# Allow Google OAuth popup
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
+
 # =============================================================================
 # PRODUCTION SECURITY SETTINGS
 # =============================================================================
@@ -45,7 +48,10 @@ if not DEBUG:
     # Other Security Headers
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = 'SAMEORIGIN'  # Changed from DENY to allow Google popup
+
+# Cross-Origin settings for Google OAuth (both dev and prod)
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
 # =============================================================================
 # APPLICATION DEFINITION
@@ -221,14 +227,15 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
 
-    # Throttling (rate limiting)
+    # Throttling (rate limiting) - UPDATED FOR DEVELOPMENT
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
-    ],
+    ] if not DEBUG else [],  # Disable throttling in DEBUG mode
+
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',
-        'user': '1000/hour'
+        'anon': '1000/hour',   # Increased from 100
+        'user': '5000/hour'    # Increased from 1000
     }
 }
 

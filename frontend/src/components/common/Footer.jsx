@@ -76,7 +76,7 @@ const Footer = () => {
                             <div>
                                 <span className="text-2xl font-bold">
                                     <span className="text-blue-400">Net</span>
-                                    <span className="text-white">Shop</span>
+                                    <span className="text-green-500">Shop</span>
                                     <span className="text-amber-400">Sphere</span>
                                 </span>
                             </div>

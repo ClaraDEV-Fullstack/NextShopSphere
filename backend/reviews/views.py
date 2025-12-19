@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -26,7 +23,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filter reviews by product if specified"""
-        queryset = Review.objects.filter(is_approved=True)
+        queryset = Review.objects.filter(is_approved=True).select_related('user')
 
         product_slug = self.request.query_params.get('product', None)
         if product_slug:
@@ -42,6 +39,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update']:
             return CreateReviewSerializer
         return ReviewSerializer
+
+    def get_serializer_context(self):
+        """Include request in serializer context for building absolute URLs"""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -76,8 +79,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        reviews = Review.objects.filter(user=request.user)
-        serializer = ReviewSerializer(reviews, many=True)
+        reviews = Review.objects.filter(user=request.user).select_related('user')
+        serializer = ReviewSerializer(reviews, many=True, context={'request': request})
         return Response(serializer.data)
 
     @extend_schema(tags=['Reviews'])
@@ -120,10 +123,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
             return Response({'has_reviewed': False, 'review': None})
 
         try:
-            review = Review.objects.get(user=request.user, product_id=product_id)
+            review = Review.objects.select_related('user').get(
+                user=request.user,
+                product_id=product_id
+            )
             return Response({
                 'has_reviewed': True,
-                'review': ReviewSerializer(review).data
+                'review': ReviewSerializer(review, context={'request': request}).data
             })
         except Review.DoesNotExist:
             return Response({'has_reviewed': False, 'review': None})

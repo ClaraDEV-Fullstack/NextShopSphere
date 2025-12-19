@@ -213,7 +213,7 @@ const Navbar = () => {
                             <div className="flex flex-col">
         <span className="text-xl font-bold leading-tight">
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Net</span>
-            <span className="text-gray-800 dark:text-white">Shop</span>
+            <span className="text-green-500 dark:text-white">Shop</span>
             <span className="text-amber-500">Sphere</span>
         </span>
                                 <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium tracking-widest uppercase hidden sm:block">

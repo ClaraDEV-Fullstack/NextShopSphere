@@ -7,11 +7,12 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     user_name = serializers.SerializerMethodField()
     user_avatar = serializers.SerializerMethodField()
+    user_email = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
         fields = [
-            'id', 'user', 'user_name', 'user_avatar', 'product',
+            'id', 'user', 'user_name', 'user_email', 'user_avatar', 'product',
             'rating', 'title', 'comment', 'is_verified_purchase',
             'created_at', 'updated_at'
         ]
@@ -21,11 +22,18 @@ class ReviewSerializer(serializers.ModelSerializer):
         """Get user's display name"""
         if obj.user.first_name:
             return f"{obj.user.first_name} {obj.user.last_name or ''}".strip()
-        return obj.user.username
+        return obj.user.username or obj.user.email.split('@')[0]
+
+    def get_user_email(self, obj):
+        """Get user's email for ownership check"""
+        return obj.user.email if obj.user else None
 
     def get_user_avatar(self, obj):
-        """Get user's avatar URL"""
-        if obj.user.avatar:
+        """Get user's avatar URL (absolute URL)"""
+        if obj.user and obj.user.avatar:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.user.avatar.url)
             return obj.user.avatar.url
         return None
 

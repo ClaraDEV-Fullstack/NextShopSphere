@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { HiOutlineShoppingCart, HiOutlineHeart } from 'react-icons/hi';
 import { addToCart } from '../../store/cartSlice';
-import { getImageUrl } from '../../utils/helpers';  // Add this
+import { getImageUrl } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 
 const ProductCard = ({ product }) => {
@@ -10,67 +10,101 @@ const ProductCard = ({ product }) => {
 
     const handleAddToCart = (e) => {
         e.preventDefault();
-        dispatch(addToCart({
-            id: product.id,
-            name: product.name,
-            price: parseFloat(product.price),
-            image: getImageUrl(product.primary_image?.image),  // Update this
-            slug: product.slug,
-        }));
-        toast.success('Added to cart!');
+        dispatch(
+            addToCart({
+                id: product.id,
+                name: product.name,
+                price: parseFloat(product.price),
+                image: getImageUrl(product.primary_image?.image),
+                slug: product.slug,
+            })
+        );
+        toast.success('Added to cart');
     };
 
     return (
-        <Link to={`/products/${product.slug}`} className="card group">
-            {/* Image */}
-            <div className="relative aspect-square overflow-hidden rounded-t-xl bg-secondary-100">
+        <Link
+            to={`/products/${product.slug}`}
+            className="
+                group flex flex-col w-full bg-white rounded-xl overflow-hidden
+                shadow-sm transition-all duration-300
+                sm:hover:shadow-lg sm:hover:-translate-y-1
+            "
+        >
+            {/* IMAGE */}
+            <div className="relative aspect-square bg-gray-100 overflow-hidden">
                 <img
-                    src={getImageUrl(product.primary_image?.image)}  // Update this
+                    src={getImageUrl(product.primary_image?.image)}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 sm:group-hover:scale-110"
                 />
 
-                {/* Discount Badge */}
                 {product.discount_percentage > 0 && (
-                    <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-            -{product.discount_percentage}%
-          </span>
+                    <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        -{product.discount_percentage}%
+                    </span>
                 )}
 
-                {/* Wishlist */}
-                <button className="absolute top-2 right-2 p-2 bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition">
-                    <HiOutlineHeart className="w-5 h-5 text-secondary-600" />
+                <button
+                    className="
+                        absolute top-2 right-2 p-2 rounded-full bg-white/90
+                        shadow opacity-100 sm:opacity-0 sm:group-hover:opacity-100
+                        transition
+                    "
+                    aria-label="Wishlist"
+                >
+                    <HiOutlineHeart className="w-5 h-5 text-gray-700" />
                 </button>
+
+                {!product.in_stock && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <span className="text-white font-semibold text-sm">
+                            Out of Stock
+                        </span>
+                    </div>
+                )}
             </div>
 
-            {/* Info */}
-            <div className="p-4">
+            {/* INFO */}
+            <div className="flex flex-col p-3 sm:p-4 flex-1">
                 {product.category && (
-                    <p className="text-xs text-secondary-500 mb-1">{product.category.name}</p>
+                    <p className="text-[11px] uppercase text-gray-500 mb-1">
+                        {product.category.name}
+                    </p>
                 )}
 
-                <h3 className="font-medium text-secondary-800 mb-2 line-clamp-2">{product.name}</h3>
+                <h3 className="text-sm sm:text-base font-semibold text-gray-800 line-clamp-2 mb-2">
+                    {product.name}
+                </h3>
 
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-primary-600">${product.price}</span>
+                <div className="mt-auto flex items-center justify-between">
+                    <div>
+                        <span className="text-lg font-bold text-gray-900">
+                            ${product.price}
+                        </span>
                         {product.compare_price && (
-                            <span className="text-sm text-secondary-400 line-through">${product.compare_price}</span>
+                            <span className="block text-xs text-gray-400 line-through">
+                                ${product.compare_price}
+                            </span>
                         )}
                     </div>
 
                     <button
                         onClick={handleAddToCart}
                         disabled={!product.in_stock}
-                        className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+                        className={`
+                            p-2.5 rounded-lg transition
+                            ${
+                            product.in_stock
+                                ? 'bg-primary-600 text-white active:scale-95'
+                                : 'bg-gray-200 text-gray-400'
+                        }
+                        `}
                     >
                         <HiOutlineShoppingCart className="w-5 h-5" />
                     </button>
                 </div>
-
-                {!product.in_stock && (
-                    <p className="text-xs text-red-500 mt-2">Out of stock</p>
-                )}
             </div>
         </Link>
     );
