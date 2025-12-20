@@ -23,4 +23,4 @@ RUN python manage.py collectstatic --noinput || true
 EXPOSE 8000
 
 # Make sure project name matches your actual Django project folder
-CMD ["gunicorn", "nextshopsphere.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD python manage.py migrate --noinput && gunicorn nextshopsphere.wsgi:application --bind 0.0.0.0:8000
