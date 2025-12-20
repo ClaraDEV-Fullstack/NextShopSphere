@@ -1,4 +1,4 @@
-# docker-compose.yml - DEVELOPMENT
+version: "3.9"
 
 services:
   db:
@@ -42,20 +42,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - ./backend/.env
     environment:
-      - DB_HOST=db
-      - DB_NAME=nextshopsphere
-      - DB_USER=admin
-      - DB_PASSWORD=admin123
-      - DB_PORT=3306
-      - DEBUG=True
-      - SECRET_KEY=dev-secret-key-not-for-production
-      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
-      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
-      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
-      - GOOGLE_OAUTH_CLIENT_ID=${GOOGLE_OAUTH_CLIENT_ID:-}
-      - GOOGLE_OAUTH_CLIENT_SECRET=${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      DB_HOST: db
+      DB_NAME: nextshopsphere
+      DB_USER: admin
+      DB_PASSWORD: admin123
+      DB_PORT: 3306
+      DEBUG: "True"
+      SECRET_KEY: dev-secret-key-not-for-production
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
     networks:
       - app_network
 
@@ -69,6 +67,8 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    env_file:
+      - ./frontend/.env
     environment:
       - REACT_APP_API_URL=http://localhost:8000/api
       - WATCHPACK_POLLING=true
