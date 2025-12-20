@@ -14,11 +14,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Create logs directory
-RUN mkdir -p logs
+# Create necessary directories
+RUN mkdir -p logs staticfiles
 
-# Expose port (for Gunicorn or Django runserver if needed)
+# Collect static files (optional but recommended)
+RUN python manage.py collectstatic --noinput || true
+
 EXPOSE 8000
 
-# Command to start app (use gunicorn for production ideally)
+# Make sure project name matches your actual Django project folder
 CMD ["gunicorn", "nextshopsphere.wsgi:application", "--bind", "0.0.0.0:8000"]
