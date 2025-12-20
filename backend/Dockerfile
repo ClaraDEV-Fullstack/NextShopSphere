@@ -21,6 +21,5 @@ RUN mkdir -p logs staticfiles
 RUN python manage.py collectstatic --noinput || true
 
 EXPOSE 8000
-
-# Make sure project name matches your actual Django project folder
-CMD python manage.py migrate --noinput && gunicorn nextshopsphere.wsgi:application --bind 0.0.0.0:8000
+# Run migrations, create superuser, then start server
+CMD python manage.py migrate --noinput && python create_superuser.py && gunicorn nextshopsphere.wsgi:application --bind 0.0.0.0:8000
