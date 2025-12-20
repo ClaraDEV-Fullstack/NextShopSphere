@@ -6,7 +6,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
 const api = axios.create({
     baseURL: API_URL,
     headers: { 'Content-Type': 'application/json' },
-    timeout: 10000, // 10 second timeout
+    timeout: 120000, // 120 seconds (2 minutes)
 });
 
 // Add auth token

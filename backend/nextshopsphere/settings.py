@@ -63,6 +63,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
 
     # Third party apps
     'rest_framework',
@@ -81,6 +84,16 @@ INSTALLED_APPS = [
     'wishlist',
     'alerts',
 ]
+
+
+# Add Cloudinary settings
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('dfdw17xrx'),
+    'API_KEY': os.getenv('547783292998643'),
+    'API_SECRET': os.getenv('2esprok9Tu5BCM9fHcaumz6bZvY'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

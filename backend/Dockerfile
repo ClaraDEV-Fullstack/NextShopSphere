@@ -21,5 +21,8 @@ RUN mkdir -p logs staticfiles
 RUN python manage.py collectstatic --noinput || true
 
 EXPOSE 8000
-# Run migrations, create superuser, then start server
-CMD python manage.py migrate --noinput && python create_superuser.py && gunicorn nextshopsphere.wsgi:application --bind 0.0.0.0:8000
+# Optimized for Render Free Tier
+# --timeout 120: Allow 2 minutes for slow requests
+# --workers 1: Use only 1 worker (limited memory)
+# --threads 2: Use threads instead of more workers
+CMD python manage.py migrate --noinput && python create_superuser.py && gunicorn nextshopsphere.wsgi:application --bind 0.0.0.0:8000 --timeout 120 --workers 1 --threads 2
