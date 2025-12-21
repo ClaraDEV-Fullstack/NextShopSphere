@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install Python dependencies
+# Install dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
@@ -15,10 +15,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create directories
-RUN mkdir -p logs staticfiles
+RUN mkdir -p logs staticfiles media
 
-# Collect static files - IMPORTANT for admin CSS
-RUN python manage.py collectstatic --noinput --clear
+# THIS IS THE MISSING PART (CRITICAL)
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 

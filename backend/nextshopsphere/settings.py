@@ -62,11 +62,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
-    'django.contrib.staticfiles',
-    'cloudinary',                      # Add AFTER staticfiles
+    'django.contrib.staticfiles',   # MUST come first
 
-    # Third party apps
+    'cloudinary',
+    'cloudinary_storage',
+
+    # Third party
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -84,12 +85,11 @@ INSTALLED_APPS = [
     'alerts',
 ]
 
-
 # Add Cloudinary settings - FIXED
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'dfdw17xrx'),
-    'API_KEY': os.getenv('CLOUDINARY_API_KEY', '547783292998643'),
-    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', '2esprok9Tu5BCM9fHcaumz6bZvY'),
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -173,11 +173,12 @@ USE_TZ = True
 # =============================================================================
 # STATIC FILES (CSS, JavaScript, Images)
 # =============================================================================
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Use simpler storage that works better with Django 6.0
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # =============================================================================
 # MEDIA FILES (User uploads)
