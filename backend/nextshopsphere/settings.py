@@ -62,8 +62,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',              # Add BEFORE staticfiles
-    'django.contrib.staticfiles',      # Only ONCE!
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
     'cloudinary',                      # Add AFTER staticfiles
 
     # Third party apps
@@ -85,11 +85,11 @@ INSTALLED_APPS = [
 ]
 
 
-# Add Cloudinary settings
+# Add Cloudinary settings - FIXED
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('dfdw17xrx'),
-    'API_KEY': os.getenv('547783292998643'),
-    'API_SECRET': os.getenv('2esprok9Tu5BCM9fHcaumz6bZvY'),
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', 'dfdw17xrx'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY', '547783292998643'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', '2esprok9Tu5BCM9fHcaumz6bZvY'),
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -176,8 +176,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# WhiteNoise for serving static files in production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use simpler storage that works better with Django 6.0
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # =============================================================================
 # MEDIA FILES (User uploads)
