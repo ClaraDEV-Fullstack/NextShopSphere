@@ -148,10 +148,10 @@ DATABASES = {
 
 # Only print debug info in development
 if DEBUG:
-    db_host = os.getenv('DB_HOST', 'db')
+    db_host = os.getenv('DB_HOST', 'localhost')
     db_name = os.getenv('DB_NAME', 'nextshopsphere')
-    print(f"🔌 Database Host: {db_host}")
-    print(f"📦 Database Name: {db_name}")
+    print(f"Database Host: {db_host}")
+    print(f"Database Name: {db_name}")
 
 
 # =============================================================================
@@ -300,9 +300,9 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply
 # Fallback to console backend if email not configured
 if not EMAIL_HOST_USER and DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    print("⚠️  EMAIL_HOST_USER not set - emails will print to console")
+    print("WARNING: EMAIL_HOST_USER not set - emails will print to console")
 elif DEBUG:
-    print(f"✅ Email configured for: {EMAIL_HOST_USER}")
+    print(f"Email configured for: {EMAIL_HOST_USER}")
 
 # =============================================================================
 # GOOGLE OAUTH CONFIGURATION
@@ -311,9 +311,9 @@ GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID', '')
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET', '')
 
 if GOOGLE_OAUTH_CLIENT_ID and DEBUG:
-    print("✅ Google OAuth configured")
+    print("Google OAuth configured")
 elif DEBUG:
-    print("⚠️  Google OAuth not configured - add GOOGLE_OAUTH_CLIENT_ID to .env")
+    print("WARNING: Google OAuth not configured - add GOOGLE_OAUTH_CLIENT_ID to .env")
 
 # =============================================================================
 # LOGGING CONFIGURATION
