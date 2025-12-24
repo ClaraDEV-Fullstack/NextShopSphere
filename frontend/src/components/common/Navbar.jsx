@@ -201,7 +201,7 @@ const Navbar = () => {
                                     {!logoError ? (
                                         <img
                                             src="/logo.png"
-                                            alt="NetShopSphere"
+                                            alt="NextShopSphere"
                                             className="w-full h-full object-contain p-0.5"
                                             onError={() => setLogoError(true)}
                                         />
@@ -212,7 +212,7 @@ const Navbar = () => {
                             </div>
                             <div className="flex flex-col">
         <span className="text-xl font-bold leading-tight">
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Net</span>
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Next</span>
             <span className="text-green-500 dark:text-white">Shop</span>
             <span className="text-amber-500">Sphere</span>
         </span>
@@ -249,6 +249,16 @@ const Navbar = () => {
                             </Link>
 
                             {/* Contact Link */}
+
+                            <Link
+                                to="/About"
+                                className="group flex items-center gap-2 px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+                            >
+                                <HiOutlineMail className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                <span>About</span>
+                            </Link>
+
+
                             <Link
                                 to="/contact"
                                 className="group flex items-center gap-2 px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"

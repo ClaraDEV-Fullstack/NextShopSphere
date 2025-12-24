@@ -75,7 +75,7 @@ const Footer = () => {
                             </div>
                             <div>
                                 <span className="text-2xl font-bold">
-                                    <span className="text-blue-400">Net</span>
+                                    <span className="text-blue-400">Next</span>
                                     <span className="text-green-500">Shop</span>
                                     <span className="text-amber-400">Sphere</span>
                                 </span>
@@ -86,37 +86,6 @@ const Footer = () => {
                             Your trusted online marketplace in Cameroon. We bring quality products
                             to your doorstep with secure payments via Mobile Money and fast nationwide delivery.
                         </p>
-
-                        {/* Contact Info */}
-                        <div className="space-y-4 mb-8">
-                            <a
-                                href="mailto:nextshopsphere@gmail.com"
-                                className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors group"
-                            >
-                                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                                    <HiMail className="w-5 h-5 text-blue-400" />
-                                </div>
-                                <span>nextshopsphere@gmail.com</span>
-                            </a>
-                            <a
-                                href="tel:+237683669723"
-                                className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors group"
-                            >
-                                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                                    <HiPhone className="w-5 h-5 text-blue-400" />
-                                </div>
-                                <span>+237 683 669 723</span>
-                            </a>
-                            <div className="flex items-start gap-3 text-gray-400">
-                                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <HiLocationMarker className="w-5 h-5 text-blue-400" />
-                                </div>
-                                <div>
-                                    <p>Bonaberi</p>
-                                    <p className="text-gray-500">Douala, Cameroon</p>
-                                </div>
-                            </div>
-                        </div>
 
                         {/* Social Links */}
                         <div className="flex gap-2">

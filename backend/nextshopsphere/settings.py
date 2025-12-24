@@ -135,7 +135,8 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'nextshopsphere'),
         'USER': os.getenv('DB_USER', 'root'),
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        #'HOST': os.getenv('DB_HOST', 'db'),  # 'db' = MySQL service name in docker-compose
+        'HOST': '127.0.0.1',
         'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
@@ -147,10 +148,11 @@ DATABASES = {
 
 # Only print debug info in development
 if DEBUG:
-    db_host = os.getenv('DB_HOST', 'localhost')
+    db_host = os.getenv('DB_HOST', 'db')
     db_name = os.getenv('DB_NAME', 'nextshopsphere')
     print(f"🔌 Database Host: {db_host}")
     print(f"📦 Database Name: {db_name}")
+
 
 # =============================================================================
 # PASSWORD VALIDATION

@@ -59,6 +59,15 @@ class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
     @extend_schema(tags=['Payments'])
     @action(detail=False, methods=['post'], url_path='process')
     def process_payment(self, request):
+        """
+        Process a mock payment and send confirmation email
+
+        Test Cards:
+        - 4242 4242 4242 4242 (Visa - Success)
+        - 5555 5555 5555 4444 (Mastercard - Success)
+        - 4000 0000 0000 0002 (Declined)
+        - 4000 0000 0000 9995 (Insufficient funds)
+        """
 
         serializer = ProcessPaymentSerializer(
             data=request.data,
