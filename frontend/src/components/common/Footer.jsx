@@ -55,38 +55,38 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="bg-gray-900 text-gray-300 relative overflow-hidden text-sm">
+        <footer className="bg-gray-900 text-gray-300 relative overflow-hidden text-xs">
             {/* Main Footer */}
-            <div className="relative max-w-7xl mx-auto px-4 py-10 md:py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8">
+            <div className="relative max-w-7xl mx-auto px-4 py-6 md:py-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6">
                     {/* Brand Section */}
                     <div className="lg:col-span-4">
-                        <Link to="/" className="inline-flex items-center gap-2 mb-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded flex items-center justify-center shadow-lg">
-                                <span className="text-white font-bold text-lg">N</span>
+                        <Link to="/" className="inline-flex items-center gap-2 mb-3">
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded flex items-center justify-center shadow-lg">
+                                <span className="text-white font-bold text-md">N</span>
                             </div>
-                            <span className="text-xl font-bold">
+                            <span className="text-lg font-bold">
                                 <span className="text-blue-400">Next</span>
                                 <span className="text-green-500">Shop</span>
                                 <span className="text-amber-400">Sphere</span>
                             </span>
                         </Link>
 
-                        <p className="text-gray-400 mb-4 leading-snug text-sm">
+                        <p className="text-gray-400 mb-3 leading-snug text-xs">
                             Your trusted marketplace in Cameroon. Quality products, secure payments, and fast delivery.
                         </p>
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-1.5">
                             {socialLinks.map((social, idx) => (
                                 <a
                                     key={idx}
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-8 h-8 bg-gray-800 rounded flex items-center justify-center text-gray-400 hover:text-white ${social.color} transition-all`}
+                                    className={`w-7 h-7 bg-gray-800 rounded flex items-center justify-center text-gray-400 hover:text-white ${social.color} transition-all`}
                                     aria-label={social.name}
                                 >
-                                    <social.icon className="w-4 h-4" />
+                                    <social.icon className="w-3.5 h-3.5" />
                                 </a>
                             ))}
                         </div>
@@ -94,17 +94,17 @@ const Footer = () => {
 
                     {/* Shop Links */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-white font-bold mb-3 flex items-center gap-1">
-                            <HiShoppingBag className="w-4 h-4 text-blue-400" /> Shop
+                        <h4 className="text-white font-bold mb-2 flex items-center gap-1 text-sm">
+                            <HiShoppingBag className="w-3.5 h-3.5 text-blue-400" /> Shop
                         </h4>
-                        <ul className="space-y-1">
+                        <ul className="space-y-0.5">
                             {shopLinks.map((link, idx) => (
                                 <li key={idx}>
                                     <Link
                                         to={link.path}
-                                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors"
+                                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-xs"
                                     >
-                                        <HiOutlineArrowRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                                        <HiOutlineArrowRight className="w-3 h-3 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                                         {link.label}
                                     </Link>
                                 </li>
@@ -114,17 +114,17 @@ const Footer = () => {
 
                     {/* Support Links */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-white font-bold mb-3 flex items-center gap-1">
-                            <HiShieldCheck className="w-4 h-4 text-blue-400" /> Support
+                        <h4 className="text-white font-bold mb-2 flex items-center gap-1 text-sm">
+                            <HiShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Support
                         </h4>
-                        <ul className="space-y-1">
+                        <ul className="space-y-0.5">
                             {supportLinks.map((link, idx) => (
                                 <li key={idx}>
                                     <Link
                                         to={link.path}
-                                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors"
+                                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-xs"
                                     >
-                                        <HiOutlineArrowRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                                        <HiOutlineArrowRight className="w-3 h-3 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                                         {link.label}
                                     </Link>
                                 </li>
@@ -133,30 +133,30 @@ const Footer = () => {
                     </div>
 
                     {/* Newsletter & WhatsApp */}
-                    <div className="lg:col-span-4 space-y-3">
-                        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
-                            <h4 className="text-white font-bold mb-1 flex items-center gap-1">
-                                <HiMail className="w-4 h-4 text-blue-400" /> Subscribe
+                    <div className="lg:col-span-4 space-y-2">
+                        <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+                            <h4 className="text-white font-bold mb-1 flex items-center gap-1 text-sm">
+                                <HiMail className="w-3.5 h-3.5 text-blue-400" /> Subscribe
                             </h4>
-                            <p className="text-gray-400 text-xs mb-2">
+                            <p className="text-gray-400 text-[10px] mb-1.5">
                                 Exclusive deals and offers delivered to your inbox.
                             </p>
-                            <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
+                            <form onSubmit={handleSubscribe} className="flex flex-col gap-1.5">
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email"
-                                    className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                                    className="w-full px-2.5 py-1.5 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-xs"
                                     required
                                 />
                                 <button
                                     type="submit"
                                     disabled={isSubscribing}
-                                    className="w-full py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded flex items-center justify-center gap-1 disabled:opacity-70"
+                                    className="w-full py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded flex items-center justify-center gap-1 disabled:opacity-70 text-xs"
                                 >
                                     {isSubscribing ? 'Subscribing...' : 'Subscribe'}
-                                    {!isSubscribing && <HiOutlineArrowRight className="w-4 h-4" />}
+                                    {!isSubscribing && <HiOutlineArrowRight className="w-3.5 h-3.5" />}
                                 </button>
                             </form>
                         </div>
@@ -165,16 +165,16 @@ const Footer = () => {
                             href="https://wa.me/237683669723"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-2 bg-green-600/10 border border-green-600/30 rounded hover:bg-green-600/20 transition-colors"
+                            className="flex items-center gap-1.5 p-2 bg-green-600/10 border border-green-600/30 rounded hover:bg-green-600/20 transition-colors"
                         >
-                            <div className="w-10 h-10 bg-green-600 rounded flex items-center justify-center">
-                                <FaWhatsapp className="w-5 h-5 text-white" />
+                            <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center">
+                                <FaWhatsapp className="w-4 h-4 text-white" />
                             </div>
                             <div className="flex-1">
-                                <p className="text-white font-semibold text-xs">Chat with us</p>
-                                <p className="text-green-400 text-[10px]">Quick responses, 24/7</p>
+                                <p className="text-white font-semibold text-[10px]">Chat with us</p>
+                                <p className="text-green-400 text-[9px]">Quick responses, 24/7</p>
                             </div>
-                            <HiOutlineExternalLink className="w-4 h-4 text-green-400" />
+                            <HiOutlineExternalLink className="w-3.5 h-3.5 text-green-400" />
                         </a>
                     </div>
                 </div>
@@ -182,10 +182,10 @@ const Footer = () => {
 
             {/* Bottom Bar */}
             <div className="border-t border-gray-800 bg-black/20">
-                <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+                <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-1.5 text-[10px] text-gray-500">
                     <span>© {currentYear} NextShopSphere. All rights reserved.</span>
-                    <span className="flex items-center gap-1">
-                        Made with <HiHeart className="w-3 h-3 text-red-500" /> in Cameroon
+                    <span className="flex items-center gap-0.5">
+                        Made with <HiHeart className="w-2.5 h-2.5 text-red-500" /> in Cameroon
                     </span>
                 </div>
             </div>
