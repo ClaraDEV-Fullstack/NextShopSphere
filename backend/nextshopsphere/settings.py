@@ -135,8 +135,8 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'nextshopsphere'),
         'USER': os.getenv('DB_USER', 'root'),
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        #'HOST': os.getenv('DB_HOST', 'db'),  # 'db' = MySQL service name in docker-compose
-        'HOST': 'nextshopsphere_db_dev',
+        'HOST': os.getenv('DB_HOST', 'db'),
+        #'HOST': 'nextshopsphere_db_dev',        MySQL service name in docker-compose
         'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
