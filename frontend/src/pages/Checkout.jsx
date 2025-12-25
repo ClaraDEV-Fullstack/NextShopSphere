@@ -1,7 +1,22 @@
+// src/pages/Checkout.jsx
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { HiArrowLeft, HiLockClosed, HiHome, HiLocationMarker, HiPhone, HiDocumentText } from 'react-icons/hi';
+import {
+    HiArrowLeft,
+    HiLockClosed,
+    HiHome,
+    HiLocationMarker,
+    HiPhone,
+    HiDocumentText,
+    HiShoppingCart,
+    HiTruck,
+    HiCreditCard,
+    HiCheckCircle,
+    HiShieldCheck,
+    HiGift
+} from 'react-icons/hi';
 import { selectCartItems, selectCartTotal, clearCart } from '../store/cartSlice';
 import { ordersAPI } from '../api/api';
 import { getImageUrl } from '../utils/helpers';
@@ -59,10 +74,7 @@ const Checkout = () => {
             };
 
             const response = await ordersAPI.create(orderData);
-
-            // Clear cart after successful order
             dispatch(clearCart());
-
             toast.success('Order placed successfully!');
             navigate(`/orders/${response.data.id}`);
         } catch (error) {
@@ -76,269 +88,393 @@ const Checkout = () => {
         }
     };
 
-    // Redirect if cart is empty
+    // Empty Cart State
     if (cartItems.length === 0) {
         return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center max-w-7xl mx-auto px-4 py-16 text-center bg-white rounded-2xl shadow-sm">
-                <div className="mb-6 p-4 bg-red-50 rounded-full">
-                    <svg className="w-16 h-16 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+            <div className="min-h-[60vh] flex items-center justify-center px-4 py-12">
+                <div className="text-center max-w-sm">
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <HiShoppingCart className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
+                    </div>
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Your Cart is Empty</h1>
+                    <p className="text-sm md:text-base text-gray-600 mb-6">Looks like you haven't added any items yet.</p>
+                    <Link
+                        to="/products"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                        <HiShoppingCart className="w-4 h-4" />
+                        Continue Shopping
+                    </Link>
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">Your Cart is Empty</h1>
-                <p className="text-gray-600 mb-8 max-w-md">Looks like you haven't added any items to your cart yet.</p>
-                <Link to="/products" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
-                    Continue Shopping
-                </Link>
             </div>
         );
     }
 
-    // Redirect if not logged in
+    // Not Authenticated State
     if (!isAuthenticated) {
         return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center max-w-7xl mx-auto px-4 py-16 text-center bg-white rounded-2xl shadow-sm">
-                <div className="mb-6 p-4 bg-blue-50 rounded-full">
-                    <svg className="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
+            <div className="min-h-[60vh] flex items-center justify-center px-4 py-12">
+                <div className="text-center max-w-sm">
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <HiLockClosed className="w-8 h-8 md:w-10 md:h-10 text-blue-400" />
+                    </div>
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Please Login</h1>
+                    <p className="text-sm md:text-base text-gray-600 mb-6">You need to be logged in to complete your purchase.</p>
+                    <Link
+                        to="/login"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                        <HiLockClosed className="w-4 h-4" />
+                        Login to Your Account
+                    </Link>
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">Please Login to Checkout</h1>
-                <p className="text-gray-600 mb-8 max-w-md">You need to be logged in to complete your purchase.</p>
-                <Link to="/login" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
-                    Login to Your Account
-                </Link>
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-            {/* Header */}
-            <div className="mb-10">
-                <Link to="/cart" className="group inline-flex items-center text-gray-600 hover:text-indigo-600 transition-colors duration-200 mb-6">
-                    <HiArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                    Back to Cart
-                </Link>
-                <div className="flex items-baseline">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Checkout</h1>
-                    <span className="ml-4 px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">
-                        {cartItems.length} {cartItems.length === 1 ? 'Item' : 'Items'}
-                    </span>
-                </div>
-                <p className="mt-2 text-gray-600">Complete your order by providing your shipping information</p>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-                {/* Shipping Form */}
-                <div>
-                    <div className="bg-white rounded-xl shadow-sm p-6 md:p-8 border border-gray-100">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Shipping Information</h2>
-                        <p className="text-gray-600 mb-8">Enter your shipping details to complete your order</p>
-
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Address */}
-                            <div>
-                                <label htmlFor="shipping_address" className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                    <HiHome className="w-4 h-4 mr-2 text-gray-500" />
-                                    Street Address <span className="text-red-500 ml-1">*</span>
-                                </label>
-                                <input
-                                    id="shipping_address"
-                                    type="text"
-                                    name="shipping_address"
-                                    value={formData.shipping_address}
-                                    onChange={handleChange}
-                                    placeholder="123 Main Street, Apt 4B"
-                                    required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors shadow-sm"
-                                />
-                            </div>
-
-                            {/* City & Country */}
-                            <div className="grid sm:grid-cols-2 gap-6">
-                                <div>
-                                    <label htmlFor="shipping_city" className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <HiLocationMarker className="w-4 h-4 mr-2 text-gray-500" />
-                                        City <span className="text-red-500 ml-1">*</span>
-                                    </label>
-                                    <input
-                                        id="shipping_city"
-                                        type="text"
-                                        name="shipping_city"
-                                        value={formData.shipping_city}
-                                        onChange={handleChange}
-                                        placeholder="New York"
-                                        required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors shadow-sm"
-                                    />
+        <div className="min-h-screen bg-gray-50">
+            {/* Progress Bar */}
+            <div className="bg-white border-b border-gray-100">
+                <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-3 md:py-4">
+                    <div className="flex items-center justify-center gap-2 md:gap-4">
+                        {[
+                            { icon: HiShoppingCart, label: 'Cart', done: true },
+                            { icon: HiTruck, label: 'Shipping', active: true },
+                            { icon: HiCreditCard, label: 'Payment', done: false },
+                            { icon: HiCheckCircle, label: 'Done', done: false },
+                        ].map((step, idx) => (
+                            <div key={idx} className="flex items-center">
+                                <div className={`flex items-center gap-1.5 md:gap-2 ${
+                                    step.active
+                                        ? 'text-indigo-600'
+                                        : step.done
+                                            ? 'text-green-600'
+                                            : 'text-gray-400'
+                                }`}>
+                                    <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center ${
+                                        step.active
+                                            ? 'bg-indigo-100 text-indigo-600'
+                                            : step.done
+                                                ? 'bg-green-100 text-green-600'
+                                                : 'bg-gray-100 text-gray-400'
+                                    }`}>
+                                        <step.icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                    </div>
+                                    <span className="hidden sm:inline text-xs md:text-sm font-medium">{step.label}</span>
                                 </div>
-                                <div>
-                                    <label htmlFor="shipping_country" className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Country <span className="text-red-500 ml-1">*</span>
-                                    </label>
-                                    <input
-                                        id="shipping_country"
-                                        type="text"
-                                        name="shipping_country"
-                                        value={formData.shipping_country}
-                                        onChange={handleChange}
-                                        placeholder="United States"
-                                        required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors shadow-sm"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Phone */}
-                            <div>
-                                <label htmlFor="shipping_phone" className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                    <HiPhone className="w-4 h-4 mr-2 text-gray-500" />
-                                    Phone Number <span className="text-red-500 ml-1">*</span>
-                                </label>
-                                <input
-                                    id="shipping_phone"
-                                    type="tel"
-                                    name="shipping_phone"
-                                    value={formData.shipping_phone}
-                                    onChange={handleChange}
-                                    placeholder="+1 (555) 123-4567"
-                                    required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors shadow-sm"
-                                />
-                            </div>
-
-                            {/* Notes */}
-                            <div>
-                                <label htmlFor="notes" className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                    <HiDocumentText className="w-4 h-4 mr-2 text-gray-500" />
-                                    Order Notes <span className="text-gray-500 ml-1 text-xs">(optional)</span>
-                                </label>
-                                <textarea
-                                    id="notes"
-                                    name="notes"
-                                    value={formData.notes}
-                                    onChange={handleChange}
-                                    placeholder="Special instructions for delivery..."
-                                    rows={3}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors shadow-sm"
-                                />
-                            </div>
-
-                            {/* Submit */}
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        Processing...
-                                    </>
-                                ) : (
-                                    <>
-                                        <HiLockClosed className="w-5 h-5" />
-                                        Place Order - ${total.toFixed(2)}
-                                    </>
+                                {idx < 3 && (
+                                    <div className={`w-6 md:w-12 h-0.5 mx-1 md:mx-2 ${
+                                        step.done ? 'bg-green-300' : 'bg-gray-200'
+                                    }`} />
                                 )}
-                            </button>
-                        </form>
+                            </div>
+                        ))}
                     </div>
                 </div>
+            </div>
 
-                {/* Order Summary */}
-                <div>
-                    <div className="bg-white rounded-xl shadow-sm p-6 md:p-8 border border-gray-100 sticky top-24">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Order Summary</h2>
-                        <p className="text-gray-600 mb-6">Review your items before placing the order</p>
+            <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-8">
+                {/* Header */}
+                <div className="mb-4 md:mb-8">
+                    <Link
+                        to="/cart"
+                        className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 transition-colors mb-3 md:mb-4"
+                    >
+                        <HiArrowLeft className="w-4 h-4" />
+                        Back to Cart
+                    </Link>
+                    <div className="flex flex-wrap items-baseline gap-2 md:gap-4">
+                        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Checkout</h1>
+                        <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 text-xs md:text-sm font-medium rounded-full">
+                            {cartItems.length} {cartItems.length === 1 ? 'Item' : 'Items'}
+                        </span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">Complete your order by providing shipping details</p>
+                </div>
 
-                        {/* Items */}
-                        <div className="space-y-5 mb-8 max-h-96 overflow-y-auto pr-2">
-                            {cartItems.map((item) => (
-                                <div key={item.id} className="flex gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200">
-                                        <img
-                                            src={getImageUrl(item.image)}
-                                            alt={item.name}
-                                            className="w-full h-full object-cover"
+                <div className="grid lg:grid-cols-5 gap-4 md:gap-6 lg:gap-8">
+                    {/* Shipping Form - Takes 3 columns on large screens */}
+                    <div className="lg:col-span-3">
+                        <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-4 md:p-6 lg:p-8 border border-gray-100">
+                            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                    <HiTruck className="w-4 h-4 md:w-5 md:h-5 text-indigo-600" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg md:text-xl font-bold text-gray-900">Shipping Information</h2>
+                                    <p className="text-xs md:text-sm text-gray-500">Where should we send your order?</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
+                                {/* Address */}
+                                <div>
+                                    <label htmlFor="shipping_address" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
+                                        <HiHome className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                        Street Address <span className="text-red-500 ml-0.5">*</span>
+                                    </label>
+                                    <input
+                                        id="shipping_address"
+                                        type="text"
+                                        name="shipping_address"
+                                        value={formData.shipping_address}
+                                        onChange={handleChange}
+                                        placeholder="123 Main Street, Apt 4B"
+                                        required
+                                        className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                                    />
+                                </div>
+
+                                {/* City & Country - 2 columns */}
+                                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                                    <div>
+                                        <label htmlFor="shipping_city" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
+                                            <HiLocationMarker className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                            City <span className="text-red-500 ml-0.5">*</span>
+                                        </label>
+                                        <input
+                                            id="shipping_city"
+                                            type="text"
+                                            name="shipping_city"
+                                            value={formData.shipping_city}
+                                            onChange={handleChange}
+                                            placeholder="New York"
+                                            required
+                                            className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
                                         />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-900 truncate">{item.name}</p>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                                Qty: {item.quantity}
-                                            </span>
-                                        </p>
+                                    <div>
+                                        <label htmlFor="shipping_country" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
+                                            <svg className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Country <span className="text-red-500 ml-0.5">*</span>
+                                        </label>
+                                        <input
+                                            id="shipping_country"
+                                            type="text"
+                                            name="shipping_country"
+                                            value={formData.shipping_country}
+                                            onChange={handleChange}
+                                            placeholder="United States"
+                                            required
+                                            className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                                        />
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold text-gray-900">${item.price.toFixed(2)}</p>
-                                        <p className="text-sm text-gray-600">each</p>
-                                        <p className="font-bold text-lg text-indigo-600 mt-1">
-                                            ${(item.price * item.quantity).toFixed(2)}
-                                        </p>
+                                </div>
+
+                                {/* Phone */}
+                                <div>
+                                    <label htmlFor="shipping_phone" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
+                                        <HiPhone className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                        Phone Number <span className="text-red-500 ml-0.5">*</span>
+                                    </label>
+                                    <input
+                                        id="shipping_phone"
+                                        type="tel"
+                                        name="shipping_phone"
+                                        value={formData.shipping_phone}
+                                        onChange={handleChange}
+                                        placeholder="+1 (555) 123-4567"
+                                        required
+                                        className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                                    />
+                                </div>
+
+                                {/* Notes */}
+                                <div>
+                                    <label htmlFor="notes" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
+                                        <HiDocumentText className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                        Order Notes
+                                        <span className="text-gray-400 ml-1 text-xs font-normal">(optional)</span>
+                                    </label>
+                                    <textarea
+                                        id="notes"
+                                        name="notes"
+                                        value={formData.notes}
+                                        onChange={handleChange}
+                                        placeholder="Special delivery instructions..."
+                                        rows={2}
+                                        className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white resize-none"
+                                    />
+                                </div>
+
+                                {/* Trust Badges - Mobile */}
+                                <div className="grid grid-cols-2 gap-2 py-3 md:hidden">
+                                    <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg">
+                                        <HiShieldCheck className="w-4 h-4 text-green-500" />
+                                        <span>Secure Checkout</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg">
+                                        <HiTruck className="w-4 h-4 text-blue-500" />
+                                        <span>Fast Delivery</span>
+                                    </div>
+                                </div>
+
+                                {/* Submit Button */}
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="w-full py-3 md:py-3.5 px-4 md:px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm md:text-base font-semibold rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            <span>Processing...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <HiLockClosed className="w-4 h-4 md:w-5 md:h-5" />
+                                            <span>Place Order • ${total.toFixed(2)}</span>
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* Trust Section - Desktop */}
+                        <div className="hidden md:grid grid-cols-3 gap-4 mt-6">
+                            {[
+                                { icon: HiShieldCheck, title: 'Secure', desc: '256-bit SSL', color: 'green' },
+                                { icon: HiTruck, title: 'Fast Delivery', desc: '2-5 business days', color: 'blue' },
+                                { icon: HiGift, title: 'Gift Ready', desc: 'Free gift wrapping', color: 'purple' },
+                            ].map((item, idx) => (
+                                <div key={idx} className="flex items-center gap-3 bg-white p-4 rounded-xl border border-gray-100">
+                                    <div className={`w-10 h-10 rounded-lg bg-${item.color}-50 flex items-center justify-center`}>
+                                        <item.icon className={`w-5 h-5 text-${item.color}-500`} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900">{item.title}</p>
+                                        <p className="text-xs text-gray-500">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
+                    </div>
 
-                        <div className="border-t border-gray-200 pt-6">
-                            {/* Totals */}
-                            <div className="space-y-4">
-                                <div className="flex justify-between text-gray-600">
+                    {/* Order Summary - Takes 2 columns on large screens */}
+                    <div className="lg:col-span-2">
+                        <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-4 md:p-6 border border-gray-100 lg:sticky lg:top-24">
+                            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                    <HiShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg md:text-xl font-bold text-gray-900">Order Summary</h2>
+                                    <p className="text-xs md:text-sm text-gray-500">{cartItems.length} items in cart</p>
+                                </div>
+                            </div>
+
+                            {/* Cart Items */}
+                            <div className="space-y-3 mb-4 md:mb-6 max-h-48 md:max-h-64 overflow-y-auto pr-1 scrollbar-thin">
+                                {cartItems.map((item) => (
+                                    <div key={item.id} className="flex gap-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                        <div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white">
+                                            <img
+                                                src={getImageUrl(item.image)}
+                                                alt={item.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+                                                    Qty: {item.quantity}
+                                                </span>
+                                                <span className="text-xs text-gray-500">× ${item.price.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                            <p className="text-sm md:text-base font-bold text-indigo-600">
+                                                ${(item.price * item.quantity).toFixed(2)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Divider */}
+                            <div className="border-t border-gray-200 pt-4 space-y-2.5 md:space-y-3">
+                                {/* Subtotal */}
+                                <div className="flex justify-between text-sm text-gray-600">
                                     <span>Subtotal</span>
                                     <span className="font-medium">${cartTotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-gray-600">
+
+                                {/* Shipping */}
+                                <div className="flex justify-between text-sm text-gray-600">
                                     <span>Shipping</span>
-                                    <span className="font-medium">
-                                        {shippingCost === 0 ? (
-                                            <span className="text-green-600">Free</span>
-                                        ) : (
-                                            `$${shippingCost.toFixed(2)}`
-                                        )}
+                                    <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
+                                        {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
                                     </span>
                                 </div>
-                                <div className="flex justify-between text-gray-600">
+
+                                {/* Tax */}
+                                <div className="flex justify-between text-sm text-gray-600">
                                     <span>Tax (10%)</span>
                                     <span className="font-medium">${tax.toFixed(2)}</span>
                                 </div>
+
+                                {/* Free Shipping Banner */}
                                 {shippingCost > 0 && (
-                                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                                        <div className="flex">
-                                            <div className="ml-3">
-                                                <p className="text-sm text-yellow-700">
-                                                    Spend ${(50 - cartTotal).toFixed(2)} more for free shipping!
-                                                </p>
-                                            </div>
+                                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 md:p-3 mt-2">
+                                        <div className="flex items-start gap-2">
+                                            <HiTruck className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <p className="text-xs text-amber-700">
+                                                Add <span className="font-bold">${(50 - cartTotal).toFixed(2)}</span> more for free shipping!
+                                            </p>
+                                        </div>
+                                        {/* Progress bar */}
+                                        <div className="mt-2 h-1.5 bg-amber-200 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-amber-500 rounded-full transition-all"
+                                                style={{ width: `${Math.min((cartTotal / 50) * 100, 100)}%` }}
+                                            />
                                         </div>
                                     </div>
                                 )}
-                                <div className="border-t border-gray-200 pt-4">
-                                    <div className="flex justify-between text-xl font-bold text-gray-900">
-                                        <span>Total</span>
-                                        <span>${total.toFixed(2)}</span>
+
+                                {/* Free Shipping Achieved */}
+                                {shippingCost === 0 && (
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-2.5 md:p-3 mt-2">
+                                        <div className="flex items-center gap-2">
+                                            <HiCheckCircle className="w-4 h-4 text-green-600" />
+                                            <p className="text-xs text-green-700 font-medium">
+                                                🎉 You've unlocked free shipping!
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Total */}
+                                <div className="border-t border-gray-200 pt-3 mt-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-base md:text-lg font-bold text-gray-900">Total</span>
+                                        <span className="text-xl md:text-2xl font-bold text-indigo-600">${total.toFixed(2)}</span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="mt-8 bg-gray-50 rounded-lg p-4 border border-gray-100">
-                            <div className="flex items-start">
-                                <div className="flex-shrink-0">
-                                    <svg className="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-gray-800">Secure Checkout</h3>
-                                    <div className="mt-2 text-sm text-gray-600">
-                                        <p>Your payment information is encrypted and secure.</p>
+                            {/* Security Note */}
+                            <div className="mt-4 md:mt-6 bg-gray-50 rounded-lg p-3 border border-gray-100">
+                                <div className="flex items-start gap-2.5">
+                                    <HiShieldCheck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                    <div>
+                                        <p className="text-xs md:text-sm font-medium text-gray-800">Secure Checkout</p>
+                                        <p className="text-xs text-gray-500 mt-0.5">Your payment info is encrypted and secure.</p>
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* Payment Methods */}
+                            <div className="mt-4 flex items-center justify-center gap-2">
+                                <span className="text-xs text-gray-400">We accept:</span>
+                                <div className="flex items-center gap-1.5">
+                                    {['💳', '🏦', '📱'].map((icon, idx) => (
+                                        <span key={idx} className="text-lg">{icon}</span>
+                                    ))}
                                 </div>
                             </div>
                         </div>

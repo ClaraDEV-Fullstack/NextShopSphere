@@ -1,9 +1,18 @@
 // src/utils/helpers.js
 
-// Backend base URL for media files
-export const BACKEND_URL = 'http://127.0.0.1:8000';
+// Backend URLs for different environments
+const getBackendUrl = () => {
+    // Check if we're in production
+    if (process.env.NODE_ENV === 'production') {
+        return 'https://nextshopsphere.onrender.com';
+    }
+    // Local development
+    return 'http://127.0.0.1:8000';
+};
 
-// Default placeholder as inline SVG (no external dependency!)
+export const BACKEND_URL = getBackendUrl();
+
+// Default placeholder
 export const PLACEHOLDER_IMAGE = `data:image/svg+xml,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
   <rect fill="#f3f4f6" width="400" height="400"/>
@@ -17,15 +26,71 @@ export const PLACEHOLDER_IMAGE = `data:image/svg+xml,${encodeURIComponent(`
 </svg>
 `)}`;
 
-// Get full image URL
-export const getImageUrl = (imagePath) => {
-    if (!imagePath) return PLACEHOLDER_IMAGE;
-
-    // If already a full URL, return as is
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-        return imagePath;
+// Robust image URL getter - handles all formats
+export const getImageUrl = (imageData) => {
+    // Handle null/undefined/empty
+    if (!imageData) {
+        return PLACEHOLDER_IMAGE;
     }
 
-    // Prepend backend URL
-    return `${BACKEND_URL}${imagePath}`;
+    // If it's a string
+    if (typeof imageData === 'string') {
+        // Empty string
+        if (imageData.trim() === '') {
+            return PLACEHOLDER_IMAGE;
+        }
+        // Already a full URL
+        if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
+            return imageData;
+        }
+        // Data URL (SVG, base64)
+        if (imageData.startsWith('data:')) {
+            return imageData;
+        }
+        // Relative path - prepend backend URL
+        const cleanPath = imageData.startsWith('/') ? imageData : `/${imageData}`;
+        return `${BACKEND_URL}${cleanPath}`;
+    }
+
+    // If it's an object
+    if (typeof imageData === 'object') {
+        // Try image_url first (from updated serializer)
+        if (imageData.image_url) {
+            return getImageUrl(imageData.image_url);
+        }
+
+        // Try image field
+        if (imageData.image) {
+            return getImageUrl(imageData.image);
+        }
+
+        // Try url field
+        if (imageData.url) {
+            return getImageUrl(imageData.url);
+        }
+
+        // Try src field
+        if (imageData.src) {
+            return getImageUrl(imageData.src);
+        }
+    }
+
+    // Fallback
+    return PLACEHOLDER_IMAGE;
+};
+
+// Format price
+export const formatPrice = (price) => {
+    if (price === null || price === undefined) return '$0.00';
+    return `$${parseFloat(price).toFixed(2)}`;
+};
+
+// Format date
+export const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
 };

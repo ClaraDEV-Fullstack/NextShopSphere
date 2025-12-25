@@ -9,13 +9,13 @@ const ProductCard = ({ product }) => {
     const dispatch = useDispatch();
 
     const handleAddToCart = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // prevent Link navigation
         dispatch(
             addToCart({
                 id: product.id,
                 name: product.name,
                 price: parseFloat(product.price),
-                image: getImageUrl(product.primary_image?.image),
+                image: getImageUrl(product.primary_image),
                 slug: product.slug,
             })
         );
@@ -32,9 +32,9 @@ const ProductCard = ({ product }) => {
             "
         >
             {/* IMAGE */}
-            <div className="relative aspect-square bg-gray-100 overflow-hidden">
+            <div className="relative w-full h-56 overflow-hidden">
                 <img
-                    src={getImageUrl(product.primary_image?.image)}
+                    src={getImageUrl(product.primary_image)}
                     alt={product.name}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 sm:group-hover:scale-110"
@@ -47,6 +47,7 @@ const ProductCard = ({ product }) => {
                 )}
 
                 <button
+                    onClick={(e) => e.preventDefault()}
                     className="
                         absolute top-2 right-2 p-2 rounded-full bg-white/90
                         shadow opacity-100 sm:opacity-0 sm:group-hover:opacity-100
@@ -67,14 +68,14 @@ const ProductCard = ({ product }) => {
             </div>
 
             {/* INFO */}
-            <div className="flex flex-col p-3 sm:p-4 flex-1">
+            <div className="flex flex-col p-4 flex-1">
                 {product.category && (
                     <p className="text-[11px] uppercase text-gray-500 mb-1">
                         {product.category.name}
                     </p>
                 )}
 
-                <h3 className="text-sm sm:text-base font-semibold text-gray-800 line-clamp-2 mb-2">
+                <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-2">
                     {product.name}
                 </h3>
 

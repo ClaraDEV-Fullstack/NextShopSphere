@@ -1,6 +1,12 @@
+// src/pages/Profile.jsx
+
 import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { HiUser, HiMail, HiPhone, HiLocationMarker, HiPencil, HiCheck, HiX, HiCamera, HiShieldCheck, HiPhotograph, HiUpload } from 'react-icons/hi';
+import {
+    HiUser, HiMail, HiPhone, HiLocationMarker, HiPencil,
+    HiCheck, HiX, HiCamera, HiShieldCheck, HiPhotograph,
+    HiUpload, HiHome
+} from 'react-icons/hi';
 import { authAPI } from '../api/api';
 import { loadUser } from '../store/authSlice';
 import toast from 'react-hot-toast';
@@ -78,7 +84,6 @@ const Profile = () => {
             const errorMessage = error.response?.data
                 ? Object.values(error.response.data).flat().join(' ')
                 : 'Failed to update profile';
-
             toast.error(errorMessage);
         } finally {
             setIsLoading(false);
@@ -87,26 +92,20 @@ const Profile = () => {
 
     const handleFileSelect = (file) => {
         if (!file) return;
-
         if (!file.type.match('image.*')) {
             toast.error('Please select an image file');
             return;
         }
-
         if (file.size > 5 * 1024 * 1024) {
             toast.error('Image size should be less than 5MB');
             return;
         }
-
-        // Create preview
         const reader = new FileReader();
-        reader.onloadend = () => {
-            setPreviewImage(reader.result);
-        };
+        reader.onloadend = () => setPreviewImage(reader.result);
         reader.readAsDataURL(file);
     };
 
-    const handleFileChange = async (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
         handleFileSelect(file);
     };
@@ -125,7 +124,6 @@ const Profile = () => {
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);
-
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
             handleFileSelect(e.dataTransfer.files[0]);
         }
@@ -133,7 +131,6 @@ const Profile = () => {
 
     const uploadImage = async () => {
         if (!fileInputRef.current?.files[0] && !previewImage) return;
-
         setIsUploading(true);
         const formData = new FormData();
         formData.append('avatar', fileInputRef.current.files[0]);
@@ -141,96 +138,72 @@ const Profile = () => {
         try {
             await authAPI.updateProfilePicture(formData);
             await dispatch(loadUser());
-
-            toast.success('Profile picture updated successfully!');
+            toast.success('Profile picture updated!');
             setShowAvatarModal(false);
             setPreviewImage(null);
         } catch (error) {
-            const errorMessage = error.response?.data?.avatar?.[0] ||
-                error.response?.data?.detail ||
-                'Failed to upload profile picture';
-            toast.error(errorMessage);
+            toast.error('Failed to upload profile picture');
         } finally {
             setIsUploading(false);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
     const cancelUpload = () => {
         setShowAvatarModal(false);
         setPreviewImage(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
-
-    const triggerFileInput = () => {
-        fileInputRef.current.click();
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     if (!user) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-4">
-                        <Loader size="lg" />
-                    </div>
-                    <p className="text-gray-500 font-medium">Loading profile...</p>
+                    <Loader size="lg" />
+                    <p className="text-gray-500 mt-3 text-sm">Loading profile...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-8 lg:py-12">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-4 md:py-8">
             {/* Avatar Upload Modal */}
             {showAvatarModal && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3">
+                    <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl overflow-hidden">
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                                        <HiPhotograph className="w-5 h-5 text-white" />
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                                        <HiPhotograph className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900">Update Photo</h3>
-                                        <p className="text-sm text-gray-500">Choose a new profile picture</p>
+                                        <h3 className="font-bold text-gray-900 text-sm">Update Photo</h3>
+                                        <p className="text-xs text-gray-500">Choose a new picture</p>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={cancelUpload}
-                                    className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                                >
+                                <button onClick={cancelUpload} className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">
                                     <HiX className="w-4 h-4 text-gray-500" />
                                 </button>
                             </div>
                         </div>
 
                         {/* Upload Area */}
-                        <div className="p-6">
+                        <div className="p-4">
                             {previewImage ? (
                                 <div className="text-center">
-                                    <div className="relative inline-block mb-4">
-                                        <img
-                                            src={previewImage}
-                                            alt="Preview"
-                                            className="w-40 h-40 rounded-full object-cover border-4 border-blue-100 shadow-lg"
-                                        />
+                                    <div className="relative inline-block mb-3">
+                                        <img src={previewImage} alt="Preview" className="w-28 h-28 rounded-full object-cover border-4 border-blue-100 shadow-lg" />
                                         <button
-                                            onClick={() => {
-                                                setPreviewImage(null);
-                                                if (fileInputRef.current) fileInputRef.current.value = '';
-                                            }}
-                                            className="absolute -top-2 -right-2 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors shadow-lg"
+                                            onClick={() => { setPreviewImage(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                                            className="absolute -top-1 -right-1 w-6 h-6 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-700"
                                         >
-                                            <HiX className="w-4 h-4" />
+                                            <HiX className="w-3 h-3" />
                                         </button>
                                     </div>
-                                    <p className="text-sm text-gray-500 mb-4">Looking good! Ready to upload?</p>
+                                    <p className="text-xs text-gray-500 mb-3">Looking good! Ready to upload?</p>
                                 </div>
                             ) : (
                                 <div
@@ -238,56 +211,37 @@ const Profile = () => {
                                     onDragLeave={handleDrag}
                                     onDragOver={handleDrag}
                                     onDrop={handleDrop}
-                                    onClick={triggerFileInput}
-                                    className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
-                                        dragActive
-                                            ? 'border-blue-500 bg-blue-50'
-                                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                                    onClick={() => fileInputRef.current.click()}
+                                    className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                                        dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'
                                     }`}
                                 >
-                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                        <HiUpload className={`w-8 h-8 ${dragActive ? 'text-blue-600' : 'text-blue-500'}`} />
+                                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                        <HiUpload className="w-6 h-6 text-blue-500" />
                                     </div>
-                                    <p className="font-semibold text-gray-700 mb-1">
-                                        {dragActive ? 'Drop your image here' : 'Drag & drop your photo'}
+                                    <p className="text-sm font-medium text-gray-700 mb-1">
+                                        {dragActive ? 'Drop here' : 'Drag & drop photo'}
                                     </p>
-                                    <p className="text-sm text-gray-500 mb-3">or click to browse</p>
-                                    <p className="text-xs text-gray-400">PNG, JPG up to 5MB</p>
+                                    <p className="text-xs text-gray-500">or click to browse</p>
                                 </div>
                             )}
-
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                className="hidden"
-                                accept="image/*"
-                            />
+                            <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
-                            <button
-                                onClick={cancelUpload}
-                                className="flex-1 px-4 py-3 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors"
-                            >
+                        <div className="p-4 border-t border-gray-100 bg-gray-50 flex gap-2">
+                            <button onClick={cancelUpload} className="flex-1 px-3 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg text-sm hover:bg-gray-50">
                                 Cancel
                             </button>
                             <button
                                 onClick={uploadImage}
                                 disabled={!previewImage || isUploading}
-                                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="flex-1 px-3 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg text-sm disabled:opacity-50 flex items-center justify-center gap-1.5"
                             >
                                 {isUploading ? (
-                                    <>
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        Uploading...
-                                    </>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 ) : (
-                                    <>
-                                        <HiCheck className="w-5 h-5" />
-                                        Upload Photo
-                                    </>
+                                    <><HiCheck className="w-4 h-4" /> Upload</>
                                 )}
                             </button>
                         </div>
@@ -295,201 +249,183 @@ const Profile = () => {
                 </div>
             )}
 
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Page Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-                    <p className="text-gray-500 mt-2">Manage your account information and preferences</p>
+            <div className="w-[95%] lg:w-[90%] max-w-6xl mx-auto px-2 md:px-4">
+                {/* Page Header - Compact */}
+                <div className="mb-4 md:mb-6">
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900">My Profile</h1>
+                    <p className="text-xs md:text-sm text-gray-500 mt-0.5">Manage your account information</p>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
+                <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
                     {/* Sidebar - Profile Card */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
-                            {/* Cover Pattern */}
-                            <div className="h-24 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 relative overflow-hidden">
+                        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                            {/* Cover */}
+                            <div className="h-16 md:h-20 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 relative">
                                 <div className="absolute inset-0 opacity-20">
-                                    <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-1/2 -translate-y-1/2" />
-                                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full translate-x-1/3 translate-y-1/3" />
+                                    <div className="absolute top-0 left-0 w-20 h-20 bg-white rounded-full -translate-x-1/2 -translate-y-1/2" />
                                 </div>
                             </div>
 
-                            <div className="px-6 pb-6">
+                            <div className="px-4 pb-4">
                                 {/* Avatar */}
-                                <div className="relative -mt-14 mb-4">
+                                <div className="relative -mt-10 md:-mt-12 mb-3">
                                     <div className="relative inline-block">
-                                        <div className="w-28 h-28 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
+                                        <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center overflow-hidden border-3 md:border-4 border-white shadow-lg">
                                             {user.avatar ? (
-                                                <img
-                                                    src={user.avatar}
-                                                    alt="Profile"
-                                                    className="w-full h-full object-cover"
-                                                />
+                                                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
                                             ) : (
-                                                <HiUser className="w-12 h-12 text-blue-500" />
+                                                <HiUser className="w-8 h-8 md:w-10 md:h-10 text-blue-500" />
                                             )}
                                         </div>
-
-                                        {/* Camera Button */}
                                         <button
                                             onClick={() => setShowAvatarModal(true)}
-                                            className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center justify-center group"
+                                            className="absolute -bottom-1 -right-1 w-7 h-7 md:w-8 md:h-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg flex items-center justify-center"
                                         >
-                                            <HiCamera className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                            <HiCamera className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* User Info */}
-                                <div className="text-center mb-6">
-                                    <h2 className="text-xl font-bold text-gray-900 mb-1">
+                                <div className="text-center mb-4">
+                                    <h2 className="text-base md:text-lg font-bold text-gray-900">
                                         {user.first_name || user.username} {user.last_name}
                                     </h2>
-                                    <p className="text-gray-500">{user.email}</p>
+                                    <p className="text-xs md:text-sm text-gray-500 truncate">{user.email}</p>
                                 </div>
 
                                 {/* Stats */}
-                                <div className="grid grid-cols-2 gap-3 mb-6">
-                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 text-center">
-                                        <p className="text-2xl font-bold text-blue-600">
+                                <div className="grid grid-cols-2 gap-2 mb-4">
+                                    <div className="bg-blue-50 rounded-lg p-2.5 md:p-3 text-center">
+                                        <p className="text-lg md:text-xl font-bold text-blue-600">
                                             {new Date().getFullYear() - new Date(user.created_at).getFullYear() || '< 1'}
                                         </p>
-                                        <p className="text-xs text-gray-500 font-medium">Years Member</p>
+                                        <p className="text-[10px] md:text-xs text-gray-500">Years Member</p>
                                     </div>
-                                    <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 text-center">
+                                    <div className="bg-emerald-50 rounded-lg p-2.5 md:p-3 text-center">
                                         <div className="flex items-center justify-center gap-1 text-emerald-600">
-                                            <HiShieldCheck className="w-5 h-5" />
-                                            <span className="font-bold">Verified</span>
+                                            <HiShieldCheck className="w-4 h-4" />
+                                            <span className="text-sm font-bold">Verified</span>
                                         </div>
-                                        <p className="text-xs text-gray-500 font-medium">Account Status</p>
+                                        <p className="text-[10px] md:text-xs text-gray-500">Status</p>
                                     </div>
                                 </div>
 
                                 {/* Member Since */}
-                                <div className="text-center pt-4 border-t border-gray-100">
-                                    <p className="text-sm text-gray-500">
-                                        Member since <span className="font-semibold text-gray-700">{new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                                <div className="text-center pt-3 border-t border-gray-100">
+                                    <p className="text-xs text-gray-500">
+                                        Member since <span className="font-semibold text-gray-700">
+                                            {new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Quick Upload Card */}
-                        <div className="mt-6 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-5 text-white relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-                            <div className="relative">
-                                <HiPhotograph className="w-8 h-8 mb-3 opacity-80" />
-                                <h3 className="font-bold mb-1">Update Your Photo</h3>
-                                <p className="text-sm text-blue-100 mb-4">Add a photo to personalize your account</p>
-                                <button
-                                    onClick={() => setShowAvatarModal(true)}
-                                    className="w-full py-2.5 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors"
-                                >
-                                    Choose Photo
-                                </button>
-                            </div>
+                        {/* Update Photo Card - Hidden on Mobile */}
+                        <div className="hidden md:block mt-4 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl p-4 text-white">
+                            <HiPhotograph className="w-6 h-6 mb-2 opacity-80" />
+                            <h3 className="font-bold text-sm mb-1">Update Your Photo</h3>
+                            <p className="text-xs text-blue-100 mb-3">Add a photo to personalize your account</p>
+                            <button
+                                onClick={() => setShowAvatarModal(true)}
+                                className="w-full py-2 bg-white text-blue-600 font-semibold rounded-lg text-sm hover:bg-blue-50"
+                            >
+                                Choose Photo
+                            </button>
                         </div>
                     </div>
 
                     {/* Main Content - Profile Form */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-2 space-y-4">
                         {/* Profile Information Card */}
-                        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
+                        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                             {/* Card Header */}
-                            <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                            <HiUser className="w-6 h-6 text-white" />
+                            <div className="p-3 md:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 md:gap-3">
+                                        <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                                            <HiUser className="w-4 h-4 md:w-5 md:h-5 text-white" />
                                         </div>
                                         <div>
-                                            <h2 className="text-xl font-bold text-gray-900">Profile Information</h2>
-                                            <p className="text-gray-500 text-sm">Update your personal details</p>
+                                            <h2 className="text-sm md:text-lg font-bold text-gray-900">Profile Information</h2>
+                                            <p className="text-[10px] md:text-xs text-gray-500">Update your personal details</p>
                                         </div>
                                     </div>
                                     {!isEditing ? (
                                         <button
                                             onClick={() => setIsEditing(true)}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/25"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs md:text-sm font-medium rounded-lg"
                                         >
-                                            <HiPencil className="w-4 h-4" />
-                                            Edit Profile
+                                            <HiPencil className="w-3.5 h-3.5" />
+                                            <span className="hidden sm:inline">Edit</span>
                                         </button>
                                     ) : (
                                         <button
                                             onClick={handleCancel}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 bg-gray-100 text-gray-700 text-xs md:text-sm font-medium rounded-lg"
                                         >
-                                            <HiX className="w-4 h-4" />
+                                            <HiX className="w-3.5 h-3.5" />
                                             Cancel
                                         </button>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Form */}
-                            <div className="p-6 lg:p-8">
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    {/* Name Fields */}
-                                    <div className="grid sm:grid-cols-2 gap-5">
+                            {/* Form - Compact */}
+                            <div className="p-3 md:p-5">
+                                <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+                                    {/* Name Fields - 2 columns */}
+                                    <div className="grid grid-cols-2 gap-2 md:gap-4">
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                                First Name
-                                            </label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">First Name</label>
                                             <input
                                                 type="text"
                                                 name="first_name"
                                                 value={formData.first_name}
                                                 onChange={handleChange}
                                                 disabled={!isEditing}
-                                                placeholder="Enter your first name"
-                                                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 font-medium"
+                                                placeholder="First name"
+                                                className="w-full px-3 py-2 md:py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                                Last Name
-                                            </label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">Last Name</label>
                                             <input
                                                 type="text"
                                                 name="last_name"
                                                 value={formData.last_name}
                                                 onChange={handleChange}
                                                 disabled={!isEditing}
-                                                placeholder="Enter your last name"
-                                                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 font-medium"
+                                                placeholder="Last name"
+                                                className="w-full px-3 py-2 md:py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Email (Read-only) */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Email Address
-                                        </label>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
                                         <div className="relative">
+                                            <HiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                             <input
                                                 type="email"
                                                 value={user.email}
                                                 disabled
-                                                className="w-full px-4 py-3.5 pl-12 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
+                                                className="w-full px-3 py-2 md:py-2.5 pl-9 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
                                             />
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400">
-                                                <HiMail className="w-full h-full" />
-                                            </div>
-                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded-md font-medium">
+                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">
                                                 Locked
                                             </span>
                                         </div>
-                                        <p className="text-xs text-gray-400 mt-2">Email cannot be changed for security reasons</p>
                                     </div>
 
                                     {/* Phone */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Phone Number
-                                        </label>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
                                         <div className="relative">
+                                            <HiPhone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                             <input
                                                 type="tel"
                                                 name="phone"
@@ -497,93 +433,82 @@ const Profile = () => {
                                                 onChange={handleChange}
                                                 disabled={!isEditing}
                                                 placeholder="+1 (555) 123-4567"
-                                                className="w-full px-4 py-3.5 pl-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 font-medium"
+                                                className="w-full px-3 py-2 md:py-2.5 pl-9 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                                             />
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400">
-                                                <HiPhone className="w-full h-full" />
-                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Divider */}
-                                    <div className="relative py-2">
+                                    <div className="relative py-1">
                                         <div className="absolute inset-0 flex items-center">
                                             <div className="w-full border-t border-gray-200"></div>
                                         </div>
                                         <div className="relative flex justify-center">
-                                            <span className="px-4 bg-white text-sm text-gray-400 font-medium">Address Information</span>
+                                            <span className="px-2 bg-white text-[10px] md:text-xs text-gray-400">Address</span>
                                         </div>
                                     </div>
 
                                     {/* Address */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Street Address
-                                        </label>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Street Address</label>
                                         <div className="relative">
+                                            <HiHome className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                             <input
                                                 type="text"
                                                 name="address"
                                                 value={formData.address}
                                                 onChange={handleChange}
                                                 disabled={!isEditing}
-                                                placeholder="123 Main Street, Apt 4B"
-                                                className="w-full px-4 py-3.5 pl-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 font-medium"
+                                                placeholder="123 Main Street"
+                                                className="w-full px-3 py-2 md:py-2.5 pl-9 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                                             />
-                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400">
-                                                <HiLocationMarker className="w-full h-full" />
-                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* City & Country */}
-                                    <div className="grid sm:grid-cols-2 gap-5">
+                                    {/* City & Country - 2 columns */}
+                                    <div className="grid grid-cols-2 gap-2 md:gap-4">
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                                City
-                                            </label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">City</label>
                                             <input
                                                 type="text"
                                                 name="city"
                                                 value={formData.city}
                                                 onChange={handleChange}
                                                 disabled={!isEditing}
-                                                placeholder="New York"
-                                                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 font-medium"
+                                                placeholder="City"
+                                                className="w-full px-3 py-2 md:py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                                Country
-                                            </label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
                                             <input
                                                 type="text"
                                                 name="country"
                                                 value={formData.country}
                                                 onChange={handleChange}
                                                 disabled={!isEditing}
-                                                placeholder="United States"
-                                                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:bg-gray-50 disabled:text-gray-500 text-gray-900 font-medium"
+                                                placeholder="Country"
+                                                className="w-full px-3 py-2 md:py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Submit Button */}
                                     {isEditing && (
-                                        <div className="flex justify-end pt-4">
+                                        <div className="flex justify-end pt-2">
                                             <button
                                                 type="submit"
                                                 disabled={isLoading}
-                                                className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/25 disabled:opacity-70"
+                                                className="inline-flex items-center gap-1.5 px-4 md:px-6 py-2 md:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg disabled:opacity-70"
                                             >
                                                 {isLoading ? (
                                                     <>
-                                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                                        Saving Changes...
+                                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                        Saving...
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <HiCheck className="w-5 h-5" />
+                                                        <HiCheck className="w-4 h-4" />
                                                         Save Changes
                                                     </>
                                                 )}
@@ -594,34 +519,24 @@ const Profile = () => {
                             </div>
                         </div>
 
-                        {/* Security Card */}
-                        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
-                            <div className="p-6 lg:p-8">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 flex-shrink-0">
-                                        <HiShieldCheck className="w-7 h-7 text-white" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-lg font-bold text-gray-900 mb-2">Account Security</h3>
-                                        <p className="text-gray-500 mb-6">
-                                            Your account is protected with industry-standard security measures.
-                                            We use encryption to keep your data safe.
-                                        </p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {[
-                                                { label: 'Email Verified', color: 'emerald' },
-                                                { label: 'Secure Connection', color: 'blue' },
-                                                { label: 'Data Encrypted', color: 'indigo' }
-                                            ].map((badge) => (
-                                                <span
-                                                    key={badge.label}
-                                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-${badge.color}-50 text-${badge.color}-700 rounded-lg text-sm font-medium`}
-                                                >
-                                                    <HiCheck className="w-4 h-4" />
-                                                    {badge.label}
-                                                </span>
-                                            ))}
-                                        </div>
+                        {/* Security Card - Compact */}
+                        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg p-3 md:p-5 border border-gray-100">
+                            <div className="flex items-start gap-3">
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <HiShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="text-sm md:text-base font-bold text-gray-900 mb-1">Account Security</h3>
+                                    <p className="text-xs md:text-sm text-gray-500 mb-3">
+                                        Your account is protected with industry-standard security.
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5 md:gap-2">
+                                        {['Email Verified', 'Secure', 'Encrypted'].map((badge, i) => (
+                                            <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-[10px] md:text-xs font-medium">
+                                                <HiCheck className="w-3 h-3" />
+                                                {badge}
+                                            </span>
+                                        ))}
                                     </div>
                                 </div>
                             </div>

@@ -93,15 +93,26 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
 
 
 # ============ PRODUCT IMAGE SERIALIZER ============
-
 class ProductImageSerializer(serializers.ModelSerializer):
     """Serializer for product images"""
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'alt_text', 'is_primary', 'order']
+        fields = ['id', 'image', 'image_url', 'alt_text', 'is_primary', 'order']
         read_only_fields = ['id']
 
+    def get_image_url(self, obj):
+        if obj.image:
+            if hasattr(obj.image, 'url'):
+                url = obj.image.url
+                if url.startswith('http'):
+                    return url
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(url)
+                return url
+        return None
 
 # ============ PRODUCT SPECIFICATION SERIALIZER ============
 
@@ -141,8 +152,29 @@ class ProductListSerializer(serializers.ModelSerializer):
         if not primary:
             primary = obj.images.first()
         if primary:
-            return ProductImageSerializer(primary).data
+            return ProductImageSerializer(primary, context=self.context).data
         return None
+
+    def get_average_rating(self, obj):
+        if hasattr(obj, 'reviews'):
+            reviews = obj.reviews.filter(is_approved=True)
+            if reviews.exists():
+                avg = reviews.aggregate(Avg('rating'))['rating__avg']
+                return round(avg, 1) if avg else 0
+        return 0
+
+    def get_review_count(self, obj):
+        if hasattr(obj, 'reviews'):
+            return obj.reviews.filter(is_approved=True).count()
+        return 0
+
+def get_primary_image(self, obj):
+    primary = obj.images.filter(is_primary=True).first()
+    if not primary:
+        primary = obj.images.first()
+    if primary:
+        return ProductImageSerializer(primary, context=self.context).data
+    return None
 
     def get_average_rating(self, obj):
         """Get average rating from reviews app"""
@@ -220,7 +252,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             category=obj.category,
             is_available=True
         ).exclude(id=obj.id)[:4]
-        return ProductListSerializer(related, many=True).data
+        return ProductListSerializer(related, many=True, context=self.context).data
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):

@@ -1,3 +1,5 @@
+// src/components/layout/Footer.jsx
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -57,10 +59,11 @@ const Footer = () => {
     return (
         <footer className="bg-gray-900 text-gray-300 relative overflow-hidden text-xs">
             {/* Main Footer */}
-            <div className="relative max-w-7xl mx-auto px-4 py-6 md:py-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6">
-                    {/* Brand Section */}
-                    <div className="lg:col-span-4">
+            <div className="relative w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-6 md:py-8">
+                <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6">
+
+                    {/* Brand Section - Full width on mobile */}
+                    <div className="col-span-2 lg:col-span-4">
                         <Link to="/" className="inline-flex items-center gap-2 mb-3">
                             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded flex items-center justify-center shadow-lg">
                                 <span className="text-white font-bold text-md">N</span>
@@ -72,7 +75,7 @@ const Footer = () => {
                             </span>
                         </Link>
 
-                        <p className="text-gray-400 mb-3 leading-snug text-xs">
+                        <p className="text-gray-400 mb-3 leading-snug text-xs max-w-xs">
                             Your trusted marketplace in Cameroon. Quality products, secure payments, and fast delivery.
                         </p>
 
@@ -92,19 +95,19 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Shop Links */}
-                    <div className="lg:col-span-2">
-                        <h4 className="text-white font-bold mb-2 flex items-center gap-1 text-sm">
+                    {/* Shop Links - Takes 1 column on mobile (side by side with Support) */}
+                    <div className="col-span-1 lg:col-span-2">
+                        <h4 className="text-white font-bold mb-2 flex items-center gap-1 text-xs md:text-sm">
                             <HiShoppingBag className="w-3.5 h-3.5 text-blue-400" /> Shop
                         </h4>
-                        <ul className="space-y-0.5">
+                        <ul className="space-y-1">
                             {shopLinks.map((link, idx) => (
                                 <li key={idx}>
                                     <Link
                                         to={link.path}
-                                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-xs"
+                                        className="group flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-[11px] md:text-xs"
                                     >
-                                        <HiOutlineArrowRight className="w-3 h-3 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                                        <HiOutlineArrowRight className="w-2.5 h-2.5 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                                         {link.label}
                                     </Link>
                                 </li>
@@ -112,19 +115,19 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Support Links */}
-                    <div className="lg:col-span-2">
-                        <h4 className="text-white font-bold mb-2 flex items-center gap-1 text-sm">
+                    {/* Support Links - Takes 1 column on mobile (side by side with Shop) */}
+                    <div className="col-span-1 lg:col-span-2">
+                        <h4 className="text-white font-bold mb-2 flex items-center gap-1 text-xs md:text-sm">
                             <HiShieldCheck className="w-3.5 h-3.5 text-blue-400" /> Support
                         </h4>
-                        <ul className="space-y-0.5">
+                        <ul className="space-y-1">
                             {supportLinks.map((link, idx) => (
                                 <li key={idx}>
                                     <Link
                                         to={link.path}
-                                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-xs"
+                                        className="group flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-[11px] md:text-xs"
                                     >
-                                        <HiOutlineArrowRight className="w-3 h-3 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                                        <HiOutlineArrowRight className="w-2.5 h-2.5 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                                         {link.label}
                                     </Link>
                                 </li>
@@ -132,49 +135,51 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Newsletter & WhatsApp */}
-                    <div className="lg:col-span-4 space-y-2">
+                    {/* Newsletter & WhatsApp - Full width on mobile */}
+                    <div className="col-span-2 lg:col-span-4 space-y-2">
+                        {/* Newsletter */}
                         <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                            <h4 className="text-white font-bold mb-1 flex items-center gap-1 text-sm">
+                            <h4 className="text-white font-bold mb-1 flex items-center gap-1 text-xs md:text-sm">
                                 <HiMail className="w-3.5 h-3.5 text-blue-400" /> Subscribe
                             </h4>
                             <p className="text-gray-400 text-[10px] mb-1.5">
                                 Exclusive deals and offers delivered to your inbox.
                             </p>
-                            <form onSubmit={handleSubscribe} className="flex flex-col gap-1.5">
+                            <form onSubmit={handleSubscribe} className="flex gap-1.5">
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email"
-                                    className="w-full px-2.5 py-1.5 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-xs"
+                                    className="flex-1 px-2.5 py-1.5 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-xs"
                                     required
                                 />
                                 <button
                                     type="submit"
                                     disabled={isSubscribing}
-                                    className="w-full py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded flex items-center justify-center gap-1 disabled:opacity-70 text-xs"
+                                    className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded flex items-center justify-center gap-1 disabled:opacity-70 text-xs whitespace-nowrap"
                                 >
-                                    {isSubscribing ? 'Subscribing...' : 'Subscribe'}
-                                    {!isSubscribing && <HiOutlineArrowRight className="w-3.5 h-3.5" />}
+                                    {isSubscribing ? '...' : 'Subscribe'}
+                                    {!isSubscribing && <HiOutlineArrowRight className="w-3 h-3 hidden sm:block" />}
                                 </button>
                             </form>
                         </div>
 
+                        {/* WhatsApp */}
                         <a
                             href="https://wa.me/237683669723"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1.5 p-2 bg-green-600/10 border border-green-600/30 rounded hover:bg-green-600/20 transition-colors"
+                            className="flex items-center gap-2 p-2 bg-green-600/10 border border-green-600/30 rounded-lg hover:bg-green-600/20 transition-colors"
                         >
-                            <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center">
+                            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <FaWhatsapp className="w-4 h-4 text-white" />
                             </div>
-                            <div className="flex-1">
-                                <p className="text-white font-semibold text-[10px]">Chat with us</p>
-                                <p className="text-green-400 text-[9px]">Quick responses, 24/7</p>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-white font-semibold text-[11px]">Chat with us on WhatsApp</p>
+                                <p className="text-green-400 text-[10px]">Quick responses, 24/7 support</p>
                             </div>
-                            <HiOutlineExternalLink className="w-3.5 h-3.5 text-green-400" />
+                            <HiOutlineExternalLink className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
                         </a>
                     </div>
                 </div>
@@ -182,10 +187,10 @@ const Footer = () => {
 
             {/* Bottom Bar */}
             <div className="border-t border-gray-800 bg-black/20">
-                <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-1.5 text-[10px] text-gray-500">
+                <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-1.5 text-[10px] text-gray-500">
                     <span>© {currentYear} NextShopSphere. All rights reserved.</span>
                     <span className="flex items-center gap-0.5">
-                        Made with <HiHeart className="w-2.5 h-2.5 text-red-500" /> in Cameroon
+                        Made with <HiHeart className="w-2.5 h-2.5 text-red-500 mx-0.5" /> in Cameroon 🇨🇲
                     </span>
                 </div>
             </div>
