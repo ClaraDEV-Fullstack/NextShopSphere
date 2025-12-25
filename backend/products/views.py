@@ -18,7 +18,54 @@ from .serializers import (
     BrandSerializer, BrandListSerializer,
     ShippingOptionSerializer,
 )
+# products/views.py - Add temporarily
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from django.conf import settings
+import os
+import cloudinary
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def debug_cloudinary(request):
+    """Debug Cloudinary configuration"""
+    from products.models import ProductImage
+
+    # Check Cloudinary config
+    cloudinary_config = {
+        'cloud_name': os.environ.get('CLOUDINARY_CLOUD_NAME', 'NOT SET'),
+        'api_key_set': bool(os.environ.get('CLOUDINARY_API_KEY')),
+        'api_secret_set': bool(os.environ.get('CLOUDINARY_API_SECRET')),
+    }
+
+    # Check storage backend
+    storage_info = {
+        'default_storage': settings.DEFAULT_FILE_STORAGE,
+        'is_cloudinary': 'cloudinary' in settings.DEFAULT_FILE_STORAGE.lower(),
+    }
+
+    # Get sample images and their actual URLs
+    sample_images = []
+    for img in ProductImage.objects.all()[:5]:
+        try:
+            img_data = {
+                'id': img.id,
+                'field_name': str(img.image.name) if img.image else None,
+                'field_url': img.image.url if img.image else None,
+                'storage_class': img.image.storage.__class__.__name__ if img.image else None,
+            }
+            sample_images.append(img_data)
+        except Exception as e:
+            sample_images.append({'id': img.id, 'error': str(e)})
+
+    return Response({
+        'cloudinary_config': cloudinary_config,
+        'storage_info': storage_info,
+        'sample_images': sample_images,
+        'render_env': os.environ.get('RENDER', 'not set'),
+    })
 
 # ============================================
 # CATEGORY VIEWSET

@@ -94,7 +94,6 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
 
 # ============ PRODUCT IMAGE SERIALIZER ============
 # products/serializers.py
-
 class ProductImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 
@@ -107,19 +106,28 @@ class ProductImageSerializer(serializers.ModelSerializer):
             return None
 
         try:
+            # Get the URL from the storage backend
             url = obj.image.url
 
-            # If already a full URL (Cloudinary), return as-is
+            # Debug: print what we're getting
+            print(f"DEBUG - Image URL: {url}")
+
+            # Cloudinary URLs start with https://res.cloudinary.com
+            # If it's already a full Cloudinary URL, return it
+            if url.startswith('https://res.cloudinary.com'):
+                return url
+
+            # If it starts with http, return as-is (might be valid external URL)
             if url.startswith('http://') or url.startswith('https://'):
                 return url
 
-            # For local development, build absolute URL
+            # For local development with relative URLs
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(url)
 
-            # Fallback: return relative URL
             return url
+
         except Exception as e:
             print(f"Error getting image URL: {e}")
             return None

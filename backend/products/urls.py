@@ -4,6 +4,8 @@ from .views import (
     CategoryViewSet, ProductViewSet, ProductImageViewSet,
     BrandViewSet, ShippingOptionViewSet
 )
+from .views import debug_cloudinary
+
 
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
@@ -18,4 +20,7 @@ urlpatterns = [
         ProductImageViewSet.as_view({'get': 'list', 'post': 'create'}),
         name='product-images'
     ),
+    path('debug-cloudinary/', debug_cloudinary, name='debug-cloudinary'),
 ]
+# products/urls.py
+
