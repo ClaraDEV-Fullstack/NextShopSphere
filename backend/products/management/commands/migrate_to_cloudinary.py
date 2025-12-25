@@ -2,93 +2,282 @@
 
 import os
 from django.core.management.base import BaseCommand
-from django.core.files.base import ContentFile
+from django.core.files import File
+from django.conf import settings
 from products.models import ProductImage, Category, Brand
 from accounts.models import User
-import requests
+import cloudinary
+import cloudinary.uploader
 
 class Command(BaseCommand):
-    help = 'Migrate existing images to Cloudinary'
+    help = 'Migrate local images to Cloudinary and update database'
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--dry-run',
+            action='store_true',
+            help='Show what would be migrated without actually doing it',
+        )
 
     def handle(self, *args, **options):
-        self.stdout.write('Starting image migration to Cloudinary...\n')
+        dry_run = options['dry_run']
 
-        # Migrate Product Images
-        self.migrate_product_images()
+        self.stdout.write('\n' + '='*60)
+        self.stdout.write('  CLOUDINARY IMAGE MIGRATION')
+        self.stdout.write('='*60)
 
-        # Migrate Category Images
-        self.migrate_category_images()
+        # Verify Cloudinary configuration
+        cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME')
+        api_key = os.environ.get('CLOUDINARY_API_KEY')
+        api_secret = os.environ.get('CLOUDINARY_API_SECRET')
 
-        # Migrate Brand Logos
-        self.migrate_brand_logos()
+        if not all([cloud_name, api_key, api_secret]):
+            self.stdout.write(self.style.ERROR('\n❌ Cloudinary credentials not set!'))
+            self.stdout.write('Please set: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET')
+            return
 
-        # Migrate User Avatars
-        self.migrate_user_avatars()
+        # Configure Cloudinary
+        cloudinary.config(
+            cloud_name=cloud_name,
+            api_key=api_key,
+            api_secret=api_secret,
+            secure=True
+        )
 
-        self.stdout.write(self.style.SUCCESS('\n✅ Migration complete!'))
+        self.stdout.write(self.style.SUCCESS(f'\n✅ Cloudinary configured: {cloud_name}'))
+        self.stdout.write(f'📁 Media root: {settings.MEDIA_ROOT}')
 
-    def migrate_product_images(self):
-        self.stdout.write('\n📦 Migrating Product Images...')
+        if dry_run:
+            self.stdout.write(self.style.WARNING('\n🔍 DRY RUN MODE - No changes will be made\n'))
+
+        # Migrate all image types
+        total_migrated = 0
+        total_migrated += self.migrate_product_images(dry_run)
+        total_migrated += self.migrate_category_images(dry_run)
+        total_migrated += self.migrate_brand_logos(dry_run)
+        total_migrated += self.migrate_user_avatars(dry_run)
+
+        self.stdout.write('\n' + '='*60)
+        self.stdout.write(self.style.SUCCESS(f'  ✅ MIGRATION COMPLETE! {total_migrated} images migrated'))
+        self.stdout.write('='*60 + '\n')
+
+    def upload_to_cloudinary(self, file_path, folder, public_id=None):
+        """Upload a file to Cloudinary and return the URL"""
+        try:
+            result = cloudinary.uploader.upload(
+                file_path,
+                folder=folder,
+                public_id=public_id,
+                overwrite=True,
+                resource_type="image"
+            )
+            return result.get('secure_url'), result.get('public_id')
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f'    Upload failed: {e}'))
+            return None, None
+
+    def migrate_product_images(self, dry_run=False):
+        self.stdout.write('\n📦 PRODUCT IMAGES')
+        self.stdout.write('-' * 40)
+
         images = ProductImage.objects.all()
         migrated = 0
+        skipped = 0
+        errors = 0
 
         for img in images:
-            if img.image and not str(img.image).startswith('http'):
-                try:
-                    # Re-save to trigger Cloudinary upload
-                    # The image will be uploaded to Cloudinary when saved
-                    img.save()
-                    migrated += 1
-                    self.stdout.write(f'  ✓ Migrated: {img.image.name}')
-                except Exception as e:
-                    self.stdout.write(self.style.ERROR(f'  ✗ Failed: {img.image.name} - {e}'))
+            if not img.image:
+                skipped += 1
+                continue
 
-        self.stdout.write(f'  Migrated {migrated} product images')
+            image_name = str(img.image.name)
 
-    def migrate_category_images(self):
-        self.stdout.write('\n📁 Migrating Category Images...')
+            # Skip if already a Cloudinary URL
+            if 'cloudinary.com' in image_name or image_name.startswith('http'):
+                self.stdout.write(f'  ⏭️  ID {img.id}: Already Cloudinary')
+                skipped += 1
+                continue
+
+            # Build local file path
+            local_path = os.path.join(settings.MEDIA_ROOT, image_name)
+
+            if not os.path.exists(local_path):
+                self.stdout.write(self.style.WARNING(f'  ⚠️  ID {img.id}: File not found - {local_path}'))
+                errors += 1
+                continue
+
+            if dry_run:
+                self.stdout.write(f'  📤 ID {img.id}: Would upload - {image_name}')
+                migrated += 1
+                continue
+
+            # Upload to Cloudinary
+            self.stdout.write(f'  📤 ID {img.id}: Uploading - {image_name}...', ending='')
+
+            # Use filename without extension as public_id
+            filename = os.path.splitext(os.path.basename(image_name))[0]
+            url, public_id = self.upload_to_cloudinary(local_path, 'products', filename)
+
+            if url:
+                # Update the database with Cloudinary public_id
+                # The URL will be generated by the storage backend
+                img.image.name = public_id
+                img.save(update_fields=['image'])
+                self.stdout.write(self.style.SUCCESS(' ✓'))
+                migrated += 1
+            else:
+                self.stdout.write(self.style.ERROR(' ✗'))
+                errors += 1
+
+        self.stdout.write(f'\n  Summary: {migrated} migrated, {skipped} skipped, {errors} errors')
+        return migrated
+
+    def migrate_category_images(self, dry_run=False):
+        self.stdout.write('\n📁 CATEGORY IMAGES')
+        self.stdout.write('-' * 40)
+
         categories = Category.objects.exclude(image='').exclude(image__isnull=True)
         migrated = 0
+        skipped = 0
+        errors = 0
 
         for cat in categories:
-            if cat.image and not str(cat.image).startswith('http'):
-                try:
-                    cat.save()
-                    migrated += 1
-                    self.stdout.write(f'  ✓ Migrated: {cat.name}')
-                except Exception as e:
-                    self.stdout.write(self.style.ERROR(f'  ✗ Failed: {cat.name} - {e}'))
+            if not cat.image:
+                skipped += 1
+                continue
 
-        self.stdout.write(f'  Migrated {migrated} category images')
+            image_name = str(cat.image.name)
 
-    def migrate_brand_logos(self):
-        self.stdout.write('\n🏷️ Migrating Brand Logos...')
+            if 'cloudinary.com' in image_name or image_name.startswith('http'):
+                self.stdout.write(f'  ⏭️  {cat.name}: Already Cloudinary')
+                skipped += 1
+                continue
+
+            local_path = os.path.join(settings.MEDIA_ROOT, image_name)
+
+            if not os.path.exists(local_path):
+                self.stdout.write(self.style.WARNING(f'  ⚠️  {cat.name}: File not found'))
+                errors += 1
+                continue
+
+            if dry_run:
+                self.stdout.write(f'  📤 {cat.name}: Would upload')
+                migrated += 1
+                continue
+
+            self.stdout.write(f'  📤 {cat.name}: Uploading...', ending='')
+
+            filename = os.path.splitext(os.path.basename(image_name))[0]
+            url, public_id = self.upload_to_cloudinary(local_path, 'categories', filename)
+
+            if url:
+                cat.image.name = public_id
+                cat.save(update_fields=['image'])
+                self.stdout.write(self.style.SUCCESS(' ✓'))
+                migrated += 1
+            else:
+                self.stdout.write(self.style.ERROR(' ✗'))
+                errors += 1
+
+        self.stdout.write(f'\n  Summary: {migrated} migrated, {skipped} skipped, {errors} errors')
+        return migrated
+
+    def migrate_brand_logos(self, dry_run=False):
+        self.stdout.write('\n🏷️  BRAND LOGOS')
+        self.stdout.write('-' * 40)
+
         brands = Brand.objects.exclude(logo='').exclude(logo__isnull=True)
         migrated = 0
+        skipped = 0
+        errors = 0
 
         for brand in brands:
-            if brand.logo and not str(brand.logo).startswith('http'):
-                try:
-                    brand.save()
-                    migrated += 1
-                    self.stdout.write(f'  ✓ Migrated: {brand.name}')
-                except Exception as e:
-                    self.stdout.write(self.style.ERROR(f'  ✗ Failed: {brand.name} - {e}'))
+            if not brand.logo:
+                skipped += 1
+                continue
 
-        self.stdout.write(f'  Migrated {migrated} brand logos')
+            logo_name = str(brand.logo.name)
 
-    def migrate_user_avatars(self):
-        self.stdout.write('\n👤 Migrating User Avatars...')
+            if 'cloudinary.com' in logo_name or logo_name.startswith('http'):
+                self.stdout.write(f'  ⏭️  {brand.name}: Already Cloudinary')
+                skipped += 1
+                continue
+
+            local_path = os.path.join(settings.MEDIA_ROOT, logo_name)
+
+            if not os.path.exists(local_path):
+                self.stdout.write(self.style.WARNING(f'  ⚠️  {brand.name}: File not found'))
+                errors += 1
+                continue
+
+            if dry_run:
+                self.stdout.write(f'  📤 {brand.name}: Would upload')
+                migrated += 1
+                continue
+
+            self.stdout.write(f'  📤 {brand.name}: Uploading...', ending='')
+
+            filename = os.path.splitext(os.path.basename(logo_name))[0]
+            url, public_id = self.upload_to_cloudinary(local_path, 'brands', filename)
+
+            if url:
+                brand.logo.name = public_id
+                brand.save(update_fields=['logo'])
+                self.stdout.write(self.style.SUCCESS(' ✓'))
+                migrated += 1
+            else:
+                self.stdout.write(self.style.ERROR(' ✗'))
+                errors += 1
+
+        self.stdout.write(f'\n  Summary: {migrated} migrated, {skipped} skipped, {errors} errors')
+        return migrated
+
+    def migrate_user_avatars(self, dry_run=False):
+        self.stdout.write('\n👤 USER AVATARS')
+        self.stdout.write('-' * 40)
+
         users = User.objects.exclude(avatar='').exclude(avatar__isnull=True)
         migrated = 0
+        skipped = 0
+        errors = 0
 
         for user in users:
-            if user.avatar and not str(user.avatar).startswith('http'):
-                try:
-                    user.save()
-                    migrated += 1
-                    self.stdout.write(f'  ✓ Migrated: {user.username}')
-                except Exception as e:
-                    self.stdout.write(self.style.ERROR(f'  ✗ Failed: {user.username} - {e}'))
+            if not user.avatar:
+                skipped += 1
+                continue
 
-        self.stdout.write(f'  Migrated {migrated} user avatars')
+            avatar_name = str(user.avatar.name)
+
+            if 'cloudinary.com' in avatar_name or avatar_name.startswith('http'):
+                self.stdout.write(f'  ⏭️  {user.username}: Already Cloudinary')
+                skipped += 1
+                continue
+
+            local_path = os.path.join(settings.MEDIA_ROOT, avatar_name)
+
+            if not os.path.exists(local_path):
+                self.stdout.write(self.style.WARNING(f'  ⚠️  {user.username}: File not found'))
+                errors += 1
+                continue
+
+            if dry_run:
+                self.stdout.write(f'  📤 {user.username}: Would upload')
+                migrated += 1
+                continue
+
+            self.stdout.write(f'  📤 {user.username}: Uploading...', ending='')
+
+            filename = os.path.splitext(os.path.basename(avatar_name))[0]
+            url, public_id = self.upload_to_cloudinary(local_path, 'avatars', filename)
+
+            if url:
+                user.avatar.name = public_id
+                user.save(update_fields=['avatar'])
+                self.stdout.write(self.style.SUCCESS(' ✓'))
+                migrated += 1
+            else:
+                self.stdout.write(self.style.ERROR(' ✗'))
+                errors += 1
+
+        self.stdout.write(f'\n  Summary: {migrated} migrated, {skipped} skipped, {errors} errors')
+        return migrated
