@@ -182,17 +182,32 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Use simpler storage that works better with Django 6.0
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# settings.py
+
 # =============================================================================
 # MEDIA FILES (User uploads)
 # =============================================================================
+
+# Check if we're in production (Render sets this)
+IS_PRODUCTION = os.getenv('RENDER', 'False').lower() == 'true'
+
+# Cloudinary Configuration (for production)
+if IS_PRODUCTION and os.getenv('CLOUDINARY_CLOUD_NAME'):
+    # Production: Use Cloudinary
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+        'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    print("✅ Using Cloudinary for media storage")
+else:
+    # Local development: Use local filesystem
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    print("📁 Using local filesystem for media storage")
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# File upload settings
-FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # =============================================================================
 # CORS SETTINGS

@@ -93,26 +93,36 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
 
 
 # ============ PRODUCT IMAGE SERIALIZER ============
+# products/serializers.py
+
 class ProductImageSerializer(serializers.ModelSerializer):
-    """Serializer for product images"""
     image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductImage
         fields = ['id', 'image', 'image_url', 'alt_text', 'is_primary', 'order']
-        read_only_fields = ['id']
 
     def get_image_url(self, obj):
-        if obj.image:
-            if hasattr(obj.image, 'url'):
-                url = obj.image.url
-                if url.startswith('http'):
-                    return url
-                request = self.context.get('request')
-                if request:
-                    return request.build_absolute_uri(url)
+        if not obj.image:
+            return None
+
+        try:
+            url = obj.image.url
+
+            # If already a full URL (Cloudinary), return as-is
+            if url.startswith('http://') or url.startswith('https://'):
                 return url
-        return None
+
+            # For local development, build absolute URL
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(url)
+
+            # Fallback: return relative URL
+            return url
+        except Exception as e:
+            print(f"Error getting image URL: {e}")
+            return None
 
 # ============ PRODUCT SPECIFICATION SERIALIZER ============
 
