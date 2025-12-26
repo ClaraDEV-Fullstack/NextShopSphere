@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
+from cloudinary.models import CloudinaryField
 
 
 class Category(models.Model):
@@ -272,6 +273,7 @@ class ProductImage(models.Model):
         related_name='images',
         help_text="Select the product this image belongs to"
     )
+    image = CloudinaryField('image')  # ✅ Must be CloudinaryField
     image = models.ImageField(
         upload_to='products/',
         help_text="Product image (recommended: 800x800px, JPG or PNG)"

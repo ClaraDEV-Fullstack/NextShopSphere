@@ -1,3 +1,5 @@
+// src/components/products/ProductCard.jsx
+
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { HiOutlineShoppingCart, HiOutlineHeart } from 'react-icons/hi';
@@ -8,14 +10,17 @@ import toast from 'react-hot-toast';
 const ProductCard = ({ product }) => {
     const dispatch = useDispatch();
 
+    // Get image URL - prefer image_url from the serializer
+    const imageUrl = getImageUrl(product.primary_image);
+
     const handleAddToCart = (e) => {
-        e.preventDefault(); // prevent Link navigation
+        e.preventDefault();
         dispatch(
             addToCart({
                 id: product.id,
                 name: product.name,
                 price: parseFloat(product.price),
-                image: getImageUrl(product.primary_image),
+                image: imageUrl,  // Use the processed URL
                 slug: product.slug,
             })
         );
@@ -32,12 +37,16 @@ const ProductCard = ({ product }) => {
             "
         >
             {/* IMAGE */}
-            <div className="relative w-full h-56 overflow-hidden">
+            <div className="relative w-full h-56 overflow-hidden bg-gray-100">
                 <img
-                    src={getImageUrl(product.primary_image)}
+                    src={imageUrl}
                     alt={product.name}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-500 sm:group-hover:scale-110"
+                    onError={(e) => {
+                        console.warn('Image failed to load:', imageUrl);
+                        e.target.src = '/placeholder-product.jpg';
+                    }}
                 />
 
                 {product.discount_percentage > 0 && (

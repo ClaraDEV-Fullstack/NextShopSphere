@@ -1,1654 +1,1743 @@
-# products/management/commands/seed_products.py
-
 from django.core.management.base import BaseCommand
-from django.db import transaction
+from django.core.files.base import ContentFile
+from django.conf import settings
 from django.utils.text import slugify
-from products.models import Product, ProductImage, ProductSpecification, Category, Brand
 from decimal import Decimal
-import random
+import os
+
+from products.models import (
+    Category,
+    Brand,
+    Product,
+    ProductSpecification,
+    ShippingOption,
+    ProductImage
+)
 
 
 class Command(BaseCommand):
-    help = 'Seeds the database with sample products for all categories'
+    help = "Seed complete e-commerce data with real-world products"
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            '--clear',
-            action='store_true',
-            help='Clear existing products before seeding',
+    # -------------------------------
+    # PLACEHOLDER IMAGE SEEDING
+    # -------------------------------
+    def seed_placeholder_images(self):
+        self.stdout.write("\n🖼️  Attaching placeholder images to products...")
+
+        placeholder_path = os.path.join(
+            settings.MEDIA_ROOT,
+            "products",
+            "placeholder-product.jpg"
         )
 
+        if not os.path.exists(placeholder_path):
+            self.stdout.write(
+                self.style.ERROR(
+                    "❌ Placeholder image not found at media/products/placeholder-product.jpg"
+                )
+            )
+            return
+
+        with open(placeholder_path, "rb") as f:
+            image_content = ContentFile(
+                f.read(),
+                name="placeholder-product.jpg"
+            )
+
+            for product in Product.objects.all():
+                if product.images.exists():
+                    continue  # Do not overwrite real images
+
+                ProductImage.objects.create(
+                    product=product,
+                    image=image_content,
+                    alt_text=f"{product.name} image",
+                    is_primary=True,
+                    order=0
+                )
+
+                self.stdout.write(f"  ✓ Image attached: {product.name}")
+
+        self.stdout.write(
+            self.style.SUCCESS("✅ Placeholder images attached successfully")
+        )
+
+    # -------------------------------
+    # MAIN HANDLER
+    # -------------------------------
     def handle(self, *args, **options):
-        if options['clear']:
-            self.stdout.write('Clearing existing products...')
-            ProductSpecification.objects.all().delete()
-            ProductImage.objects.all().delete()
-            Product.objects.all().delete()
-            self.stdout.write(self.style.WARNING('  Cleared all products'))
+        self.stdout.write(self.style.WARNING("🗑️  Clearing existing product data..."))
+        self.clear_existing_data()
 
-        self.stdout.write('Seeding products...')
-        self.seed_products()
-        self.stdout.write(self.style.SUCCESS('✅ Products seeded successfully!'))
-
-    def get_brand(self, brand_name):
-        """Get or create a brand"""
-        if not brand_name:
-            return None
-        brand, _ = Brand.objects.get_or_create(
-            slug=slugify(brand_name),
-            defaults={'name': brand_name}
+        self.stdout.write(
+            self.style.HTTP_INFO("\n🚀 Starting comprehensive product seeding...\n")
         )
-        return brand
 
-    def get_category(self, category_slug):
-        """Get category by slug"""
-        try:
-            return Category.objects.get(slug=category_slug)
-        except Category.DoesNotExist:
-            self.stdout.write(self.style.WARNING(f'  Category not found: {category_slug}'))
-            return None
+        brands = self.create_brands()
+        categories = self.create_categories()
+        self.create_shipping_options()
 
-    @transaction.atomic
-    def seed_products(self):
-        """Create sample products for all categories"""
+        self.seed_electronics(categories['electronics'], brands)
+        self.seed_fashion(categories['fashion'], brands)
+        self.seed_home_living(categories['home'], brands)
+        self.seed_beauty(categories['beauty'], brands)
+        self.seed_books(categories['books'], brands)
+        self.seed_sports(categories['sports'], brands)
+        self.seed_kids_toys(categories['kids'], brands)
+        self.seed_digital(categories['digital'], brands)
 
-        # Product data organized by main category -> subcategory
-        products_data = {
-            # ==================== ELECTRONICS ====================
-            'electronics': {
-                'smartphones': [
-                    {
-                        'name': 'iPhone 15 Pro Max',
-                        'brand': 'Apple',
-                        'price': 1199.99,
-                        'compare_price': 1299.99,
-                        'short_description': 'The most powerful iPhone ever with A17 Pro chip.',
-                        'description': 'Experience the pinnacle of smartphone technology with the iPhone 15 Pro Max. Featuring the groundbreaking A17 Pro chip, a stunning 6.7-inch Super Retina XDR display, and an advanced camera system with 5x optical zoom.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.22,
-                        'specifications': [
-                            {'name': 'Display', 'value': '6.7-inch Super Retina XDR'},
-                            {'name': 'Chip', 'value': 'A17 Pro'},
-                            {'name': 'Storage', 'value': '256GB'},
-                            {'name': 'Camera', 'value': '48MP Main + 12MP Ultra Wide + 12MP Telephoto'},
-                            {'name': 'Battery', 'value': 'Up to 29 hours video playback'},
-                        ]
-                    },
-                    {
-                        'name': 'Samsung Galaxy S24 Ultra',
-                        'brand': 'Samsung',
-                        'price': 1299.99,
-                        'compare_price': 1399.99,
-                        'short_description': 'Ultimate Galaxy experience with S Pen and AI features.',
-                        'description': 'The Samsung Galaxy S24 Ultra sets a new standard with its integrated S Pen, 200MP camera, and Galaxy AI features. Titanium design meets powerful performance.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.23,
-                        'specifications': [
-                            {'name': 'Display', 'value': '6.8-inch QHD+ Dynamic AMOLED'},
-                            {'name': 'Processor', 'value': 'Snapdragon 8 Gen 3'},
-                            {'name': 'Storage', 'value': '256GB'},
-                            {'name': 'Camera', 'value': '200MP + 12MP + 50MP + 10MP'},
-                        ]
-                    },
-                    {
-                        'name': 'Google Pixel 8 Pro',
-                        'brand': 'Google',
-                        'price': 999.00,
-                        'short_description': 'The best of Google AI in a premium smartphone.',
-                        'description': 'Google Pixel 8 Pro brings you the best of Google AI with Magic Eraser, Photo Unblur, and real-time translation. 7 years of OS and security updates.',
-                        'featured': True,
-                        'weight': 0.21,
-                        'specifications': [
-                            {'name': 'Display', 'value': '6.7-inch LTPO OLED'},
-                            {'name': 'Chip', 'value': 'Google Tensor G3'},
-                            {'name': 'Camera', 'value': '50MP + 48MP + 48MP'},
-                        ]
-                    },
-                    {
-                        'name': 'OnePlus 12',
-                        'brand': 'OnePlus',
-                        'price': 799.99,
-                        'compare_price': 899.99,
-                        'short_description': 'Flagship killer with Hasselblad camera.',
-                        'description': 'The OnePlus 12 delivers flagship performance at a competitive price. Features a Hasselblad camera system and 100W fast charging.',
-                        'specifications': [
-                            {'name': 'Display', 'value': '6.82-inch 2K LTPO AMOLED'},
-                            {'name': 'Processor', 'value': 'Snapdragon 8 Gen 3'},
-                            {'name': 'Charging', 'value': '100W SUPERVOOC'},
-                        ]
-                    },
-                ],
-                'laptops-computers': [
-                    {
-                        'name': 'MacBook Pro 16" M3 Max',
-                        'brand': 'Apple',
-                        'price': 3499.00,
-                        'compare_price': 3699.00,
-                        'short_description': 'The most powerful MacBook Pro ever made.',
-                        'description': 'Supercharged by M3 Max, MacBook Pro delivers exceptional performance for demanding workflows. Up to 22 hours of battery life.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 2.14,
-                        'specifications': [
-                            {'name': 'Chip', 'value': 'Apple M3 Max'},
-                            {'name': 'Memory', 'value': '36GB Unified Memory'},
-                            {'name': 'Storage', 'value': '1TB SSD'},
-                            {'name': 'Display', 'value': '16.2-inch Liquid Retina XDR'},
-                        ]
-                    },
-                    {
-                        'name': 'Dell XPS 15',
-                        'brand': 'Dell',
-                        'price': 1799.99,
-                        'short_description': 'Premium Windows laptop with stunning display.',
-                        'description': 'The Dell XPS 15 combines power and portability with a beautiful 15.6-inch OLED display and latest Intel processors.',
-                        'featured': True,
-                        'weight': 1.86,
-                        'specifications': [
-                            {'name': 'Processor', 'value': 'Intel Core i7-13700H'},
-                            {'name': 'Memory', 'value': '16GB DDR5'},
-                            {'name': 'Storage', 'value': '512GB SSD'},
-                            {'name': 'Graphics', 'value': 'NVIDIA RTX 4050'},
-                        ]
-                    },
-                    {
-                        'name': 'ASUS ROG Zephyrus G14',
-                        'brand': 'ASUS',
-                        'price': 1599.99,
-                        'compare_price': 1799.99,
-                        'short_description': 'Compact gaming powerhouse.',
-                        'description': 'The ROG Zephyrus G14 packs incredible gaming performance into a compact 14-inch chassis with AMD Ryzen 9 and RTX 4060.',
-                        'is_bestseller': True,
-                        'weight': 1.72,
-                        'specifications': [
-                            {'name': 'Processor', 'value': 'AMD Ryzen 9 7940HS'},
-                            {'name': 'Graphics', 'value': 'NVIDIA RTX 4060'},
-                            {'name': 'Display', 'value': '14-inch 165Hz QHD+'},
-                        ]
-                    },
-                ],
-                'headphones-audio': [
-                    {
-                        'name': 'Sony WH-1000XM5',
-                        'brand': 'Sony',
-                        'price': 349.99,
-                        'compare_price': 399.99,
-                        'short_description': 'Industry-leading noise cancellation.',
-                        'description': 'The Sony WH-1000XM5 offers best-in-class noise cancellation, exceptional sound quality, and up to 30 hours of battery life.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.25,
-                        'specifications': [
-                            {'name': 'Driver', 'value': '30mm'},
-                            {'name': 'Battery Life', 'value': '30 hours'},
-                            {'name': 'Noise Cancellation', 'value': 'Active (8 microphones)'},
-                        ]
-                    },
-                    {
-                        'name': 'AirPods Pro 2',
-                        'brand': 'Apple',
-                        'price': 249.00,
-                        'short_description': 'Magical audio experience with Active Noise Cancellation.',
-                        'description': 'AirPods Pro 2 feature the H2 chip, Adaptive Transparency, and Personalized Spatial Audio for an immersive experience.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.05,
-                        'specifications': [
-                            {'name': 'Chip', 'value': 'Apple H2'},
-                            {'name': 'Battery Life', 'value': '6 hours (30 with case)'},
-                            {'name': 'Features', 'value': 'ANC, Transparency Mode'},
-                        ]
-                    },
-                    {
-                        'name': 'Bose QuietComfort Ultra',
-                        'brand': 'Bose',
-                        'price': 429.00,
-                        'short_description': 'World-class noise cancellation meets immersive audio.',
-                        'description': 'Experience Bose Immersive Audio and world-class noise cancellation in a comfortable, premium design.',
-                        'featured': True,
-                        'weight': 0.25,
-                        'specifications': [
-                            {'name': 'Battery Life', 'value': '24 hours'},
-                            {'name': 'Audio', 'value': 'Bose Immersive Audio'},
-                        ]
-                    },
-                ],
-                'smart-watches': [
-                    {
-                        'name': 'Apple Watch Ultra 2',
-                        'brand': 'Apple',
-                        'price': 799.00,
-                        'short_description': 'The most rugged and capable Apple Watch.',
-                        'description': 'Built for endurance athletes, outdoor adventurers, and ocean explorers. Features the brightest Apple display ever.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.06,
-                        'specifications': [
-                            {'name': 'Case', 'value': '49mm Titanium'},
-                            {'name': 'Battery', 'value': 'Up to 36 hours'},
-                            {'name': 'Water Resistance', 'value': '100m'},
-                        ]
-                    },
-                    {
-                        'name': 'Samsung Galaxy Watch 6 Classic',
-                        'brand': 'Samsung',
-                        'price': 429.99,
-                        'short_description': 'Premium smartwatch with rotating bezel.',
-                        'description': 'The Galaxy Watch 6 Classic brings back the beloved rotating bezel with advanced health monitoring features.',
-                        'specifications': [
-                            {'name': 'Display', 'value': '1.5-inch Super AMOLED'},
-                            {'name': 'Battery', 'value': '425mAh'},
-                        ]
-                    },
-                ],
-                'gaming': [
-                    {
-                        'name': 'PlayStation 5',
-                        'brand': 'Sony',
-                        'price': 499.99,
-                        'short_description': 'Experience lightning-fast loading with ultra-high speed SSD.',
-                        'description': 'The PS5 console unleashes new gaming possibilities with ray tracing, 4K gaming, and the innovative DualSense controller.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 4.5,
-                        'specifications': [
-                            {'name': 'Storage', 'value': '825GB SSD'},
-                            {'name': 'Resolution', 'value': 'Up to 8K'},
-                            {'name': 'Frame Rate', 'value': 'Up to 120fps'},
-                        ]
-                    },
-                    {
-                        'name': 'Xbox Series X',
-                        'brand': 'Microsoft',
-                        'price': 499.99,
-                        'short_description': 'The fastest, most powerful Xbox ever.',
-                        'description': 'Experience 12 teraflops of raw graphic processing power, true 4K gaming, and Quick Resume.',
-                        'featured': True,
-                        'weight': 4.45,
-                        'specifications': [
-                            {'name': 'Storage', 'value': '1TB SSD'},
-                            {'name': 'Resolution', 'value': 'Up to 8K'},
-                        ]
-                    },
-                    {
-                        'name': 'Nintendo Switch OLED',
-                        'brand': 'Nintendo',
-                        'price': 349.99,
-                        'short_description': 'Vibrant 7-inch OLED screen for handheld gaming.',
-                        'description': 'Experience enhanced audio and a vibrant 7-inch OLED screen whether playing at home or on the go.',
-                        'is_bestseller': True,
-                        'weight': 0.42,
-                        'specifications': [
-                            {'name': 'Screen', 'value': '7-inch OLED'},
-                            {'name': 'Storage', 'value': '64GB'},
-                        ]
-                    },
-                ],
+        # 🔑 THIS IS THE FIX YOU WERE MISSING
+        self.seed_placeholder_images()
+
+        self.print_summary()
+
+    # -------------------------------
+    # CLEAR DATA
+    # -------------------------------
+    def clear_existing_data(self):
+        ProductSpecification.objects.all().delete()
+        Product.objects.all().delete()
+        Category.objects.all().delete()
+        Brand.objects.all().delete()
+        ShippingOption.objects.all().delete()
+
+        self.stdout.write(self.style.SUCCESS("✓ Cleared existing data"))
+
+
+    # ═══════════════════════════════════════════════════════════════
+    # BRANDS
+    # ═══════════════════════════════════════════════════════════════
+    def create_brands(self):
+        self.stdout.write("📦 Creating brands...")
+
+        brand_data = [
+            # Electronics
+            {"name": "Apple", "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories.", "website": "https://www.apple.com"},
+            {"name": "Samsung", "description": "Samsung Electronics is a global leader in technology, opening new possibilities for people everywhere.", "website": "https://www.samsung.com"},
+            {"name": "Sony", "description": "Sony Corporation is a Japanese multinational conglomerate known for electronics, gaming, and entertainment.", "website": "https://www.sony.com"},
+            {"name": "Dell", "description": "Dell Technologies provides computers, servers, data storage devices, and software.", "website": "https://www.dell.com"},
+            {"name": "Bose", "description": "Bose Corporation sells audio equipment including premium headphones and speakers.", "website": "https://www.bose.com"},
+
+            # Fashion
+            {"name": "Nike", "description": "Nike designs, develops, manufactures, and markets footwear, apparel, and accessories.", "website": "https://www.nike.com"},
+            {"name": "Adidas", "description": "Adidas is a German athletic apparel and footwear corporation.", "website": "https://www.adidas.com"},
+            {"name": "Levi's", "description": "Levi Strauss & Co. is known worldwide for its Levi's brand of denim jeans.", "website": "https://www.levi.com"},
+            {"name": "Ray-Ban", "description": "Ray-Ban is a brand of luxury sunglasses and eyeglasses.", "website": "https://www.ray-ban.com"},
+            {"name": "Ralph Lauren", "description": "Ralph Lauren Corporation produces luxury and mainstream lifestyle collections.", "website": "https://www.ralphlauren.com"},
+
+            # Home & Living
+            {"name": "IKEA", "description": "IKEA designs and sells ready-to-assemble furniture and home accessories.", "website": "https://www.ikea.com"},
+            {"name": "Dyson", "description": "Dyson is known for innovative vacuum cleaners, air purifiers, and hair care.", "website": "https://www.dyson.com"},
+            {"name": "Philips", "description": "Philips is a health technology company focused on improving people's lives.", "website": "https://www.philips.com"},
+            {"name": "Le Creuset", "description": "Le Creuset is known for colorful, enameled cast-iron cookware.", "website": "https://www.lecreuset.com"},
+            {"name": "Nespresso", "description": "Nespresso offers premium coffee pods and machines.", "website": "https://www.nespresso.com"},
+
+            # Beauty
+            {"name": "The Ordinary", "description": "The Ordinary offers clinical formulations with integrity at affordable prices.", "website": "https://theordinary.com"},
+            {"name": "CeraVe", "description": "CeraVe is developed with dermatologists for all skin types.", "website": "https://www.cerave.com"},
+            {"name": "Estée Lauder", "description": "Estée Lauder manufactures prestige skincare, makeup, and fragrance.", "website": "https://www.esteelauder.com"},
+            {"name": "Drunk Elephant", "description": "Drunk Elephant is known for its clean-clinical skincare philosophy.", "website": "https://www.drunkelephant.com"},
+            {"name": "Fenty Beauty", "description": "Fenty Beauty by Rihanna is known for inclusive shade ranges.", "website": "https://fentybeauty.com"},
+
+            # Books & Education
+            {"name": "Penguin Random House", "description": "The world's largest trade book publisher.", "website": "https://www.penguinrandomhouse.com"},
+            {"name": "O'Reilly Media", "description": "O'Reilly publishes books and produces tech conferences.", "website": "https://www.oreilly.com"},
+            {"name": "HarperCollins", "description": "One of the world's largest publishing companies.", "website": "https://www.harpercollins.com"},
+            {"name": "Pearson", "description": "The largest education company and book publisher in the world.", "website": "https://www.pearson.com"},
+            {"name": "McGraw Hill", "description": "McGraw Hill provides educational content and services.", "website": "https://www.mheducation.com"},
+
+            # Sports & Fitness
+            {"name": "Peloton", "description": "Peloton offers internet-connected exercise equipment.", "website": "https://www.onepeloton.com"},
+            {"name": "Bowflex", "description": "Bowflex is known for innovative home gym equipment.", "website": "https://www.bowflex.com"},
+            {"name": "Theragun", "description": "Therabody creates percussion therapy devices.", "website": "https://www.therabody.com"},
+            {"name": "Garmin", "description": "Garmin is known for GPS technology and fitness wearables.", "website": "https://www.garmin.com"},
+            {"name": "Manduka", "description": "Manduka is a leading yoga lifestyle brand.", "website": "https://www.manduka.com"},
+
+            # Kids & Toys
+            {"name": "LEGO", "description": "LEGO manufactures construction toys since 1932.", "website": "https://www.lego.com"},
+            {"name": "Nintendo", "description": "Nintendo is known for Mario, Zelda, and Pokémon.", "website": "https://www.nintendo.com"},
+            {"name": "Mattel", "description": "Mattel is known for Barbie, Hot Wheels, and Fisher-Price.", "website": "https://www.mattel.com"},
+            {"name": "Hasbro", "description": "Hasbro makes Monopoly, Transformers, and My Little Pony.", "website": "https://www.hasbro.com"},
+            {"name": "Melissa & Doug", "description": "Melissa & Doug is known for wooden toys and educational products.", "website": "https://www.melissaanddoug.com"},
+
+            # Digital Products
+            {"name": "Adobe", "description": "Adobe is known for Creative Cloud, Photoshop, and Acrobat.", "website": "https://www.adobe.com"},
+            {"name": "Microsoft", "description": "Microsoft is the world's largest software maker.", "website": "https://www.microsoft.com"},
+            {"name": "Udemy", "description": "Udemy offers over 200,000 online courses.", "website": "https://www.udemy.com"},
+            {"name": "Spotify", "description": "Spotify is the world's largest music streaming service.", "website": "https://www.spotify.com"},
+            {"name": "Canva", "description": "Canva is a graphic design platform for everyone.", "website": "https://www.canva.com"},
+        ]
+
+        brands = {}
+        for data in brand_data:
+            brand, created = Brand.objects.get_or_create(
+                slug=slugify(data["name"]),
+                defaults={
+                    "name": data["name"],
+                    "description": data["description"],
+                    "website": data["website"],
+                    "is_featured": True,
+                    "is_active": True,
+                }
+            )
+            brands[slugify(data["name"])] = brand
+            status = "✓ Created" if created else "→ Exists"
+            self.stdout.write(f"  {status}: {data['name']}")
+
+        return brands
+
+    # ═══════════════════════════════════════════════════════════════
+    # CATEGORIES
+    # ═══════════════════════════════════════════════════════════════
+    def create_categories(self):
+        self.stdout.write("\n📂 Creating categories...")
+
+        category_data = [
+            {"name": "Electronics", "slug": "electronics", "icon": "laptop", "description": "Latest smartphones, laptops, tablets, and audio equipment.", "key": "electronics"},
+            {"name": "Fashion", "slug": "fashion", "icon": "shirt", "description": "Trending clothing, footwear, and accessories.", "key": "fashion"},
+            {"name": "Home & Living", "slug": "home-living", "icon": "home", "description": "Furniture, home décor, and kitchen appliances.", "key": "home"},
+            {"name": "Beauty & Skincare", "slug": "beauty-skincare", "icon": "sparkles", "description": "Premium skincare, makeup, and personal care.", "key": "beauty"},
+            {"name": "Books & Education", "slug": "books-education", "icon": "book-open", "description": "Bestselling books, textbooks, and courses.", "key": "books"},
+            {"name": "Sports & Fitness", "slug": "sports-fitness", "icon": "fire", "description": "Exercise equipment, sportswear, and recovery tools.", "key": "sports"},
+            {"name": "Kids & Toys", "slug": "kids-toys", "icon": "puzzle", "description": "Educational toys, games, and outdoor play equipment.", "key": "kids"},
+            {"name": "Digital Products", "slug": "digital-products", "icon": "cloud-download", "description": "Software, subscriptions, and online courses.", "key": "digital"},
+        ]
+
+        categories = {}
+        for i, data in enumerate(category_data):
+            cat, created = Category.objects.get_or_create(
+                slug=data["slug"],
+                defaults={
+                    "name": data["name"],
+                    "description": data["description"],
+                    "icon": data["icon"],
+                    "display_order": i + 1,
+                    "featured": True,
+                    "is_active": True,
+                }
+            )
+            categories[data["key"]] = cat
+            status = "✓ Created" if created else "→ Exists"
+            self.stdout.write(f"  {status}: {data['name']}")
+
+        return categories
+
+    # ═══════════════════════════════════════════════════════════════
+    # SHIPPING OPTIONS
+    # ═══════════════════════════════════════════════════════════════
+    def create_shipping_options(self):
+        self.stdout.write("\n🚚 Creating shipping options...")
+
+        shipping_data = [
+            {"name": "Standard Shipping", "description": "Regular delivery via ground shipping.", "price": Decimal("5.99"), "estimated_days_min": 5, "estimated_days_max": 7, "is_default": True, "free_shipping_threshold": Decimal("50.00"), "display_order": 1},
+            {"name": "Express Shipping", "description": "Faster delivery with priority handling.", "price": Decimal("12.99"), "estimated_days_min": 2, "estimated_days_max": 3, "is_default": False, "free_shipping_threshold": Decimal("100.00"), "display_order": 2},
+            {"name": "Next Day Delivery", "description": "Order by 2 PM for next business day delivery.", "price": Decimal("24.99"), "estimated_days_min": 1, "estimated_days_max": 1, "is_default": False, "free_shipping_threshold": Decimal("200.00"), "display_order": 3},
+            {"name": "Free Shipping", "description": "Free standard shipping on qualifying orders.", "price": Decimal("0.00"), "estimated_days_min": 7, "estimated_days_max": 10, "is_default": False, "free_shipping_threshold": None, "display_order": 4},
+        ]
+
+        for data in shipping_data:
+            ship, created = ShippingOption.objects.get_or_create(
+                name=data["name"],
+                defaults=data
+            )
+            status = "✓ Created" if created else "→ Exists"
+            self.stdout.write(f"  {status}: {data['name']}")
+
+    # ═══════════════════════════════════════════════════════════════
+    # HELPER METHOD - CREATE PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def _create_products(self, products_data, category, brands):
+        for data in products_data:
+            if Product.objects.filter(slug=data["slug"]).exists():
+                self.stdout.write(f"  ⏭️  Skipping {data['name']} (already exists)")
+                continue
+
+            # Get brand from brands dict
+            brand = data.get("brand")
+            if isinstance(brand, str):
+                brand = brands.get(slugify(brand))
+
+            product = Product.objects.create(
+                name=data["name"],
+                slug=data["slug"],
+                sku=data["sku"],
+                description=data["description"].strip(),
+                short_description=data["short_description"],
+                product_type=data.get("product_type", "physical"),
+                price=data["price"],
+                compare_price=data.get("compare_price"),
+                stock=data["stock"],
+                category=category,
+                brand=brand,
+                weight=data.get("weight"),
+                dimensions=data.get("dimensions", ""),
+                featured=data.get("featured", False),
+                is_new=data.get("is_new", True),
+                is_bestseller=data.get("is_bestseller", False),
+                is_available=True,
+            )
+
+            # Add specifications
+            specs = data.get("specs") or data.get("specifications", [])
+            for order, spec in enumerate(specs):
+                if isinstance(spec, tuple):
+                    spec_name, spec_value = spec
+                else:
+                    spec_name, spec_value = spec.get("name"), spec.get("value")
+
+                ProductSpecification.objects.create(
+                    product=product,
+                    name=spec_name,
+                    value=spec_value,
+                    order=order
+                )
+
+            self.stdout.write(f"  ✅ Created: {product.name}")
+
+    # ═══════════════════════════════════════════════════════════════
+    # ELECTRONICS PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_electronics(self, category, brands):
+        self.stdout.write(f"\n📱 Seeding Electronics products...")
+
+        products = [
+            {
+                "name": "Apple iPhone 15 Pro Max 256GB - Natural Titanium",
+                "slug": "apple-iphone-15-pro-max-256gb-natural-titanium",
+                "sku": "ELEC-IPHONE15PM-256-NT",
+                "price": Decimal("1199.00"),
+                "compare_price": Decimal("1299.00"),
+                "brand": "apple",
+                "stock": 45,
+                "weight": Decimal("0.22"),
+                "dimensions": "15.99 x 7.69 x 0.83 cm",
+                "short_description": "The most powerful iPhone ever with A17 Pro chip, titanium design, and 5x optical zoom.",
+                "description": """
+Experience the pinnacle of smartphone technology with iPhone 15 Pro Max. Forged in titanium with a stunning Natural Titanium finish.
+
+**A17 Pro Chip** - The first 3-nanometer chip in a smartphone enables console-quality gaming.
+
+**Pro Camera System**
+• 48MP Main camera with sensor-shift optical image stabilization
+• 5x optical zoom with the longest optical focal length ever on iPhone
+• ProRAW and ProRes video recording at up to 4K60 fps
+
+**Display** - 6.7-inch Super Retina XDR display with ProMotion technology.
+
+**Durability** - Aerospace-grade titanium design. Water resistant to 6 meters (IP68).
+
+**Battery** - Up to 29 hours of video playback. USB-C with MagSafe wireless charging.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "is_new": True,
+                "specs": [
+                    ("Display", "6.7-inch Super Retina XDR OLED"),
+                    ("Chip", "A17 Pro with 6-core GPU"),
+                    ("Storage", "256GB"),
+                    ("Main Camera", "48MP with ƒ/1.78 aperture"),
+                    ("Battery", "Up to 29 hours video playback"),
+                    ("Water Resistance", "IP68"),
+                ]
             },
+            {
+                "name": "Samsung Galaxy S24 Ultra 512GB - Titanium Black",
+                "slug": "samsung-galaxy-s24-ultra-512gb-titanium-black",
+                "sku": "ELEC-SAMS24U-512-TB",
+                "price": Decimal("1299.99"),
+                "compare_price": Decimal("1419.99"),
+                "brand": "samsung",
+                "stock": 38,
+                "weight": Decimal("0.23"),
+                "dimensions": "16.23 x 7.90 x 0.86 cm",
+                "short_description": "Samsung's ultimate smartphone with Galaxy AI, S Pen, and 200MP camera system.",
+                "description": """
+Introducing Galaxy S24 Ultra with groundbreaking Galaxy AI capabilities.
 
-            # ==================== FASHION ====================
-            'fashion': {
-                'mens-clothing': [
-                    {
-                        'name': 'Classic Fit Oxford Shirt',
-                        'brand': 'Zara',
-                        'price': 49.99,
-                        'compare_price': 69.99,
-                        'short_description': 'Timeless oxford shirt for any occasion.',
-                        'description': 'A wardrobe essential crafted from premium cotton. Features a button-down collar and classic fit.',
-                        'featured': True,
-                        'weight': 0.3,
-                        'specifications': [
-                            {'name': 'Material', 'value': '100% Cotton'},
-                            {'name': 'Fit', 'value': 'Classic'},
-                            {'name': 'Care', 'value': 'Machine Washable'},
-                        ]
-                    },
-                    {
-                        'name': 'Slim Fit Chino Pants',
-                        'brand': 'H&M',
-                        'price': 39.99,
-                        'short_description': 'Versatile chinos for work or weekend.',
-                        'description': 'Modern slim-fit chinos in stretch cotton twill. Perfect for both casual and smart-casual looks.',
-                        'is_bestseller': True,
-                        'weight': 0.4,
-                        'specifications': [
-                            {'name': 'Material', 'value': '98% Cotton, 2% Elastane'},
-                            {'name': 'Fit', 'value': 'Slim'},
-                        ]
-                    },
-                    {
-                        'name': 'Wool Blend Overcoat',
-                        'brand': 'Zara',
-                        'price': 189.99,
-                        'compare_price': 249.99,
-                        'short_description': 'Sophisticated overcoat for cold weather.',
-                        'description': 'Elegant wool-blend overcoat with notch lapels. A timeless piece for your winter wardrobe.',
-                        'featured': True,
-                        'weight': 1.2,
-                        'specifications': [
-                            {'name': 'Material', 'value': '70% Wool, 30% Polyester'},
-                            {'name': 'Length', 'value': 'Mid-thigh'},
-                        ]
-                    },
-                ],
-                'womens-clothing': [
-                    {
-                        'name': 'Floral Midi Dress',
-                        'brand': 'Zara',
-                        'price': 79.99,
-                        'compare_price': 99.99,
-                        'short_description': 'Elegant floral dress for any season.',
-                        'description': 'Beautiful midi dress with delicate floral print. Features a flattering A-line silhouette and puff sleeves.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.35,
-                        'specifications': [
-                            {'name': 'Material', 'value': '100% Viscose'},
-                            {'name': 'Length', 'value': 'Midi'},
-                            {'name': 'Fit', 'value': 'Regular'},
-                        ]
-                    },
-                    {
-                        'name': 'High-Rise Skinny Jeans',
-                        'brand': 'Zara',
-                        'price': 59.99,
-                        'short_description': 'Perfect everyday skinny jeans.',
-                        'description': 'Classic high-rise skinny jeans in premium stretch denim. Flattering fit that moves with you.',
-                        'is_bestseller': True,
-                        'weight': 0.45,
-                        'specifications': [
-                            {'name': 'Material', 'value': '92% Cotton, 6% Polyester, 2% Elastane'},
-                            {'name': 'Rise', 'value': 'High'},
-                        ]
-                    },
-                    {
-                        'name': 'Cashmere Blend Sweater',
-                        'brand': 'H&M',
-                        'price': 89.99,
-                        'compare_price': 129.99,
-                        'short_description': 'Luxuriously soft cashmere blend.',
-                        'description': 'Cozy cashmere-blend sweater with ribbed details. Perfect layering piece for cooler days.',
-                        'featured': True,
-                        'weight': 0.3,
-                        'specifications': [
-                            {'name': 'Material', 'value': '50% Cashmere, 50% Wool'},
-                        ]
-                    },
-                ],
-                'footwear': [
-                    {
-                        'name': 'Air Max 270',
-                        'brand': 'Nike',
-                        'price': 150.00,
-                        'short_description': 'Iconic comfort meets street style.',
-                        'description': 'The Nike Air Max 270 delivers visible cushioning under every step with its large Air unit.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.35,
-                        'specifications': [
-                            {'name': 'Sole', 'value': 'Air Max Unit'},
-                            {'name': 'Upper', 'value': 'Mesh + Synthetic'},
-                        ]
-                    },
-                    {
-                        'name': 'Ultraboost 22',
-                        'brand': 'Adidas',
-                        'price': 190.00,
-                        'compare_price': 220.00,
-                        'short_description': 'Incredible energy return with every stride.',
-                        'description': 'Experience incredible energy return with Boost midsole technology. Primeknit upper adapts to your foot.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.32,
-                        'specifications': [
-                            {'name': 'Technology', 'value': 'Boost Midsole'},
-                            {'name': 'Upper', 'value': 'Primeknit'},
-                        ]
-                    },
-                    {
-                        'name': 'Classic Leather Chelsea Boot',
-                        'brand': 'Zara',
-                        'price': 129.99,
-                        'short_description': 'Timeless Chelsea boot in genuine leather.',
-                        'description': 'Classic Chelsea boot crafted from genuine leather. Features elastic side panels and pull tab.',
-                        'weight': 0.8,
-                        'specifications': [
-                            {'name': 'Material', 'value': '100% Leather'},
-                            {'name': 'Sole', 'value': 'Rubber'},
-                        ]
-                    },
-                ],
-                'bags-luggage': [
-                    {
-                        'name': 'Leather Tote Bag',
-                        'brand': 'Gucci',
-                        'price': 299.99,
-                        'compare_price': 399.99,
-                        'short_description': 'Spacious tote for work and weekend.',
-                        'description': 'Elegant leather tote with spacious interior. Perfect for carrying laptop, documents, and daily essentials.',
-                        'featured': True,
-                        'weight': 0.8,
-                        'specifications': [
-                            {'name': 'Material', 'value': 'Genuine Leather'},
-                            {'name': 'Dimensions', 'value': '40 x 30 x 15 cm'},
-                        ]
-                    },
-                    {
-                        'name': 'Travel Backpack 40L',
-                        'brand': 'Nike',
-                        'price': 89.99,
-                        'short_description': 'Versatile backpack for travel and daily use.',
-                        'description': 'Durable travel backpack with laptop compartment, multiple pockets, and ergonomic straps.',
-                        'is_bestseller': True,
-                        'weight': 1.2,
-                        'specifications': [
-                            {'name': 'Capacity', 'value': '40 Liters'},
-                            {'name': 'Laptop', 'value': 'Up to 17 inch'},
-                        ]
-                    },
-                ],
+**Galaxy AI Features**
+• Live Translate: Real-time call translation
+• Circle to Search with Google
+• Note Assist: Automatic formatting and summarization
+
+**200MP Camera System** - Capture incredible detail with the highest resolution camera on a Galaxy.
+
+**Display** - 6.8-inch Dynamic AMOLED 2X with 2600 nits peak brightness.
+
+**Built-in S Pen** - Create, annotate, and navigate with precision.
+
+**Battery** - 5000mAh with 45W super fast charging.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "is_new": True,
+                "specs": [
+                    ("Display", "6.8-inch Dynamic AMOLED 2X"),
+                    ("Processor", "Snapdragon 8 Gen 3"),
+                    ("RAM", "12GB"),
+                    ("Storage", "512GB"),
+                    ("Main Camera", "200MP with OIS"),
+                    ("Battery", "5000mAh"),
+                ]
             },
+            {
+                "name": "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
+                "slug": "sony-wh-1000xm5-wireless-noise-cancelling",
+                "sku": "ELEC-SONYWH1KXM5-BLK",
+                "price": Decimal("349.99"),
+                "compare_price": Decimal("399.99"),
+                "brand": "sony",
+                "stock": 67,
+                "weight": Decimal("0.25"),
+                "dimensions": "22.0 x 25.0 x 8.0 cm",
+                "short_description": "Industry-leading noise cancellation with exceptional sound quality.",
+                "description": """
+Sony WH-1000XM5 headphones rewrite the rules for distraction-free listening.
 
-            # ==================== HOME & LIVING ====================
-            'home-living': {
-                'furniture': [
-                    {
-                        'name': 'Modern Sectional Sofa',
-                        'brand': 'IKEA',
-                        'price': 1299.00,
-                        'compare_price': 1599.00,
-                        'short_description': 'Contemporary L-shaped sectional for modern living.',
-                        'description': 'Spacious sectional sofa with reversible chaise. Features high-density foam cushions and durable fabric upholstery.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 85,
-                        'specifications': [
-                            {'name': 'Dimensions', 'value': '280 x 180 x 85 cm'},
-                            {'name': 'Material', 'value': 'Polyester Blend'},
-                            {'name': 'Seats', 'value': '5-6 people'},
-                        ]
-                    },
-                    {
-                        'name': 'Solid Oak Dining Table',
-                        'brand': 'IKEA',
-                        'price': 699.00,
-                        'short_description': 'Elegant dining table for 6-8 people.',
-                        'description': 'Beautifully crafted dining table in solid oak. Sturdy construction with elegant design.',
-                        'featured': True,
-                        'weight': 45,
-                        'specifications': [
-                            {'name': 'Dimensions', 'value': '180 x 90 x 75 cm'},
-                            {'name': 'Material', 'value': 'Solid Oak'},
-                            {'name': 'Capacity', 'value': '6-8 people'},
-                        ]
-                    },
-                    {
-                        'name': 'Ergonomic Office Chair',
-                        'brand': 'IKEA',
-                        'price': 349.00,
-                        'compare_price': 449.00,
-                        'short_description': 'All-day comfort for home office.',
-                        'description': 'Ergonomic office chair with lumbar support, adjustable armrests, and breathable mesh back.',
-                        'is_bestseller': True,
-                        'weight': 18,
-                        'specifications': [
-                            {'name': 'Adjustable Height', 'value': '42-52 cm'},
-                            {'name': 'Weight Capacity', 'value': '120 kg'},
-                        ]
-                    },
-                ],
-                'lighting': [
-                    {
-                        'name': 'Modern LED Floor Lamp',
-                        'brand': 'Philips',
-                        'price': 149.99,
-                        'short_description': 'Adjustable LED floor lamp with dimmer.',
-                        'description': 'Contemporary floor lamp with adjustable brightness and color temperature. Energy-efficient LED technology.',
-                        'featured': True,
-                        'weight': 5,
-                        'specifications': [
-                            {'name': 'Wattage', 'value': '20W LED'},
-                            {'name': 'Color Temperature', 'value': '2700K-6500K'},
-                            {'name': 'Height', 'value': '180 cm'},
-                        ]
-                    },
-                    {
-                        'name': 'Smart Ceiling Light',
-                        'brand': 'Philips',
-                        'price': 89.99,
-                        'short_description': 'WiFi-enabled smart ceiling light.',
-                        'description': 'Smart ceiling light compatible with Alexa and Google Home. Control brightness and color from your phone.',
-                        'is_bestseller': True,
-                        'weight': 2,
-                        'specifications': [
-                            {'name': 'Wattage', 'value': '32W LED'},
-                            {'name': 'Diameter', 'value': '45 cm'},
-                            {'name': 'Smart Features', 'value': 'WiFi, Voice Control'},
-                        ]
-                    },
-                ],
-                'kitchen-dining': [
-                    {
-                        'name': 'Professional Chef Knife Set',
-                        'brand': None,
-                        'price': 199.99,
-                        'compare_price': 299.99,
-                        'short_description': '8-piece German steel knife set.',
-                        'description': 'Professional-grade knife set forged from high-carbon German steel. Includes chef knife, bread knife, utility knife, and more.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 3,
-                        'specifications': [
-                            {'name': 'Pieces', 'value': '8'},
-                            {'name': 'Material', 'value': 'German Steel'},
-                            {'name': 'Block', 'value': 'Acacia Wood'},
-                        ]
-                    },
-                    {
-                        'name': 'Cast Iron Dutch Oven',
-                        'brand': None,
-                        'price': 89.99,
-                        'short_description': 'Enameled cast iron for perfect cooking.',
-                        'description': '6-quart enameled cast iron Dutch oven. Perfect for soups, stews, roasts, and baking bread.',
-                        'is_bestseller': True,
-                        'weight': 6,
-                        'specifications': [
-                            {'name': 'Capacity', 'value': '6 Quarts'},
-                            {'name': 'Material', 'value': 'Enameled Cast Iron'},
-                        ]
-                    },
-                ],
-                'bedding': [
-                    {
-                        'name': 'Luxury Egyptian Cotton Sheet Set',
-                        'brand': None,
-                        'price': 149.99,
-                        'compare_price': 199.99,
-                        'short_description': '1000 thread count pure luxury.',
-                        'description': 'Experience hotel-quality comfort with our 1000 thread count Egyptian cotton sheets. Includes flat sheet, fitted sheet, and 2 pillowcases.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 2,
-                        'specifications': [
-                            {'name': 'Thread Count', 'value': '1000'},
-                            {'name': 'Material', 'value': '100% Egyptian Cotton'},
-                            {'name': 'Pieces', 'value': '4'},
-                        ]
-                    },
-                    {
-                        'name': 'Memory Foam Pillow Set',
-                        'brand': None,
-                        'price': 79.99,
-                        'short_description': 'Contoured support for better sleep.',
-                        'description': 'Set of 2 memory foam pillows with cooling gel layer. Ergonomic design supports neck and spine alignment.',
-                        'weight': 2,
-                        'specifications': [
-                            {'name': 'Quantity', 'value': '2 Pillows'},
-                            {'name': 'Material', 'value': 'Memory Foam with Cooling Gel'},
-                        ]
-                    },
-                ],
+**Industry-Leading Noise Cancellation** - Two processors control 8 microphones.
+
+**Exceptional Sound** - 30mm driver unit with LDAC support for Hi-Res Audio.
+
+**Crystal Clear Calls** - Four beamforming microphones with AI noise reduction.
+
+**30-Hour Battery** - Quick charge: 3 minutes = 3 hours playback.
+
+**Premium Comfort** - Soft fit leather, lightweight at just 250g.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "is_new": False,
+                "specs": [
+                    ("Driver Unit", "30mm"),
+                    ("Noise Cancellation", "8 Microphones"),
+                    ("Battery Life", "Up to 30 hours"),
+                    ("Bluetooth", "5.2 with LDAC"),
+                    ("Weight", "250g"),
+                ]
             },
+            {
+                "name": "Apple MacBook Pro 14-inch M3 Pro - Space Black",
+                "slug": "apple-macbook-pro-14-m3-pro-space-black",
+                "sku": "ELEC-MBP14-M3P-SB",
+                "price": Decimal("1999.00"),
+                "compare_price": Decimal("2199.00"),
+                "brand": "apple",
+                "stock": 25,
+                "weight": Decimal("1.61"),
+                "dimensions": "31.26 x 22.12 x 1.55 cm",
+                "short_description": "Pro laptop with M3 Pro chip, 18GB unified memory, and Liquid Retina XDR display.",
+                "description": """
+MacBook Pro 14-inch with M3 Pro supercharges your workflow.
 
-            # ==================== BEAUTY & SKINCARE ====================
-            'beauty-skincare': {
-                'skincare': [
-                    {
-                        'name': 'Vitamin C Brightening Serum',
-                        'brand': 'CeraVe',
-                        'price': 24.99,
-                        'short_description': '20% Vitamin C for radiant skin.',
-                        'description': 'Powerful antioxidant serum with 20% Vitamin C, Vitamin E, and Ferulic Acid. Brightens skin and reduces fine lines.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.1,
-                        'specifications': [
-                            {'name': 'Size', 'value': '30ml'},
-                            {'name': 'Skin Type', 'value': 'All Skin Types'},
-                            {'name': 'Key Ingredient', 'value': '20% Vitamin C'},
-                        ]
-                    },
-                    {
-                        'name': 'Hyaluronic Acid Moisturizer',
-                        'brand': 'CeraVe',
-                        'price': 19.99,
-                        'short_description': 'Deep hydration for plump skin.',
-                        'description': 'Lightweight moisturizer with hyaluronic acid for intense hydration. Non-comedogenic and suitable for sensitive skin.',
-                        'is_bestseller': True,
-                        'weight': 0.1,
-                        'specifications': [
-                            {'name': 'Size', 'value': '50ml'},
-                            {'name': 'Skin Type', 'value': 'All Skin Types'},
-                        ]
-                    },
-                    {
-                        'name': 'Retinol Night Cream',
-                        'brand': 'CeraVe',
-                        'price': 34.99,
-                        'compare_price': 44.99,
-                        'short_description': 'Anti-aging retinol formula.',
-                        'description': 'Clinically proven retinol cream that reduces wrinkles and improves skin texture overnight.',
-                        'featured': True,
-                        'weight': 0.1,
-                        'specifications': [
-                            {'name': 'Size', 'value': '50ml'},
-                            {'name': 'Key Ingredient', 'value': '0.5% Retinol'},
-                        ]
-                    },
-                ],
-                'makeup': [
-                    {
-                        'name': 'Matte Liquid Lipstick Set',
-                        'brand': 'Fenty Beauty',
-                        'price': 42.00,
-                        'short_description': '6 stunning shades for every mood.',
-                        'description': 'Long-wearing matte liquid lipstick set featuring 6 universally flattering shades. Transfer-proof formula lasts up to 12 hours.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.15,
-                        'specifications': [
-                            {'name': 'Pieces', 'value': '6 Shades'},
-                            {'name': 'Finish', 'value': 'Matte'},
-                            {'name': 'Wear Time', 'value': '12 Hours'},
-                        ]
-                    },
-                    {
-                        'name': 'Full Coverage Foundation',
-                        'brand': 'Fenty Beauty',
-                        'price': 38.00,
-                        'short_description': '40 shades for every skin tone.',
-                        'description': 'Buildable full coverage foundation with natural matte finish. Lightweight formula that lasts all day.',
-                        'is_bestseller': True,
-                        'weight': 0.1,
-                        'specifications': [
-                            {'name': 'Size', 'value': '32ml'},
-                            {'name': 'Coverage', 'value': 'Full'},
-                            {'name': 'Finish', 'value': 'Natural Matte'},
-                        ]
-                    },
-                    {
-                        'name': 'Eyeshadow Palette - Neutrals',
-                        'brand': 'Fenty Beauty',
-                        'price': 54.00,
-                        'compare_price': 65.00,
-                        'short_description': '18 versatile neutral shades.',
-                        'description': 'Curated palette of 18 highly pigmented eyeshadows in matte, shimmer, and metallic finishes.',
-                        'featured': True,
-                        'weight': 0.2,
-                        'specifications': [
-                            {'name': 'Shades', 'value': '18'},
-                            {'name': 'Finishes', 'value': 'Matte, Shimmer, Metallic'},
-                        ]
-                    },
-                ],
-                'fragrances': [
-                    {
-                        'name': 'Sauvage Eau de Parfum',
-                        'brand': 'Dior',
-                        'price': 135.00,
-                        'short_description': 'Fresh and woody masculine fragrance.',
-                        'description': 'Iconic fragrance with notes of bergamot, pepper, and ambroxan. Long-lasting and versatile.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.3,
-                        'specifications': [
-                            {'name': 'Size', 'value': '100ml'},
-                            {'name': 'Type', 'value': 'Eau de Parfum'},
-                            {'name': 'Notes', 'value': 'Bergamot, Pepper, Ambroxan'},
-                        ]
-                    },
-                    {
-                        'name': 'Miss Dior Blooming Bouquet',
-                        'brand': 'Dior',
-                        'price': 115.00,
-                        'short_description': 'Fresh and floral feminine fragrance.',
-                        'description': 'Delicate floral fragrance with notes of peony, rose, and white musk. Fresh and romantic.',
-                        'featured': True,
-                        'weight': 0.3,
-                        'specifications': [
-                            {'name': 'Size', 'value': '100ml'},
-                            {'name': 'Type', 'value': 'Eau de Toilette'},
-                        ]
-                    },
-                ],
-                'hair-care': [
-                    {
-                        'name': 'Argan Oil Hair Treatment',
-                        'brand': "L'Oreal",
-                        'price': 29.99,
-                        'short_description': 'Nourishing treatment for silky hair.',
-                        'description': 'Luxurious argan oil treatment that transforms dry, damaged hair. Adds shine and reduces frizz.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.15,
-                        'specifications': [
-                            {'name': 'Size', 'value': '100ml'},
-                            {'name': 'Hair Type', 'value': 'All Types'},
-                        ]
-                    },
-                    {
-                        'name': 'Professional Hair Dryer',
-                        'brand': None,
-                        'price': 159.99,
-                        'compare_price': 199.99,
-                        'short_description': 'Salon-quality drying at home.',
-                        'description': 'Professional ionic hair dryer with multiple heat and speed settings. Includes concentrator and diffuser attachments.',
-                        'weight': 0.6,
-                        'specifications': [
-                            {'name': 'Wattage', 'value': '2000W'},
-                            {'name': 'Technology', 'value': 'Ionic'},
-                            {'name': 'Attachments', 'value': 'Concentrator, Diffuser'},
-                        ]
-                    },
-                ],
+**M3 Pro Chip** - 11-core CPU, 14-core GPU, 18GB unified memory.
+
+**Liquid Retina XDR Display** - 3024 x 1964 resolution, ProMotion 120Hz, 1600 nits peak HDR.
+
+**All-Day Battery** - Up to 17 hours of video playback.
+
+**Pro Connectivity** - Three Thunderbolt 4 ports, HDMI, SD card, MagSafe 3.
+
+**Six-Speaker Sound System** - Spatial Audio with Dolby Atmos.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "is_new": True,
+                "specs": [
+                    ("Chip", "Apple M3 Pro"),
+                    ("Memory", "18GB Unified"),
+                    ("Storage", "512GB SSD"),
+                    ("Display", "14.2-inch Liquid Retina XDR"),
+                    ("Battery", "Up to 17 hours"),
+                ]
             },
+            {
+                "name": "Apple iPad Pro 12.9-inch M2 256GB - Space Gray",
+                "slug": "apple-ipad-pro-12-9-m2-256gb-space-gray",
+                "sku": "ELEC-IPADPRO12-M2-256-SG",
+                "price": Decimal("1099.00"),
+                "compare_price": Decimal("1199.00"),
+                "brand": "apple",
+                "stock": 33,
+                "weight": Decimal("0.68"),
+                "dimensions": "28.06 x 21.49 x 0.64 cm",
+                "short_description": "The ultimate iPad with M2 chip and Liquid Retina XDR display.",
+                "description": """
+iPad Pro. Supercharged by M2. The ultimate iPad experience.
 
-            # ==================== BOOKS & EDUCATION ====================
-            'books-education': {
-                'fiction': [
-                    {
-                        'name': 'Fourth Wing',
-                        'brand': None,
-                        'price': 21.99,
-                        'short_description': 'A dragon rider romantasy adventure.',
-                        'description': 'Twenty-year-old Violet Sorrengail was supposed to enter the Scribe Quadrant, but the commanding general has ordered her into the riders quadrant, where dragons may bond with humans.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.5,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Hardcover'},
-                            {'name': 'Pages', 'value': '512'},
-                            {'name': 'Genre', 'value': 'Fantasy Romance'},
-                        ]
-                    },
-                    {
-                        'name': 'A Court of Thorns and Roses',
-                        'brand': None,
-                        'price': 18.99,
-                        'short_description': 'Epic fantasy retelling of Beauty and the Beast.',
-                        'description': 'When nineteen-year-old huntress Feyre kills a wolf in the woods, a terrifying creature arrives to demand retribution.',
-                        'is_bestseller': True,
-                        'weight': 0.45,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Pages', 'value': '432'},
-                        ]
-                    },
-                    {
-                        'name': 'Tomorrow, and Tomorrow, and Tomorrow',
-                        'brand': None,
-                        'price': 24.00,
-                        'short_description': 'A story of creativity and love.',
-                        'description': 'Sam and Sadie meet as kids and bond over video games. Decades later, they create a groundbreaking game together.',
-                        'featured': True,
-                        'weight': 0.4,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Hardcover'},
-                            {'name': 'Pages', 'value': '416'},
-                        ]
-                    },
-                    {
-                        'name': 'Project Hail Mary',
-                        'brand': None,
-                        'price': 18.99,
-                        'compare_price': 24.99,
-                        'short_description': 'A lone astronaut must save Earth.',
-                        'description': 'Ryland Grace is the sole survivor on a desperate, last-chance mission. He must figure out how to save humanity.',
-                        'weight': 0.45,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Genre', 'value': 'Science Fiction'},
-                        ]
-                    },
-                ],
-                'non-fiction': [
-                    {
-                        'name': 'Atomic Habits',
-                        'brand': None,
-                        'price': 18.99,
-                        'short_description': 'Build good habits, break bad ones.',
-                        'description': 'James Clear reveals practical strategies to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.4,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Pages', 'value': '320'},
-                            {'name': 'Category', 'value': 'Self-improvement'},
-                        ]
-                    },
-                    {
-                        'name': 'Sapiens: A Brief History of Humankind',
-                        'brand': None,
-                        'price': 22.99,
-                        'short_description': 'How we came to dominate the world.',
-                        'description': 'Yuval Noah Harari explores how Homo sapiens came to dominate Earth through cognitive, agricultural, and scientific revolutions.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.5,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Pages', 'value': '464'},
-                        ]
-                    },
-                    {
-                        'name': 'Educated: A Memoir',
-                        'brand': None,
-                        'price': 17.00,
-                        'short_description': 'A powerful memoir of self-invention.',
-                        'description': 'Born to survivalists in the mountains of Idaho, Tara Westover was seventeen when she first set foot in a classroom.',
-                        'weight': 0.4,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Category', 'value': 'Memoir'},
-                        ]
-                    },
-                    {
-                        'name': 'The Psychology of Money',
-                        'brand': None,
-                        'price': 19.99,
-                        'short_description': 'Timeless lessons on wealth and happiness.',
-                        'description': 'Morgan Housel shares 19 short stories exploring the strange ways people think about money.',
-                        'is_bestseller': True,
-                        'weight': 0.35,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Pages', 'value': '256'},
-                        ]
-                    },
-                ],
-                'self-help': [
-                    {
-                        'name': 'The 7 Habits of Highly Effective People',
-                        'brand': None,
-                        'price': 17.99,
-                        'short_description': 'Powerful lessons in personal change.',
-                        'description': 'Stephen R. Covey presents a holistic approach to solving personal and professional problems.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.4,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Pages', 'value': '381'},
-                        ]
-                    },
-                    {
-                        'name': 'Think and Grow Rich',
-                        'brand': None,
-                        'price': 9.99,
-                        'short_description': 'The classic success manual.',
-                        'description': 'Napoleon Hill reveals the secrets behind the wealth of the most successful industrialists of his time.',
-                        'weight': 0.3,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Pages', 'value': '320'},
-                        ]
-                    },
-                ],
-                'technology-books': [
-                    {
-                        'name': 'Clean Code: A Handbook',
-                        'brand': None,
-                        'price': 44.99,
-                        'short_description': 'Write better, cleaner code.',
-                        'description': 'Robert C. Martin presents best practices for writing readable, maintainable, and efficient code.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.6,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Paperback'},
-                            {'name': 'Pages', 'value': '464'},
-                        ]
-                    },
-                    {
-                        'name': 'The Pragmatic Programmer',
-                        'brand': None,
-                        'price': 49.99,
-                        'short_description': 'Your journey to mastery.',
-                        'description': 'Practical advice on software development, from code organization to career development.',
-                        'is_bestseller': True,
-                        'weight': 0.55,
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Hardcover'},
-                            {'name': 'Pages', 'value': '352'},
-                        ]
-                    },
-                ],
+**M2 Chip** - 8-core CPU, 10-core GPU, 15.8 trillion operations per second.
+
+**Liquid Retina XDR Display** - mini-LED backlighting, 1,000,000:1 contrast ratio.
+
+**Pro Camera System** - 12MP Wide, 10MP Ultra Wide, LiDAR Scanner.
+
+**Apple Pencil Hover** - Detects Apple Pencil up to 12mm above the display.
+
+**Thunderbolt Connectivity** - USB-C with Thunderbolt/USB 4 support.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "is_new": True,
+                "specs": [
+                    ("Chip", "Apple M2"),
+                    ("Display", "12.9-inch Liquid Retina XDR"),
+                    ("Storage", "256GB"),
+                    ("Cameras", "12MP Wide + 10MP Ultra Wide"),
+                    ("Battery", "Up to 10 hours"),
+                ]
             },
+        ]
 
-            # ==================== SPORTS & FITNESS ====================
-            'sports-fitness': {
-                'exercise-equipment': [
-                    {
-                        'name': 'Adjustable Dumbbell Set',
-                        'brand': None,
-                        'price': 349.99,
-                        'compare_price': 449.99,
-                        'short_description': 'Replace 15 sets of dumbbells.',
-                        'description': 'Adjustable dumbbells from 5-52.5 lbs each. Quick-change weight selection for efficient workouts.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 25,
-                        'specifications': [
-                            {'name': 'Weight Range', 'value': '5-52.5 lbs each'},
-                            {'name': 'Increments', 'value': '2.5 lbs'},
-                            {'name': 'Material', 'value': 'Steel with Rubber Coating'},
-                        ]
-                    },
-                    {
-                        'name': 'Premium Yoga Mat',
-                        'brand': None,
-                        'price': 79.99,
-                        'short_description': 'Non-slip mat for yoga and fitness.',
-                        'description': 'Extra thick 6mm yoga mat with non-slip surface. Eco-friendly TPE material with alignment lines.',
-                        'is_bestseller': True,
-                        'weight': 1.2,
-                        'specifications': [
-                            {'name': 'Thickness', 'value': '6mm'},
-                            {'name': 'Material', 'value': 'TPE (Eco-Friendly)'},
-                            {'name': 'Size', 'value': '183 x 61 cm'},
-                        ]
-                    },
-                    {
-                        'name': 'Resistance Bands Set',
-                        'brand': None,
-                        'price': 29.99,
-                        'short_description': '5 resistance levels for full body workout.',
-                        'description': 'Complete set of 5 resistance bands with different tension levels. Includes door anchor, handles, and ankle straps.',
-                        'weight': 0.5,
-                        'specifications': [
-                            {'name': 'Bands', 'value': '5 Resistance Levels'},
-                            {'name': 'Accessories', 'value': 'Door Anchor, Handles, Ankle Straps'},
-                        ]
-                    },
-                    {
-                        'name': 'Folding Treadmill',
-                        'brand': None,
-                        'price': 599.99,
-                        'compare_price': 799.99,
-                        'short_description': 'Space-saving cardio machine.',
-                        'description': 'Compact folding treadmill with 12 preset programs, up to 12 km/h speed, and heart rate monitor.',
-                        'featured': True,
-                        'weight': 45,
-                        'specifications': [
-                            {'name': 'Max Speed', 'value': '12 km/h'},
-                            {'name': 'Programs', 'value': '12 Preset'},
-                            {'name': 'Display', 'value': 'LCD'},
-                        ]
-                    },
-                ],
-                'sportswear': [
-                    {
-                        'name': 'Performance Running Shoes',
-                        'brand': 'Nike',
-                        'price': 129.99,
-                        'short_description': 'Lightweight and responsive running shoes.',
-                        'description': 'Engineered for speed with responsive foam and breathable mesh upper. Perfect for daily training and races.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 0.25,
-                        'specifications': [
-                            {'name': 'Drop', 'value': '10mm'},
-                            {'name': 'Cushioning', 'value': 'Responsive Foam'},
-                        ]
-                    },
-                    {
-                        'name': 'Compression Leggings',
-                        'brand': 'Adidas',
-                        'price': 65.00,
-                        'short_description': 'High-performance compression wear.',
-                        'description': 'Moisture-wicking compression leggings with 4-way stretch. High waist with hidden pocket.',
-                        'is_bestseller': True,
-                        'weight': 0.2,
-                        'specifications': [
-                            {'name': 'Material', 'value': 'Nylon/Spandex Blend'},
-                            {'name': 'Features', 'value': 'High Waist, Hidden Pocket'},
-                        ]
-                    },
-                    {
-                        'name': 'Breathable Training Tee',
-                        'brand': 'Under Armour',
-                        'price': 35.00,
-                        'short_description': 'Stay cool during intense workouts.',
-                        'description': 'Ultra-light, breathable training t-shirt with anti-odor technology and 4-way stretch fabric.',
-                        'weight': 0.15,
-                        'specifications': [
-                            {'name': 'Material', 'value': '100% Polyester'},
-                            {'name': 'Technology', 'value': 'Anti-Odor'},
-                        ]
-                    },
-                ],
-                'supplements': [
-                    {
-                        'name': 'Whey Protein Isolate',
-                        'brand': None,
-                        'price': 54.99,
-                        'compare_price': 69.99,
-                        'short_description': '25g protein per serving, low carb.',
-                        'description': 'Premium whey protein isolate with 25g protein per serving. Low carb, low fat, and fast absorbing.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 2,
-                        'specifications': [
-                            {'name': 'Protein per Serving', 'value': '25g'},
-                            {'name': 'Servings', 'value': '30'},
-                            {'name': 'Flavors', 'value': 'Chocolate, Vanilla, Strawberry'},
-                        ]
-                    },
-                    {
-                        'name': 'Pre-Workout Energy',
-                        'brand': None,
-                        'price': 39.99,
-                        'short_description': 'Explosive energy and focus.',
-                        'description': 'Powerful pre-workout formula with caffeine, beta-alanine, and citrulline for enhanced performance.',
-                        'weight': 0.4,
-                        'specifications': [
-                            {'name': 'Caffeine', 'value': '200mg'},
-                            {'name': 'Servings', 'value': '30'},
-                        ]
-                    },
-                    {
-                        'name': 'BCAA Recovery',
-                        'brand': None,
-                        'price': 29.99,
-                        'short_description': 'Muscle recovery and endurance.',
-                        'description': 'Branch chain amino acids (2:1:1 ratio) for muscle recovery, reduced fatigue, and improved endurance.',
-                        'weight': 0.35,
-                        'specifications': [
-                            {'name': 'BCAA Ratio', 'value': '2:1:1'},
-                            {'name': 'Servings', 'value': '30'},
-                        ]
-                    },
-                ],
-                'yoga-pilates': [
-                    {
-                        'name': 'Cork Yoga Block Set',
-                        'brand': None,
-                        'price': 24.99,
-                        'short_description': 'Eco-friendly cork yoga blocks.',
-                        'description': 'Set of 2 premium cork yoga blocks. Sustainable, non-slip, and firm support for all yoga levels.',
-                        'is_bestseller': True,
-                        'weight': 0.8,
-                        'specifications': [
-                            {'name': 'Material', 'value': 'Natural Cork'},
-                            {'name': 'Size', 'value': '23 x 15 x 10 cm'},
-                            {'name': 'Quantity', 'value': '2 Blocks'},
-                        ]
-                    },
-                    {
-                        'name': 'Yoga Strap with Loops',
-                        'brand': None,
-                        'price': 14.99,
-                        'short_description': 'Extend your reach in poses.',
-                        'description': 'Durable cotton yoga strap with 10 loops for gradual stretching. Perfect for deepening poses.',
-                        'weight': 0.2,
-                        'specifications': [
-                            {'name': 'Material', 'value': 'Cotton'},
-                            {'name': 'Length', 'value': '2.5m'},
-                            {'name': 'Loops', 'value': '10'},
-                        ]
-                    },
-                ],
+        self._create_products(products, category, brands)
+
+    # ═══════════════════════════════════════════════════════════════
+    # FASHION PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_fashion(self, category, brands):
+        self.stdout.write(f"\n👗 Seeding Fashion products...")
+
+        products = [
+            {
+                "name": "Nike Air Jordan 1 Retro High OG - Chicago",
+                "slug": "nike-air-jordan-1-retro-high-og-chicago",
+                "sku": "FASH-AJ1-CHI-LAF",
+                "price": Decimal("180.00"),
+                "compare_price": Decimal("220.00"),
+                "brand": "nike",
+                "stock": 24,
+                "weight": Decimal("0.95"),
+                "dimensions": "35 x 22 x 14 cm",
+                "short_description": "Iconic Chicago colorway with premium leather construction.",
+                "description": """
+The Air Jordan 1 Retro High OG "Chicago" celebrates the legendary colorway.
+
+**Premium Materials** - Full-grain leather upper with natural creasing.
+
+**Iconic Chicago Colorway** - Varsity Red overlays, white base, black Swoosh.
+
+**Air-Sole Cushioning** - Comfortable all-day wear.
+
+**Authentic Details** - Wings logo, Nike Air branding, OG high-cut silhouette.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Style", "High Top"),
+                    ("Material", "Premium Leather"),
+                    ("Colorway", "Varsity Red/Black/White"),
+                    ("Midsole", "Air-Sole Unit"),
+                    ("Closure", "Lace-up"),
+                ]
             },
+            {
+                "name": "Levi's 501 Original Fit Men's Jeans - Stonewash",
+                "slug": "levis-501-original-fit-mens-jeans-stonewash",
+                "sku": "FASH-LEVI501-SW-32",
+                "price": Decimal("69.50"),
+                "compare_price": Decimal("89.50"),
+                "brand": "levis",
+                "stock": 85,
+                "weight": Decimal("0.65"),
+                "dimensions": "42 x 32 x 5 cm",
+                "short_description": "The original blue jean since 1873. Straight leg, button fly.",
+                "description": """
+Since 1873, the Levi's 501 has been the gold standard for denim.
 
-            # ==================== KIDS & TOYS ====================
-            'kids-toys': {
-                'building-blocks': [
-                    {
-                        'name': 'LEGO Classic Creative Brick Box',
-                        'brand': 'LEGO',
-                        'price': 59.99,
-                        'short_description': '790 pieces for endless creativity.',
-                        'description': 'Classic LEGO brick set with 790 pieces in 33 different colors. Includes ideas booklet for inspiration.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 1.5,
-                        'specifications': [
-                            {'name': 'Pieces', 'value': '790'},
-                            {'name': 'Age', 'value': '4+'},
-                            {'name': 'Colors', 'value': '33'},
-                        ]
-                    },
-                    {
-                        'name': 'Magnetic Building Tiles',
-                        'brand': None,
-                        'price': 44.99,
-                        'compare_price': 59.99,
-                        'short_description': '100 pieces of magnetic fun.',
-                        'description': 'Colorful magnetic building tiles that snap together easily. STEM learning through creative play.',
-                        'is_bestseller': True,
-                        'weight': 1.8,
-                        'specifications': [
-                            {'name': 'Pieces', 'value': '100'},
-                            {'name': 'Age', 'value': '3+'},
-                            {'name': 'Material', 'value': 'ABS Plastic with Magnets'},
-                        ]
-                    },
-                ],
-                'educational-toys': [
-                    {
-                        'name': 'STEM Robot Building Kit',
-                        'brand': None,
-                        'price': 69.99,
-                        'short_description': 'Build and program your own robot.',
-                        'description': '405-piece robot kit with remote control and programming app. Learn coding and engineering through play.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 1.2,
-                        'specifications': [
-                            {'name': 'Pieces', 'value': '405'},
-                            {'name': 'Age', 'value': '8+'},
-                            {'name': 'Features', 'value': 'Remote Control, App Programming'},
-                        ]
-                    },
-                    {
-                        'name': 'Science Experiment Kit',
-                        'brand': None,
-                        'price': 34.99,
-                        'short_description': '20 fun science experiments.',
-                        'description': 'Complete science kit with 20 experiments covering chemistry, physics, and biology. Includes all materials and guide.',
-                        'weight': 1.5,
-                        'specifications': [
-                            {'name': 'Experiments', 'value': '20'},
-                            {'name': 'Age', 'value': '6+'},
-                        ]
-                    },
-                ],
-                'dolls-playsets': [
-                    {
-                        'name': 'Dream Dollhouse',
-                        'brand': None,
-                        'price': 149.99,
-                        'compare_price': 199.99,
-                        'short_description': '3-story wooden dollhouse.',
-                        'description': 'Beautiful 3-story wooden dollhouse with 15 furniture pieces. Working elevator and outdoor patio area.',
-                        'featured': True,
-                        'weight': 12,
-                        'specifications': [
-                            {'name': 'Floors', 'value': '3'},
-                            {'name': 'Rooms', 'value': '8'},
-                            {'name': 'Furniture Pieces', 'value': '15'},
-                        ]
-                    },
-                    {
-                        'name': 'Action Figure Collection',
-                        'brand': None,
-                        'price': 29.99,
-                        'short_description': '6 poseable action figures.',
-                        'description': 'Set of 6 highly detailed action figures with multiple points of articulation. Includes accessories.',
-                        'is_bestseller': True,
-                        'weight': 0.6,
-                        'specifications': [
-                            {'name': 'Figures', 'value': '6'},
-                            {'name': 'Size', 'value': '15cm'},
-                        ]
-                    },
-                ],
-                'board-games': [
-                    {
-                        'name': 'Family Strategy Game',
-                        'brand': None,
-                        'price': 44.99,
-                        'short_description': 'Fun strategy game for all ages.',
-                        'description': 'Award-winning strategy game that the whole family can enjoy. Easy to learn, challenging to master.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'weight': 1.2,
-                        'specifications': [
-                            {'name': 'Players', 'value': '2-6'},
-                            {'name': 'Age', 'value': '8+'},
-                            {'name': 'Play Time', 'value': '45-60 minutes'},
-                        ]
-                    },
-                    {
-                        'name': 'Classic Trivia Game',
-                        'brand': None,
-                        'price': 34.99,
-                        'short_description': '3000 questions in 6 categories.',
-                        'description': 'Test your knowledge with 3000 trivia questions across 6 categories. Perfect for game nights.',
-                        'weight': 0.9,
-                        'specifications': [
-                            {'name': 'Questions', 'value': '3000'},
-                            {'name': 'Categories', 'value': '6'},
-                            {'name': 'Players', 'value': '2-36'},
-                        ]
-                    },
-                ],
-                'outdoor-play': [
-                    {
-                        'name': 'Kids Electric Scooter',
-                        'brand': None,
-                        'price': 199.99,
-                        'compare_price': 249.99,
-                        'short_description': 'Safe and fun electric scooter.',
-                        'description': 'Electric scooter designed for kids with max speed of 10 mph. LED lights and adjustable handlebar height.',
-                        'featured': True,
-                        'weight': 8,
-                        'specifications': [
-                            {'name': 'Max Speed', 'value': '10 mph'},
-                            {'name': 'Range', 'value': '8 miles'},
-                            {'name': 'Age', 'value': '8+'},
-                        ]
-                    },
-                    {
-                        'name': 'Trampoline with Safety Net',
-                        'brand': None,
-                        'price': 299.99,
-                        'short_description': '12ft trampoline with enclosure.',
-                        'description': 'Large 12ft trampoline with safety enclosure net, padded poles, and rust-resistant frame.',
-                        'is_bestseller': True,
-                        'weight': 55,
-                        'specifications': [
-                            {'name': 'Diameter', 'value': '12 feet'},
-                            {'name': 'Weight Capacity', 'value': '250 lbs'},
-                        ]
-                    },
-                ],
+**Original Fit** - Straight leg from hip to ankle, classic rise.
+
+**Premium Denim** - 100% cotton, 12.5 oz. heavyweight fabric.
+
+**Iconic Details** - Two Horse leather patch, Arcuate stitching, Red Tab.
+
+**Sustainable** - Water<Less® finishing uses up to 96% less water.
+                """,
+                "featured": False,
+                "is_bestseller": True,
+                "specs": [
+                    ("Fit", "Original Straight Leg"),
+                    ("Material", "100% Cotton"),
+                    ("Fly", "Button"),
+                    ("Wash", "Stonewash"),
+                    ("Pockets", "5-Pocket Styling"),
+                ]
             },
+            {
+                "name": "Ray-Ban Aviator Classic Sunglasses - Gold/Green",
+                "slug": "ray-ban-aviator-classic-sunglasses-gold-green",
+                "sku": "FASH-RB-AVIATOR-GG",
+                "price": Decimal("161.00"),
+                "compare_price": Decimal("198.00"),
+                "brand": "ray-ban",
+                "stock": 42,
+                "weight": Decimal("0.03"),
+                "dimensions": "14.5 x 5.5 x 5.0 cm",
+                "short_description": "The iconic pilot silhouette. Crystal green G-15 lenses.",
+                "description": """
+Originally designed in 1937 for U.S. aviators.
 
-            # ==================== DIGITAL PRODUCTS ====================
-            'digital-products': {
-                'ebooks': [
-                    {
-                        'name': 'The Complete Web Development Bootcamp eBook',
-                        'brand': None,
-                        'price': 29.99,
-                        'compare_price': 49.99,
-                        'short_description': 'Master HTML, CSS, JavaScript, React, Node.js and more.',
-                        'description': 'A comprehensive guide to becoming a full-stack web developer. Covers HTML5, CSS3, JavaScript ES6+, React, Node.js, MongoDB, and deployment strategies. Includes code examples and projects.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Format', 'value': 'PDF, EPUB, MOBI'},
-                            {'name': 'Pages', 'value': '650'},
-                            {'name': 'Language', 'value': 'English'},
-                            {'name': 'Last Updated', 'value': '2024'},
-                        ]
-                    },
-                    {
-                        'name': 'Python Machine Learning Handbook',
-                        'brand': None,
-                        'price': 34.99,
-                        'compare_price': 59.99,
-                        'short_description': 'From basics to advanced ML algorithms with Python.',
-                        'description': 'Learn machine learning from scratch using Python. Covers NumPy, Pandas, Scikit-learn, TensorFlow, and PyTorch. Includes real-world projects and datasets.',
-                        'featured': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Format', 'value': 'PDF, EPUB'},
-                            {'name': 'Pages', 'value': '480'},
-                            {'name': 'Skill Level', 'value': 'Intermediate'},
-                        ]
-                    },
-                    {
-                        'name': 'Digital Marketing Mastery Guide',
-                        'brand': None,
-                        'price': 24.99,
-                        'short_description': 'Complete guide to SEO, social media, and PPC advertising.',
-                        'description': 'Master digital marketing strategies including SEO, content marketing, social media advertising, email marketing, and analytics. Includes templates and checklists.',
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Format', 'value': 'PDF'},
-                            {'name': 'Pages', 'value': '320'},
-                            {'name': 'Bonus', 'value': '50+ Templates'},
-                        ]
-                    },
-                ],
-                'templates': [
-                    {
-                        'name': 'Professional Resume & CV Template Pack',
-                        'brand': None,
-                        'price': 19.99,
-                        'compare_price': 39.99,
-                        'short_description': '50+ ATS-friendly resume templates for all industries.',
-                        'description': 'Stand out with professionally designed resume templates. Includes modern, creative, and traditional styles. Easy to customize in Word, Google Docs, and InDesign.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Formats', 'value': 'DOCX, Google Docs, INDD'},
-                            {'name': 'Templates', 'value': '50+'},
-                            {'name': 'Cover Letters', 'value': 'Included'},
-                        ]
-                    },
-                    {
-                        'name': 'Social Media Content Calendar Template',
-                        'brand': None,
-                        'price': 14.99,
-                        'short_description': 'Plan your social media content like a pro.',
-                        'description': 'Comprehensive social media planning template with content calendar, hashtag tracker, analytics dashboard, and posting schedule.',
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Format', 'value': 'Excel, Google Sheets'},
-                            {'name': 'Platforms', 'value': 'All Major Platforms'},
-                            {'name': 'Duration', 'value': '12-Month Planner'},
-                        ]
-                    },
-                    {
-                        'name': 'Notion Life OS Template',
-                        'brand': None,
-                        'price': 24.99,
-                        'short_description': 'All-in-one Notion system for life management.',
-                        'description': 'Complete Notion template for managing goals, habits, finances, projects, and personal development. Includes tutorials and lifetime updates.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Platform', 'value': 'Notion'},
-                            {'name': 'Modules', 'value': '15+'},
-                            {'name': 'Updates', 'value': 'Lifetime'},
-                        ]
-                    },
-                ],
-                'graphics-icons': [
-                    {
-                        'name': 'Ultimate Icon Bundle - 10,000+ Icons',
-                        'brand': None,
-                        'price': 49.99,
-                        'compare_price': 99.99,
-                        'short_description': 'Massive icon library for all your design needs.',
-                        'description': 'Over 10,000 premium icons in multiple styles: line, solid, duotone, and colored. Includes SVG, PNG, and icon font formats.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Icons', 'value': '10,000+'},
-                            {'name': 'Formats', 'value': 'SVG, PNG, Icon Font'},
-                            {'name': 'Styles', 'value': 'Line, Solid, Duotone'},
-                            {'name': 'License', 'value': 'Commercial Use'},
-                        ]
-                    },
-                    {
-                        'name': '3D Illustration Pack - Characters',
-                        'brand': None,
-                        'price': 39.99,
-                        'compare_price': 69.99,
-                        'short_description': 'Modern 3D character illustrations for web and apps.',
-                        'description': 'Trendy 3D character illustrations in various poses and scenarios. Perfect for landing pages, apps, and presentations.',
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Characters', 'value': '50+'},
-                            {'name': 'Poses', 'value': '150+'},
-                            {'name': 'Format', 'value': 'PNG, Figma'},
-                        ]
-                    },
-                    {
-                        'name': 'Logo Template Mega Bundle',
-                        'brand': None,
-                        'price': 44.99,
-                        'compare_price': 89.99,
-                        'short_description': '300+ editable logo templates for any business.',
-                        'description': 'Professional logo templates for various industries. Fully editable in Adobe Illustrator and Canva.',
-                        'featured': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Logos', 'value': '300+'},
-                            {'name': 'Format', 'value': 'AI, EPS, Canva'},
-                            {'name': 'Industries', 'value': '25+'},
-                        ]
-                    },
-                ],
-                'software': [
-                    {
-                        'name': 'TaskMaster Pro - Project Management Software',
-                        'brand': None,
-                        'price': 79.99,
-                        'compare_price': 149.99,
-                        'short_description': 'All-in-one project management for teams.',
-                        'description': 'Powerful project management software with Kanban boards, Gantt charts, time tracking, and team collaboration. One-time purchase, lifetime license.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'License', 'value': 'Lifetime'},
-                            {'name': 'Users', 'value': 'Unlimited'},
-                            {'name': 'Platforms', 'value': 'Windows, Mac, Web'},
-                            {'name': 'Updates', 'value': '1 Year Free'},
-                        ]
-                    },
-                    {
-                        'name': 'PhotoEdit Suite - Image Editor',
-                        'brand': None,
-                        'price': 49.99,
-                        'short_description': 'Professional photo editing software.',
-                        'description': 'Advanced photo editing with layers, filters, AI-powered tools, and RAW support. Perfect alternative to expensive subscriptions.',
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'License', 'value': 'Lifetime'},
-                            {'name': 'Platforms', 'value': 'Windows, Mac'},
-                            {'name': 'RAW Support', 'value': 'Yes'},
-                        ]
-                    },
-                    {
-                        'name': 'VideoStudio Pro - Video Editor',
-                        'brand': None,
-                        'price': 89.99,
-                        'compare_price': 199.99,
-                        'short_description': 'Professional video editing made easy.',
-                        'description': 'Complete video editing suite with 4K support, motion graphics, color grading, and audio editing. No subscription required.',
-                        'featured': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Resolution', 'value': 'Up to 8K'},
-                            {'name': 'Effects', 'value': '1000+'},
-                            {'name': 'Platforms', 'value': 'Windows, Mac'},
-                        ]
-                    },
-                ],
-                'online-courses': [
-                    {
-                        'name': 'Complete Python Developer Masterclass',
-                        'brand': None,
-                        'price': 94.99,
-                        'compare_price': 199.99,
-                        'short_description': 'From beginner to professional Python developer.',
-                        'description': 'Comprehensive Python course covering basics to advanced topics including web development, data science, automation, and machine learning. 50+ hours of content.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Duration', 'value': '50+ Hours'},
-                            {'name': 'Projects', 'value': '20+'},
-                            {'name': 'Certificate', 'value': 'Yes'},
-                            {'name': 'Access', 'value': 'Lifetime'},
-                        ]
-                    },
-                    {
-                        'name': 'Digital Marketing Complete Course',
-                        'brand': None,
-                        'price': 79.99,
-                        'compare_price': 149.99,
-                        'short_description': 'Master all aspects of digital marketing.',
-                        'description': 'Learn SEO, Google Ads, Facebook Ads, content marketing, email marketing, and analytics. Includes real-world projects.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Duration', 'value': '40+ Hours'},
-                            {'name': 'Modules', 'value': '12'},
-                            {'name': 'Certificate', 'value': 'Yes'},
-                        ]
-                    },
-                    {
-                        'name': 'UI/UX Design Bootcamp',
-                        'brand': None,
-                        'price': 89.99,
-                        'short_description': 'Become a professional UI/UX designer.',
-                        'description': 'Complete UI/UX design course covering Figma, user research, wireframing, prototyping, and design systems.',
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Duration', 'value': '35+ Hours'},
-                            {'name': 'Tools', 'value': 'Figma, Adobe XD'},
-                            {'name': 'Projects', 'value': '10+'},
-                        ]
-                    },
-                ],
-                'music-audio': [
-                    {
-                        'name': 'Cinematic Music Pack - Epic Orchestral',
-                        'brand': None,
-                        'price': 49.99,
-                        'compare_price': 99.99,
-                        'short_description': 'Epic orchestral tracks for films and games.',
-                        'description': '25 royalty-free cinematic music tracks perfect for trailers, films, games, and YouTube videos.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Tracks', 'value': '25'},
-                            {'name': 'Format', 'value': 'WAV, MP3'},
-                            {'name': 'License', 'value': 'Royalty-Free'},
-                        ]
-                    },
-                    {
-                        'name': 'Lo-Fi Hip Hop Beat Collection',
-                        'brand': None,
-                        'price': 29.99,
-                        'short_description': 'Chill beats for studying and relaxation.',
-                        'description': '50 lo-fi hip hop beats perfect for YouTube, podcasts, and background music. All tracks are royalty-free.',
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Beats', 'value': '50'},
-                            {'name': 'Format', 'value': 'WAV, MP3'},
-                            {'name': 'BPM Range', 'value': '70-90'},
-                        ]
-                    },
-                    {
-                        'name': 'Podcast Sound Effects Bundle',
-                        'brand': None,
-                        'price': 24.99,
-                        'short_description': 'Professional sound effects for podcasters.',
-                        'description': '500+ sound effects including transitions, whooshes, impacts, and ambient sounds.',
-                        'featured': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Effects', 'value': '500+'},
-                            {'name': 'Format', 'value': 'WAV, MP3'},
-                            {'name': 'Categories', 'value': '20+'},
-                        ]
-                    },
-                ],
-                'fonts': [
-                    {
-                        'name': 'Modern Sans Serif Font Family',
-                        'brand': None,
-                        'price': 29.99,
-                        'compare_price': 49.99,
-                        'short_description': 'Clean, versatile sans-serif for any project.',
-                        'description': 'Complete font family with 12 weights from thin to black, plus italics. Perfect for branding, web, and print.',
-                        'featured': True,
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Weights', 'value': '12'},
-                            {'name': 'Formats', 'value': 'OTF, TTF, WOFF, WOFF2'},
-                            {'name': 'License', 'value': 'Desktop & Web'},
-                            {'name': 'Languages', 'value': '100+'},
-                        ]
-                    },
-                    {
-                        'name': 'Elegant Script Font Collection',
-                        'brand': None,
-                        'price': 24.99,
-                        'short_description': '5 beautiful script fonts for elegant designs.',
-                        'description': 'Collection of 5 elegant script fonts perfect for wedding invitations, branding, and social media.',
-                        'featured': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Fonts', 'value': '5'},
-                            {'name': 'Glyphs', 'value': '500+ Each'},
-                            {'name': 'Formats', 'value': 'OTF, TTF, WOFF'},
-                        ]
-                    },
-                    {
-                        'name': 'Display Font Bundle - 20 Fonts',
-                        'brand': None,
-                        'price': 39.99,
-                        'compare_price': 99.99,
-                        'short_description': 'Eye-catching display fonts for headlines.',
-                        'description': '20 unique display fonts for posters, logos, and social media. Variety of styles from bold to decorative.',
-                        'is_bestseller': True,
-                        'product_type': 'digital',
-                        'specifications': [
-                            {'name': 'Fonts', 'value': '20'},
-                            {'name': 'Styles', 'value': 'Various'},
-                            {'name': 'License', 'value': 'Commercial'},
-                        ]
-                    },
-                ],
+**Crystal Green G-15 Lenses** - Blocks 85% of visible light, natural vision.
+
+**Gold Metal Frame** - Electroplated gold finish, adjustable nose pads.
+
+**100% UV Protection** - Blocks all UVA and UVB rays.
+
+**Authentic Details** - Etched "RB" on lens, original case included.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Model", "RB3025 Aviator Classic"),
+                    ("Frame", "Gold Metal"),
+                    ("Lens", "Crystal Green G-15"),
+                    ("Lens Size", "58mm"),
+                    ("UV Protection", "100% UV400"),
+                ]
             },
-        }
+            {
+                "name": "Adidas Ultraboost 23 Running Shoes - Core Black",
+                "slug": "adidas-ultraboost-23-running-shoes-core-black",
+                "sku": "FASH-ADUB23-BLK-10",
+                "price": Decimal("190.00"),
+                "compare_price": Decimal("220.00"),
+                "brand": "adidas",
+                "stock": 55,
+                "weight": Decimal("0.68"),
+                "dimensions": "33 x 20 x 12 cm",
+                "short_description": "Energy-returning Boost midsole with Primeknit+ upper.",
+                "description": """
+Adidas Ultraboost 23 delivers legendary energy return.
 
-        product_count = 0
+**Boost Technology** - Thousands of TPU capsules store and unleash energy.
 
-        # Process each main category
-        for main_category_slug, subcategories in products_data.items():
-            for subcategory_slug, products in subcategories.items():
-                category = self.get_category(subcategory_slug)
-                if not category:
-                    # Try to get main category if subcategory not found
-                    category = self.get_category(main_category_slug)
+**Primeknit+ Upper** - Seamless stretch for natural movement.
 
-                if not category:
-                    self.stdout.write(self.style.WARNING(f'  Skipping {subcategory_slug} - no category found'))
-                    continue
+**Continental™ Rubber Outsole** - Trusted grip in all conditions.
 
-                for product_data in products:
-                    try:
-                        # Get or create brand
-                        brand = self.get_brand(product_data.get('brand'))
+**Sustainability** - Made with Primeblue recycled materials.
+                """,
+                "featured": False,
+                "is_bestseller": True,
+                "specs": [
+                    ("Style", "Running"),
+                    ("Upper", "Primeknit+ Textile"),
+                    ("Midsole", "Boost Foam"),
+                    ("Outsole", "Continental Rubber"),
+                    ("Drop", "10mm"),
+                ]
+            },
+            {
+                "name": "Ralph Lauren Classic Fit Mesh Polo - Newport Navy",
+                "slug": "ralph-lauren-classic-fit-mesh-polo-navy",
+                "sku": "FASH-RL-POLO-NN-L",
+                "price": Decimal("98.50"),
+                "compare_price": Decimal("125.00"),
+                "brand": "ralph-lauren",
+                "stock": 120,
+                "weight": Decimal("0.25"),
+                "dimensions": "38 x 30 x 3 cm",
+                "short_description": "Iconic mesh polo with embroidered Pony logo.",
+                "description": """
+The Ralph Lauren Polo Shirt is an American icon.
 
-                        # Generate SKU
-                        sku = f"{subcategory_slug[:3].upper()}-{slugify(product_data['name'])[:20].upper()}-{random.randint(1000, 9999)}"
+**Classic Fit** - Relaxed through chest and body, straight hem.
 
-                        # Create product
-                        product, created = Product.objects.update_or_create(
-                            slug=slugify(product_data['name']),
-                            defaults={
-                                'name': product_data['name'],
-                                'description': product_data.get('description', product_data['short_description']),
-                                'short_description': product_data['short_description'],
-                                'price': Decimal(str(product_data['price'])),
-                                'compare_price': Decimal(str(product_data['compare_price'])) if product_data.get('compare_price') else None,
-                                'sku': sku,
-                                'stock': random.randint(10, 100),
-                                'category': category,
-                                'brand': brand,
-                                'product_type': product_data.get('product_type', 'physical'),
-                                'weight': Decimal(str(product_data.get('weight', 0.5))),
-                                'featured': product_data.get('featured', False),
-                                'is_bestseller': product_data.get('is_bestseller', False),
-                                'is_new': random.choice([True, False]),
-                                'is_available': True,
-                            }
-                        )
+**Premium Cotton Mesh** - Soft, breathable, lightweight.
 
-                        # Create specifications
-                        if created:
-                            ProductSpecification.objects.filter(product=product).delete()
-                            for idx, spec in enumerate(product_data.get('specifications', [])):
-                                ProductSpecification.objects.create(
-                                    product=product,
-                                    name=spec['name'],
-                                    value=spec['value'],
-                                    order=idx
-                                )
+**Signature Details** - Embroidered Polo Pony, ribbed collar and cuffs.
 
-                        action = 'Created' if created else 'Updated'
-                        self.stdout.write(f"  {action}: {product.name}")
-                        product_count += 1
+**Versatile Styling** - From office to weekend.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "specs": [
+                    ("Fit", "Classic Fit"),
+                    ("Material", "100% Cotton Mesh"),
+                    ("Collar", "Ribbed Polo Collar"),
+                    ("Closure", "Two-Button Placket"),
+                    ("Color", "Newport Navy"),
+                ]
+            },
+        ]
 
-                    except Exception as e:
-                        self.stdout.write(self.style.ERROR(f"  Error creating {product_data['name']}: {str(e)}"))
+        self._create_products(products, category, brands)
 
-        self.stdout.write(self.style.SUCCESS(f'\n  Total products seeded: {product_count}'))
+    # ═══════════════════════════════════════════════════════════════
+    # HOME & LIVING PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_home_living(self, category, brands):
+        self.stdout.write(f"\n🏠 Seeding Home & Living products...")
+
+        products = [
+            {
+                "name": "Dyson V15 Detect Absolute Cordless Vacuum",
+                "slug": "dyson-v15-detect-absolute-cordless-vacuum",
+                "sku": "HOME-DYSONV15-DET-ABS",
+                "price": Decimal("749.99"),
+                "compare_price": Decimal("849.99"),
+                "brand": "dyson",
+                "stock": 28,
+                "weight": Decimal("2.74"),
+                "dimensions": "25.4 x 126.4 x 25.0 cm",
+                "short_description": "Laser reveals invisible dust. Up to 60 minutes runtime.",
+                "description": """
+Dyson V15 Detect reveals invisible dust with laser technology.
+
+**Laser Dust Detection** - Green laser reveals invisible particles.
+
+**Piezo Sensor** - Counts particles 24,000 times per second.
+
+**Hyperdymium Motor** - 230 air watts of suction power.
+
+**HEPA Filtration** - Captures 99.99% of particles as small as 0.3 microns.
+
+**60-Minute Runtime** - Fade-free power with intelligent power adaptation.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Motor", "Hyperdymium (125,000 RPM)"),
+                    ("Suction Power", "230 AW"),
+                    ("Runtime", "Up to 60 minutes"),
+                    ("Filtration", "Whole-machine HEPA"),
+                    ("Bin Capacity", "0.76 liters"),
+                ]
+            },
+            {
+                "name": "IKEA MALM Queen Bed Frame with Storage - White Oak",
+                "slug": "ikea-malm-queen-bed-frame-storage-white-oak",
+                "sku": "HOME-MALM-BED-Q-WO",
+                "price": Decimal("449.00"),
+                "compare_price": Decimal("549.00"),
+                "brand": "ikea",
+                "stock": 18,
+                "weight": Decimal("95.00"),
+                "dimensions": "209 x 156 x 100 cm",
+                "short_description": "Modern bed frame with 4 storage drawers.",
+                "description": """
+The MALM bed frame combines Scandinavian design with smart storage.
+
+**Smart Storage** - 4 spacious rolling drawers.
+
+**Quality Construction** - Particleboard with white oak veneer.
+
+**Mattress Support** - 17 wooden slats included.
+
+**Clean Design** - Modern, minimalist aesthetic.
+
+**Assembly Required** - Approximately 1.5 hours, 2-person recommended.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Size", "Queen (60\" x 80\" mattress)"),
+                    ("Material", "Particleboard, White Oak Veneer"),
+                    ("Storage", "4 Drawers"),
+                    ("Max Weight", "450 lbs"),
+                    ("Assembly", "Required"),
+                ]
+            },
+            {
+                "name": "Philips Hue White and Color Ambiance Starter Kit",
+                "slug": "philips-hue-white-color-ambiance-starter-kit",
+                "sku": "HOME-PHILIPSHUE-WCASK",
+                "price": Decimal("199.99"),
+                "compare_price": Decimal("249.99"),
+                "brand": "philips",
+                "stock": 45,
+                "weight": Decimal("0.95"),
+                "dimensions": "20 x 15 x 10 cm",
+                "short_description": "Smart lighting with 4 color bulbs and Hue Bridge. 16 million colors.",
+                "description": """
+Transform your home with Philips Hue smart lighting.
+
+**What's Included** - 4 color bulbs + Hue Bridge.
+
+**16 Million Colors** - Full spectrum RGB plus warm to cool white.
+
+**Smart Control** - App, voice (Alexa, Google, Siri), automation.
+
+**Energy Efficient** - LED uses 80% less energy, 25,000-hour lifespan.
+
+**Expandable** - Add up to 50 lights to one Bridge.
+                """,
+                "featured": False,
+                "is_bestseller": True,
+                "specs": [
+                    ("Bulbs", "4 x A19 Color"),
+                    ("Lumens", "800 per bulb"),
+                    ("Colors", "16 million"),
+                    ("Voice Control", "Alexa, Google, Siri"),
+                    ("Bridge Capacity", "Up to 50 lights"),
+                ]
+            },
+            {
+                "name": "Le Creuset Signature Dutch Oven 5.5 Qt - Flame",
+                "slug": "le-creuset-signature-dutch-oven-5-5-qt-flame",
+                "sku": "HOME-LECREUSET-DO55-FL",
+                "price": Decimal("379.95"),
+                "compare_price": Decimal("439.95"),
+                "brand": "le-creuset",
+                "stock": 22,
+                "weight": Decimal("5.67"),
+                "dimensions": "30.5 x 26.7 x 15.2 cm",
+                "short_description": "Iconic French cookware. Premium enameled cast iron.",
+                "description": """
+Le Creuset has been crafting premium French cookware since 1925.
+
+**Handcrafted** - Cast individually in sand molds by French artisans.
+
+**Superior Heat Distribution** - Even cooking without hot spots.
+
+**Versatile Cooking** - Braising, roasting, baking, and more.
+
+**Oven Safe** - Up to 500°F, works on all cooktops including induction.
+
+**Lifetime Warranty** - Backed by Le Creuset quality.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "specs": [
+                    ("Capacity", "5.5 quarts"),
+                    ("Material", "Enameled Cast Iron"),
+                    ("Color", "Flame Orange"),
+                    ("Oven Safe", "Up to 500°F"),
+                    ("Made In", "France"),
+                ]
+            },
+            {
+                "name": "Nespresso Vertuo Next Premium Coffee Machine",
+                "slug": "nespresso-vertuo-next-premium-coffee-machine",
+                "sku": "HOME-NESPVNEXT-CHR",
+                "price": Decimal("179.00"),
+                "compare_price": Decimal("229.00"),
+                "brand": "nespresso",
+                "stock": 35,
+                "weight": Decimal("4.00"),
+                "dimensions": "14.2 x 42.9 x 31.4 cm",
+                "short_description": "Single-serve coffee with Centrifusion technology. 5 coffee sizes.",
+                "description": """
+Nespresso Vertuo Next brews the perfect cup every time.
+
+**Centrifusion™ Technology** - Spins capsule at 7,000 RPM for optimal extraction.
+
+**5 Coffee Sizes** - From Espresso to Alto (14 oz).
+
+**Barcode Recognition** - Automatic brewing parameters per capsule.
+
+**Smart Connected** - Bluetooth and Wi-Fi enabled.
+
+**Fast Heat-Up** - Ready in 30 seconds.
+                """,
+                "featured": False,
+                "is_bestseller": True,
+                "specs": [
+                    ("Technology", "Centrifusion™"),
+                    ("Cup Sizes", "5 (Espresso to Alto)"),
+                    ("Water Tank", "37 oz"),
+                    ("Heat-up Time", "30 seconds"),
+                    ("Connectivity", "Bluetooth, Wi-Fi"),
+                ]
+            },
+        ]
+
+        self._create_products(products, category, brands)
+
+    # ═══════════════════════════════════════════════════════════════
+    # BEAUTY & SKINCARE PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_beauty(self, category, brands):
+        self.stdout.write(f"\n💄 Seeding Beauty & Skincare products...")
+
+        products = [
+            {
+                "name": "CeraVe Hydrating Facial Cleanser 473ml",
+                "slug": "cerave-hydrating-facial-cleanser-473ml",
+                "sku": "BEAUTY-CERAVE-001",
+                "price": Decimal("18.99"),
+                "compare_price": Decimal("24.99"),
+                "brand": "cerave",
+                "stock": 150,
+                "weight": Decimal("0.55"),
+                "dimensions": "8 x 5 x 20 cm",
+                "short_description": "Gentle, non-foaming cleanser with ceramides and hyaluronic acid.",
+                "description": """
+CeraVe Hydrating Facial Cleanser for normal to dry skin.
+
+**Key Ingredients** - 3 essential ceramides + hyaluronic acid.
+
+**Gentle Formula** - Non-foaming, fragrance-free.
+
+**MVE Technology** - Long-lasting hydration.
+
+**Developed with Dermatologists** - Accepted by National Eczema Association.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Volume", "473ml / 16 fl oz"),
+                    ("Skin Type", "Normal to Dry"),
+                    ("Key Ingredients", "Ceramides, Hyaluronic Acid"),
+                    ("Fragrance", "Fragrance-Free"),
+                    ("Cruelty-Free", "Yes"),
+                ]
+            },
+            {
+                "name": "The Ordinary Niacinamide 10% + Zinc 1% Serum",
+                "slug": "the-ordinary-niacinamide-zinc-serum-30ml",
+                "sku": "BEAUTY-ORDINARY-002",
+                "price": Decimal("12.50"),
+                "compare_price": Decimal("16.00"),
+                "brand": "the-ordinary",
+                "stock": 200,
+                "weight": Decimal("0.08"),
+                "dimensions": "3 x 3 x 10 cm",
+                "short_description": "High-strength vitamin and mineral formula for blemishes and pores.",
+                "description": """
+The Ordinary Niacinamide 10% + Zinc 1% targets blemishes and enlarged pores.
+
+**10% Niacinamide** - Visible pore reduction.
+
+**1% Zinc PCA** - Regulates sebum production.
+
+**Lightweight** - Water-based formula.
+
+**Vegan & Cruelty-Free** - Alcohol-free, silicone-free.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Volume", "30ml / 1 fl oz"),
+                    ("Active Ingredients", "10% Niacinamide, 1% Zinc"),
+                    ("Skin Type", "Oily, Combination, Acne-Prone"),
+                    ("Format", "Water-Based Serum"),
+                    ("Vegan", "Yes"),
+                ]
+            },
+            {
+                "name": "Drunk Elephant Protini Polypeptide Cream",
+                "slug": "drunk-elephant-protini-polypeptide-cream",
+                "sku": "BEAUTY-DE-PROTINI-001",
+                "price": Decimal("68.00"),
+                "compare_price": Decimal("78.00"),
+                "brand": "drunk-elephant",
+                "stock": 65,
+                "weight": Decimal("0.12"),
+                "dimensions": "5 x 5 x 5 cm",
+                "short_description": "Protein moisturizer with peptides for firmer, stronger skin.",
+                "description": """
+Drunk Elephant Protini delivers visible improvement in skin's tone and texture.
+
+**Signal Peptides** - Support skin's natural collagen.
+
+**Growth Factors** - Improve firmness and elasticity.
+
+**Amino Acids** - Provide essential building blocks.
+
+**Clean Formula** - Free of the "Suspicious 6."
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "specs": [
+                    ("Volume", "50ml / 1.69 fl oz"),
+                    ("Skin Type", "All Skin Types"),
+                    ("Key Ingredients", "Peptides, Amino Acids"),
+                    ("Format", "Moisturizer"),
+                    ("Clean", "Yes - Suspicious 6 Free"),
+                ]
+            },
+            {
+                "name": "Fenty Beauty Pro Filt'r Soft Matte Foundation",
+                "slug": "fenty-beauty-pro-filtr-foundation",
+                "sku": "BEAUTY-FENTY-FOUND-001",
+                "price": Decimal("40.00"),
+                "compare_price": Decimal("48.00"),
+                "brand": "fenty-beauty",
+                "stock": 180,
+                "weight": Decimal("0.10"),
+                "dimensions": "4 x 4 x 12 cm",
+                "short_description": "Soft matte foundation in 50 shades for all skin tones.",
+                "description": """
+Fenty Beauty Pro Filt'r delivers buildable, longwear coverage.
+
+**50 Shades** - Inclusive range for all skin tones.
+
+**Soft Matte Finish** - Controls shine without drying.
+
+**Buildable Coverage** - Medium to full.
+
+**Longwear** - Up to 12 hours of wear.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Volume", "32ml / 1.08 fl oz"),
+                    ("Finish", "Soft Matte"),
+                    ("Coverage", "Medium to Full"),
+                    ("Shades", "50"),
+                    ("Wear Time", "Up to 12 hours"),
+                ]
+            },
+            {
+                "name": "Estée Lauder Advanced Night Repair Serum",
+                "slug": "estee-lauder-advanced-night-repair-serum",
+                "sku": "BEAUTY-EL-ANR-001",
+                "price": Decimal("105.00"),
+                "compare_price": Decimal("125.00"),
+                "brand": "estee-lauder",
+                "stock": 55,
+                "weight": Decimal("0.15"),
+                "dimensions": "5 x 5 x 12 cm",
+                "short_description": "The #1 repair serum. Reduces lines and wrinkles in just 3 weeks.",
+                "description": """
+Estée Lauder Advanced Night Repair - The world's #1 repair serum.
+
+**Chronolux™ Power Signal Technology** - Supports skin's natural repair.
+
+**Reduces Lines & Wrinkles** - Visible results in 3 weeks.
+
+**7 Key Signs of Aging** - Addresses lines, wrinkles, dryness, dullness, and more.
+
+**Lightweight** - Fast-absorbing, non-greasy formula.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Volume", "50ml / 1.7 fl oz"),
+                    ("Skin Type", "All Skin Types"),
+                    ("Key Technology", "Chronolux™"),
+                    ("Benefits", "Anti-Aging, Hydrating, Firming"),
+                    ("Use", "Morning and Night"),
+                ]
+            },
+        ]
+
+        self._create_products(products, category, brands)
+
+    # ═══════════════════════════════════════════════════════════════
+    # BOOKS & EDUCATION PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_books(self, category, brands):
+        self.stdout.write(f"\n📚 Seeding Books & Education products...")
+
+        products = [
+            {
+                "name": "Atomic Habits by James Clear - Hardcover",
+                "slug": "atomic-habits-james-clear-hardcover",
+                "sku": "BOOKS-ATOMIC-001",
+                "price": Decimal("24.99"),
+                "compare_price": Decimal("32.00"),
+                "brand": "penguin-random-house",
+                "stock": 75,
+                "weight": Decimal("0.45"),
+                "dimensions": "21 x 14 x 3 cm",
+                "short_description": "#1 New York Times bestseller on building good habits and breaking bad ones.",
+                "description": """
+Atomic Habits by James Clear - over 15 million copies sold worldwide.
+
+**Key Concepts** - The 1% Rule, Four Laws of Behavior Change, Habit Stacking.
+
+**Proven Framework** - For building good habits and breaking bad ones.
+
+**320 Pages** - Hardcover with dust jacket.
+
+**Translated** - Available in 50+ languages.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Author", "James Clear"),
+                    ("Pages", "320"),
+                    ("Format", "Hardcover"),
+                    ("Language", "English"),
+                    ("ISBN", "978-0735211292"),
+                ]
+            },
+            {
+                "name": "Python Crash Course 3rd Edition",
+                "slug": "python-crash-course-3rd-edition",
+                "sku": "BOOKS-PYTHON-002",
+                "price": Decimal("39.99"),
+                "compare_price": Decimal("49.99"),
+                "brand": "oreilly-media",
+                "stock": 60,
+                "weight": Decimal("0.85"),
+                "dimensions": "23 x 18 x 3 cm",
+                "short_description": "The world's best-selling Python book. Hands-on, project-based.",
+                "description": """
+Python Crash Course by Eric Matthes - over 1.5 million copies sold.
+
+**Part 1** - Python Fundamentals: variables, functions, classes, files.
+
+**Part 2** - Three Real-World Projects: game, data visualization, web app.
+
+**Updated** - For Python 3.11+ with modern best practices.
+
+**552 Pages** - Full-color illustrations with downloadable code.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Author", "Eric Matthes"),
+                    ("Edition", "3rd Edition (2023)"),
+                    ("Pages", "552"),
+                    ("Format", "Paperback"),
+                    ("Skill Level", "Beginner to Intermediate"),
+                ]
+            },
+            {
+                "name": "The Psychology of Money - Morgan Housel",
+                "slug": "psychology-of-money-morgan-housel",
+                "sku": "BOOKS-PSYMONEY-003",
+                "price": Decimal("18.99"),
+                "compare_price": Decimal("24.00"),
+                "brand": "harpercollins",
+                "stock": 90,
+                "weight": Decimal("0.30"),
+                "dimensions": "20 x 13 x 2 cm",
+                "short_description": "Timeless lessons on wealth, greed, and happiness.",
+                "description": """
+The Psychology of Money by Morgan Housel - a new way to think about money.
+
+**19 Short Stories** - Exploring the strange ways people think about money.
+
+**Timeless Lessons** - On wealth, greed, and happiness.
+
+**256 Pages** - Accessible and engaging read.
+
+**#1 Best Seller** - Over 3 million copies sold.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Author", "Morgan Housel"),
+                    ("Pages", "256"),
+                    ("Format", "Paperback"),
+                    ("Topic", "Personal Finance, Psychology"),
+                    ("ISBN", "978-0857197689"),
+                ]
+            },
+            {
+                "name": "Clean Code: A Handbook - Robert C. Martin",
+                "slug": "clean-code-robert-martin",
+                "sku": "BOOKS-CLEANCODE-004",
+                "price": Decimal("44.99"),
+                "compare_price": Decimal("54.99"),
+                "brand": "pearson",
+                "stock": 45,
+                "weight": Decimal("0.70"),
+                "dimensions": "24 x 18 x 3 cm",
+                "short_description": "The definitive guide to writing readable, maintainable code.",
+                "description": """
+Clean Code by Robert C. Martin (Uncle Bob) - essential reading for developers.
+
+**Part 1** - Principles, patterns, and practices of clean code.
+
+**Part 2** - Case studies of increasing complexity.
+
+**Part 3** - Heuristics and smells for clean code.
+
+**464 Pages** - Comprehensive coverage with code examples.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "specs": [
+                    ("Author", "Robert C. Martin"),
+                    ("Pages", "464"),
+                    ("Format", "Paperback"),
+                    ("Topic", "Software Development"),
+                    ("Skill Level", "Intermediate to Advanced"),
+                ]
+            },
+            {
+                "name": "Sapiens: A Brief History of Humankind",
+                "slug": "sapiens-brief-history-humankind",
+                "sku": "BOOKS-SAPIENS-005",
+                "price": Decimal("22.99"),
+                "compare_price": Decimal("29.99"),
+                "brand": "harpercollins",
+                "stock": 70,
+                "weight": Decimal("0.50"),
+                "dimensions": "23 x 15 x 3 cm",
+                "short_description": "Yuval Noah Harari explores the history of our species.",
+                "description": """
+Sapiens by Yuval Noah Harari - over 25 million copies sold.
+
+**Cognitive Revolution** - 70,000 years ago.
+
+**Agricultural Revolution** - 12,000 years ago.
+
+**Scientific Revolution** - 500 years ago.
+
+**512 Pages** - Sweeping narrative of human history.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Author", "Yuval Noah Harari"),
+                    ("Pages", "512"),
+                    ("Format", "Paperback"),
+                    ("Topic", "History, Anthropology"),
+                    ("ISBN", "978-0062316110"),
+                ]
+            },
+        ]
+
+        self._create_products(products, category, brands)
+
+    # ═══════════════════════════════════════════════════════════════
+    # SPORTS & FITNESS PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_sports(self, category, brands):
+        self.stdout.write(f"\n🏃 Seeding Sports & Fitness products...")
+
+        products = [
+            {
+                "name": "Peloton Bike+ Indoor Exercise Bike",
+                "slug": "peloton-bike-plus-indoor-exercise",
+                "sku": "SPORTS-PELOTON-BIKE-001",
+                "price": Decimal("2495.00"),
+                "compare_price": Decimal("2795.00"),
+                "brand": "peloton",
+                "stock": 12,
+                "weight": Decimal("63.50"),
+                "dimensions": "150 x 60 x 135 cm",
+                "short_description": "Premium connected bike with rotating 23.8\" HD touchscreen.",
+                "description": """
+Peloton Bike+ - The ultimate connected fitness experience.
+
+**23.8" HD Touchscreen** - Rotates 360° for on and off-bike workouts.
+
+**Apple GymKit** - Seamless Apple Watch integration.
+
+**Auto-Follow** - Automatic resistance adjustments during class.
+
+**Thousands of Classes** - Live and on-demand cycling, strength, yoga, and more.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Screen", "23.8\" HD Rotating Touchscreen"),
+                    ("Resistance Levels", "100"),
+                    ("Weight Capacity", "297 lbs"),
+                    ("Dimensions", "59\"L x 22\"W x 53\"H"),
+                    ("Subscription", "Required for full experience"),
+                ]
+            },
+            {
+                "name": "Bowflex SelectTech 552 Adjustable Dumbbells",
+                "slug": "bowflex-selecttech-552-adjustable-dumbbells",
+                "sku": "SPORTS-BOWFLEX-552-001",
+                "price": Decimal("429.00"),
+                "compare_price": Decimal("549.00"),
+                "brand": "bowflex",
+                "stock": 35,
+                "weight": Decimal("24.00"),
+                "dimensions": "43 x 21 x 23 cm",
+                "short_description": "Replaces 15 sets of weights. 5-52.5 lbs per dumbbell.",
+                "description": """
+Bowflex SelectTech 552 - Space-saving adjustable dumbbells.
+
+**15 Weight Settings** - 5 to 52.5 lbs in 2.5 lb increments.
+
+**Quick-Change Dial** - Switch weights in seconds.
+
+**Replaces 30 Dumbbells** - Save space in your home gym.
+
+**2-Year Warranty** - Backed by Bowflex quality.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Weight Range", "5-52.5 lbs per dumbbell"),
+                    ("Increments", "2.5 lbs"),
+                    ("Includes", "2 Dumbbells + Trays"),
+                    ("Material", "Steel with rubber coating"),
+                    ("Warranty", "2 Years"),
+                ]
+            },
+            {
+                "name": "Theragun PRO Percussive Therapy Device",
+                "slug": "theragun-pro-percussive-therapy-device",
+                "sku": "SPORTS-THERAGUN-PRO-001",
+                "price": Decimal("449.00"),
+                "compare_price": Decimal("599.00"),
+                "brand": "theragun",
+                "stock": 40,
+                "weight": Decimal("1.30"),
+                "dimensions": "25 x 18 x 8 cm",
+                "short_description": "Professional-grade percussive therapy. 60 lbs force, 5 speeds.",
+                "description": """
+Theragun PRO - The professional-grade deep muscle treatment.
+
+**60 lbs Force** - Deepest muscle treatment available.
+
+**5 Built-In Speeds** - 1750-2400 PPMs.
+
+**QuietForce Technology** - Proprietary brushless motor.
+
+**OLED Screen** - Force meter and speed controls.
+
+**Rotating Arm** - Ergonomic multi-grip design.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "specs": [
+                    ("Force", "Up to 60 lbs"),
+                    ("Speeds", "5 (1750-2400 PPMs)"),
+                    ("Battery Life", "150 minutes"),
+                    ("Attachments", "6 included"),
+                    ("Warranty", "2 Years"),
+                ]
+            },
+            {
+                "name": "Garmin Forerunner 965 GPS Running Watch",
+                "slug": "garmin-forerunner-965-gps-running-watch",
+                "sku": "SPORTS-GARMIN-FR965-001",
+                "price": Decimal("599.99"),
+                "compare_price": Decimal("649.99"),
+                "brand": "garmin",
+                "stock": 28,
+                "weight": Decimal("0.05"),
+                "dimensions": "4.7 x 4.7 x 1.4 cm",
+                "short_description": "Premium triathlon smartwatch with AMOLED display and full maps.",
+                "description": """
+Garmin Forerunner 965 - The ultimate running companion.
+
+**1.4" AMOLED Display** - Bright, colorful, always-on.
+
+**Full Color Maps** - Turn-by-turn navigation.
+
+**Training Readiness** - Know when to push and when to rest.
+
+**23-Day Battery** - Smartwatch mode with AMOLED display.
+
+**All Sports** - Running, cycling, swimming, and more.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Display", "1.4\" AMOLED"),
+                    ("Battery", "Up to 23 days"),
+                    ("Water Rating", "5 ATM"),
+                    ("GPS", "Multi-band with maps"),
+                    ("Music Storage", "Up to 2000 songs"),
+                ]
+            },
+            {
+                "name": "Manduka PRO Yoga Mat 6mm - Black",
+                "slug": "manduka-pro-yoga-mat-6mm-black",
+                "sku": "SPORTS-MANDUKA-PRO-001",
+                "price": Decimal("120.00"),
+                "compare_price": Decimal("140.00"),
+                "brand": "manduka",
+                "stock": 55,
+                "weight": Decimal("3.40"),
+                "dimensions": "180 x 66 x 0.6 cm",
+                "short_description": "The legendary PRO mat. Dense cushioning, lifetime guarantee.",
+                "description": """
+Manduka PRO - The gold standard of yoga mats.
+
+**6mm Density** - Superior joint protection and cushioning.
+
+**Closed-Cell Surface** - Hygienic, prevents sweat absorption.
+
+**High-Density Cushion** - Never wears out, never bunches.
+
+**Lifetime Guarantee** - Built to last a lifetime.
+
+**Trusted by Teachers** - The #1 choice of yoga professionals.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Thickness", "6mm"),
+                    ("Dimensions", "71\" x 26\""),
+                    ("Material", "PVC"),
+                    ("Weight", "7.5 lbs"),
+                    ("Warranty", "Lifetime Guarantee"),
+                ]
+            },
+        ]
+
+        self._create_products(products, category, brands)
+
+    # ═══════════════════════════════════════════════════════════════
+    # KIDS & TOYS PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_kids_toys(self, category, brands):
+        self.stdout.write(f"\n🧸 Seeding Kids & Toys products...")
+
+        products = [
+            {
+                "name": "LEGO Star Wars Millennium Falcon 75375",
+                "slug": "lego-star-wars-millennium-falcon-75375",
+                "sku": "KIDS-LEGO-MF-001",
+                "price": Decimal("84.99"),
+                "compare_price": Decimal("99.99"),
+                "brand": "lego",
+                "stock": 35,
+                "weight": Decimal("1.45"),
+                "dimensions": "48 x 28 x 8 cm",
+                "short_description": "Build the legendary Millennium Falcon with 921 pieces and 6 minifigures.",
+                "description": """
+LEGO Star Wars Millennium Falcon - The fastest ship in the galaxy.
+
+**921 Pieces** - Ages 9+, 4-6 hour build time.
+
+**6 Minifigures** - Han Solo, Chewbacca, Leia, Luke, Obi-Wan, C-3PO.
+
+**Authentic Details** - Opening cockpit, rotating turrets, secret compartment.
+
+**Display or Play** - Includes display stand with nameplate.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Pieces", "921"),
+                    ("Age Range", "9+ years"),
+                    ("Minifigures", "6 included"),
+                    ("Theme", "Star Wars"),
+                    ("Dimensions", "17\" x 12\" x 5\""),
+                ]
+            },
+            {
+                "name": "Nintendo Switch OLED Model - White",
+                "slug": "nintendo-switch-oled-model-white",
+                "sku": "KIDS-SWITCH-OLED-001",
+                "price": Decimal("349.99"),
+                "compare_price": Decimal("399.99"),
+                "brand": "nintendo",
+                "stock": 42,
+                "weight": Decimal("0.42"),
+                "dimensions": "24 x 10 x 1.4 cm",
+                "short_description": "Vibrant 7-inch OLED screen with enhanced audio and 64GB storage.",
+                "description": """
+Nintendo Switch OLED Model - Play at home or on the go.
+
+**7-inch OLED Screen** - Vibrant colors and crisp contrast.
+
+**64GB Internal Storage** - Double the original model.
+
+**Enhanced Audio** - New speakers for handheld/tabletop play.
+
+**Wide Adjustable Stand** - Improved tabletop mode.
+
+**Wired LAN Port** - Included in dock for stable online play.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Screen", "7\" OLED"),
+                    ("Storage", "64GB"),
+                    ("Battery Life", "4.5-9 hours"),
+                    ("Modes", "TV, Tabletop, Handheld"),
+                    ("Online", "Nintendo Switch Online required"),
+                ]
+            },
+            {
+                "name": "Barbie Dreamhouse 2023 Edition",
+                "slug": "barbie-dreamhouse-2023-edition",
+                "sku": "KIDS-BARBIE-DH-001",
+                "price": Decimal("199.99"),
+                "compare_price": Decimal("249.99"),
+                "brand": "mattel",
+                "stock": 22,
+                "weight": Decimal("8.50"),
+                "dimensions": "110 x 80 x 30 cm",
+                "short_description": "3.75-foot tall dollhouse with 10 rooms, slide, elevator, and 75+ pieces.",
+                "description": """
+Barbie Dreamhouse 2023 - The ultimate dollhouse experience.
+
+**3.75 Feet Tall** - 10 indoor/outdoor areas.
+
+**Working Elevator** - Fits Barbie doll and wheelchair.
+
+**Pool Slide** - From top floor to ground level.
+
+**75+ Pieces** - Furniture, accessories, and decor included.
+
+**Lights and Sounds** - Interactive play features.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "specs": [
+                    ("Height", "3.75 feet"),
+                    ("Rooms", "10 areas"),
+                    ("Pieces", "75+ included"),
+                    ("Age Range", "3-7 years"),
+                    ("Assembly", "Adult assembly required"),
+                ]
+            },
+            {
+                "name": "Melissa & Doug Wooden Building Blocks Set",
+                "slug": "melissa-doug-wooden-building-blocks-100",
+                "sku": "KIDS-MD-BLOCKS-001",
+                "price": Decimal("29.99"),
+                "compare_price": Decimal("39.99"),
+                "brand": "melissa-doug",
+                "stock": 85,
+                "weight": Decimal("2.00"),
+                "dimensions": "35 x 25 x 10 cm",
+                "short_description": "100 solid wood blocks in 4 colors and 9 shapes. Classic play.",
+                "description": """
+Melissa & Doug Wooden Building Blocks - Classic open-ended play.
+
+**100 Pieces** - Solid hardwood construction.
+
+**4 Colors** - Blue, green, red, yellow, plus natural wood.
+
+**9 Shapes** - Cubes, cylinders, arches, triangles, and more.
+
+**Durable** - Built to last for generations.
+
+**Storage Case** - Wooden crate with handles included.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Pieces", "100"),
+                    ("Material", "Solid Hardwood"),
+                    ("Colors", "4 colors + natural"),
+                    ("Age Range", "3+ years"),
+                    ("Storage", "Wooden crate included"),
+                ]
+            },
+            {
+                "name": "Hasbro Monopoly Classic Board Game",
+                "slug": "hasbro-monopoly-classic-board-game",
+                "sku": "KIDS-MONOPOLY-001",
+                "price": Decimal("19.99"),
+                "compare_price": Decimal("24.99"),
+                "brand": "hasbro",
+                "stock": 120,
+                "weight": Decimal("0.90"),
+                "dimensions": "40 x 27 x 5 cm",
+                "short_description": "The classic property trading game. 2-8 players, ages 8+.",
+                "description": """
+Monopoly Classic - The world's favorite family game.
+
+**Buy Properties** - Build houses and hotels.
+
+**Collect Rent** - Bankrupt your opponents.
+
+**Classic Tokens** - Includes 8 iconic metal tokens.
+
+**2-8 Players** - Ages 8 and up.
+
+**Everything Included** - Board, tokens, cards, money, dice.
+                """,
+                "featured": False,
+                "is_bestseller": True,
+                "specs": [
+                    ("Players", "2-8"),
+                    ("Age Range", "8+ years"),
+                    ("Play Time", "60-180 minutes"),
+                    ("Tokens", "8 metal tokens"),
+                    ("Contents", "Board, cards, money, dice"),
+                ]
+            },
+        ]
+
+        self._create_products(products, category, brands)
+
+    # ═══════════════════════════════════════════════════════════════
+    # DIGITAL PRODUCTS
+    # ═══════════════════════════════════════════════════════════════
+    def seed_digital(self, category, brands):
+        self.stdout.write(f"\n💻 Seeding Digital Products...")
+
+        products = [
+            {
+                "name": "Complete Web Development Bootcamp 2024",
+                "slug": "complete-web-development-bootcamp-2024",
+                "sku": "DIGITAL-WEBDEV-001",
+                "price": Decimal("19.99"),
+                "compare_price": Decimal("199.99"),
+                "brand": "udemy",
+                "stock": 9999,
+                "weight": None,
+                "dimensions": "",
+                "product_type": "digital",
+                "short_description": "Master HTML, CSS, JavaScript, React, Node.js with 65+ hours of content.",
+                "description": """
+Complete Web Development Bootcamp - From zero to full-stack developer.
+
+**65+ Hours** - HD video content with lifetime access.
+
+**Frontend** - HTML, CSS, JavaScript, React.
+
+**Backend** - Node.js, Express, MongoDB, PostgreSQL.
+
+**15 Projects** - Real-world portfolio projects.
+
+**Certificate** - Upon completion.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Duration", "65+ hours"),
+                    ("Skill Level", "Beginner to Advanced"),
+                    ("Projects", "15 Real-World Projects"),
+                    ("Access", "Lifetime"),
+                    ("Certificate", "Yes"),
+                ]
+            },
+            {
+                "name": "Adobe Creative Cloud All Apps - 1 Year",
+                "slug": "adobe-creative-cloud-all-apps-1-year",
+                "sku": "DIGITAL-ADOBE-CC-001",
+                "price": Decimal("599.88"),
+                "compare_price": Decimal("719.88"),
+                "brand": "adobe",
+                "stock": 9999,
+                "weight": None,
+                "dimensions": "",
+                "product_type": "digital",
+                "short_description": "All 20+ creative apps including Photoshop, Illustrator, Premiere Pro.",
+                "description": """
+Adobe Creative Cloud All Apps - The complete creative toolkit.
+
+**20+ Apps** - Photoshop, Illustrator, Premiere Pro, After Effects, and more.
+
+**100GB Cloud Storage** - Store and sync your files.
+
+**Adobe Fonts** - Access thousands of fonts.
+
+**Behance Integration** - Showcase your work.
+
+**Always Updated** - Latest features and updates.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Apps Included", "20+"),
+                    ("Cloud Storage", "100GB"),
+                    ("Subscription", "12 Months"),
+                    ("Platforms", "Windows, Mac, iOS, Android"),
+                    ("Delivery", "Instant - Email License"),
+                ]
+            },
+            {
+                "name": "Microsoft 365 Family - 1 Year Subscription",
+                "slug": "microsoft-365-family-1-year",
+                "sku": "DIGITAL-M365-FAM-001",
+                "price": Decimal("99.99"),
+                "compare_price": Decimal("129.99"),
+                "brand": "microsoft",
+                "stock": 9999,
+                "weight": None,
+                "dimensions": "",
+                "product_type": "digital",
+                "short_description": "Office apps for up to 6 people. 1TB OneDrive per person.",
+                "description": """
+Microsoft 365 Family - The complete productivity solution.
+
+**Up to 6 Users** - Each with their own account.
+
+**1TB OneDrive Each** - 6TB total cloud storage.
+
+**Premium Office Apps** - Word, Excel, PowerPoint, Outlook.
+
+**Advanced Security** - Defender for identity protection.
+
+**Mobile Apps** - iOS and Android included.
+                """,
+                "featured": True,
+                "is_bestseller": True,
+                "specs": [
+                    ("Users", "Up to 6"),
+                    ("Storage", "1TB per person"),
+                    ("Apps", "Word, Excel, PowerPoint, Outlook"),
+                    ("Subscription", "12 Months"),
+                    ("Platforms", "PC, Mac, iOS, Android"),
+                ]
+            },
+            {
+                "name": "Spotify Premium - 12 Month Gift Card",
+                "slug": "spotify-premium-12-month-gift-card",
+                "sku": "DIGITAL-SPOTIFY-12M-001",
+                "price": Decimal("129.99"),
+                "compare_price": Decimal("143.88"),
+                "brand": "spotify",
+                "stock": 9999,
+                "weight": None,
+                "dimensions": "",
+                "product_type": "digital",
+                "short_description": "Ad-free music streaming with offline downloads and unlimited skips.",
+                "description": """
+Spotify Premium - Music without limits.
+
+**Ad-Free Listening** - No interruptions, ever.
+
+**Offline Downloads** - Listen without internet.
+
+**Unlimited Skips** - Skip as many tracks as you want.
+
+**High Quality Audio** - Up to 320kbps streaming.
+
+**100+ Million Tracks** - Plus podcasts and audiobooks.
+                """,
+                "featured": False,
+                "is_bestseller": True,
+                "specs": [
+                    ("Duration", "12 Months"),
+                    ("Audio Quality", "Up to 320kbps"),
+                    ("Offline Mode", "Yes"),
+                    ("Ad-Free", "Yes"),
+                    ("Delivery", "Instant - Code via email"),
+                ]
+            },
+            {
+                "name": "Canva Pro Annual Subscription",
+                "slug": "canva-pro-annual-subscription",
+                "sku": "DIGITAL-CANVA-PRO-001",
+                "price": Decimal("119.99"),
+                "compare_price": Decimal("155.88"),
+                "brand": "canva",
+                "stock": 9999,
+                "weight": None,
+                "dimensions": "",
+                "product_type": "digital",
+                "short_description": "Premium design platform with 100+ million assets and AI tools.",
+                "description": """
+Canva Pro - Design anything, publish anywhere.
+
+**100+ Million Assets** - Photos, videos, graphics, audio.
+
+**Premium Templates** - Thousands of pro-designed templates.
+
+**Brand Kit** - Store your logos, colors, and fonts.
+
+**Magic Tools** - AI-powered design assistance.
+
+**1TB Storage** - For all your designs and assets.
+                """,
+                "featured": True,
+                "is_bestseller": False,
+                "specs": [
+                    ("Subscription", "12 Months"),
+                    ("Premium Assets", "100+ million"),
+                    ("Storage", "1TB"),
+                    ("Brand Kits", "Unlimited"),
+                    ("Team Features", "Up to 5 members"),
+                ]
+            },
+        ]
+
+        self._create_products(products, category, brands)
+
+    # ═══════════════════════════════════════════════════════════════
+    # SUMMARY
+    # ═══════════════════════════════════════════════════════════════
+    def print_summary(self):
+        self.stdout.write("\n" + "=" * 60)
+        self.stdout.write(self.style.SUCCESS("📊 SEEDING SUMMARY"))
+        self.stdout.write("=" * 60)
+
+        self.stdout.write(f"\n  Categories:  {Category.objects.count()}")
+        self.stdout.write(f"  Brands:      {Brand.objects.count()}")
+        self.stdout.write(f"  Products:    {Product.objects.count()}")
+        self.stdout.write(f"  Specs:       {ProductSpecification.objects.count()}")
+        self.stdout.write(f"  Shipping:    {ShippingOption.objects.count()}")
+
+        self.stdout.write("\n" + "=" * 60)
+        self.stdout.write(self.style.SUCCESS("✅ ALL DATA SEEDED SUCCESSFULLY!"))
+        self.stdout.write("=" * 60 + "\n")

@@ -2,11 +2,11 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+# settings.py
 
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-
 
 # Load environment variables from .env file
 load_dotenv()
@@ -90,13 +90,24 @@ INSTALLED_APPS = [
     'alerts',
 ]
 
-# Add Cloudinary settings - FIXED
+
+
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+    secure=True  # ✅ Important: ensures https:// URLs
+)
+
+# For django-cloudinary-storage
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
+# Default file storage
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MIDDLEWARE = [
@@ -187,51 +198,17 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Use simpler storage that works better with Django 6.0
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# settings.py
-
 # =============================================================================
 # MEDIA FILES (User uploads)
 # =============================================================================
-
-# Check if we're in production (Render sets this)
-IS_PRODUCTION = os.getenv('RENDER', 'False').lower() == 'true'
-
-# =============================================================================
-# CLOUDINARY CONFIGURATION
-# =============================================================================
-
-# Configure Cloudinary
-cloudinary.config(
-    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.getenv('CLOUDINARY_API_KEY'),
-    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
-    secure=True
-)
-
-# Cloudinary Storage Settings
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
-}
-
-# Check if Cloudinary is configured
-CLOUDINARY_CONFIGURED = all([
-    os.getenv('CLOUDINARY_CLOUD_NAME'),
-    os.getenv('CLOUDINARY_API_KEY'),
-    os.getenv('CLOUDINARY_API_SECRET'),
-])
-
-if CLOUDINARY_CONFIGURED:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    print("✅ Cloudinary storage enabled")
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    print("⚠️ Using local file storage (Cloudinary not configured)")
-
-# Media settings (still needed for local dev fallback)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# File upload settings
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # =============================================================================
 # CORS SETTINGS

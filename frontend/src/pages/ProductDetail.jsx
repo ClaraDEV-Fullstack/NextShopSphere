@@ -82,14 +82,19 @@ const ProductDetail = () => {
         }
     };
 
+    // At the top, update the handleAddToCart function:
     const handleAddToCart = () => {
         if (!product) return;
 
-        const imageUrl = product.primary_image
-            ? getImageUrl(product.primary_image.image || product.primary_image)
-            : product.images?.length > 0
-                ? getImageUrl(product.images[0].image)
-                : null;
+        // Get the primary image URL correctly
+        let imageUrl = null;
+
+        if (product.images && product.images.length > 0) {
+            // Use image_url from the first image
+            imageUrl = getImageUrl(product.images[0]);
+        } else if (product.primary_image) {
+            imageUrl = getImageUrl(product.primary_image);
+        }
 
         for (let i = 0; i < quantity; i++) {
             dispatch(addToCart({
@@ -148,24 +153,28 @@ const ProductDetail = () => {
         );
     }
 
-    // Prepare images array
+    // Prepare images array - USE image_url field
     const images = [];
-    if (product.primary_image) {
-        images.push({
-            image: product.primary_image.image_url || product.primary_image.image,
-            alt: product.primary_image.alt_text || product.name
-        });
-    }
-    if (product.images?.length > 0) {
+
+    if (product.images && product.images.length > 0) {
         product.images.forEach(img => {
-            const imgUrl = img.image_url || img.image;
-            if (!images.find(i => i.image === imgUrl)) {
-                images.push({ image: imgUrl, alt: img.alt_text || product.name });
+            // Prefer image_url (processed URL from serializer)
+            const imgUrl = getImageUrl(img);
+            if (imgUrl && !images.find(i => i.image === imgUrl)) {
+                images.push({
+                    image: imgUrl,
+                    alt: img.alt_text || product.name
+                });
             }
         });
     }
+
+// Fallback if no images
     if (images.length === 0) {
-        images.push({ image: null, alt: product.name });
+        images.push({
+            image: '/placeholder-product.jpg',
+            alt: product.name
+        });
     }
 
     return (

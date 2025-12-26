@@ -1,57 +1,149 @@
+# products/serializers.py
+
 from rest_framework import serializers
 from django.db.models import Avg
+from urllib.parse import unquote
+import re
 from .models import (
     Category, Product, ProductImage, ProductSpecification,
     Brand, ShippingOption
 )
 
 
+# ============ CLOUDINARY URL HELPER ============
+
+def get_image_url(image_field, request=None):
+    """
+    Extract clean Cloudinary URL from image field.
+    Handles malformed URLs like:
+    - http://localhost:8000/media/https%3A/res.cloudinary.com/...
+    - /media/https%3A/res.cloudinary.com/...
+    - https%3A/res.cloudinary.com/...
+    """
+    if not image_field:
+        return None
+
+    try:
+        # Get the raw URL/value
+        if hasattr(image_field, 'url'):
+            url = image_field.url
+        elif hasattr(image_field, 'name'):
+            url = image_field.name
+        else:
+            url = str(image_field)
+
+        if not url:
+            return None
+
+        # Step 1: Decode URL-encoded characters (%3A -> :, %2F -> /)
+        url = unquote(url)
+
+        # Step 2: Check if there's a Cloudinary URL embedded in the path
+        # Pattern: anything before "https://res.cloudinary.com" or "http://res.cloudinary.com"
+        cloudinary_pattern = r'(https?://res\.cloudinary\.com/[^\s]+)'
+        match = re.search(cloudinary_pattern, url)
+
+        if match:
+            # Found Cloudinary URL embedded - extract it
+            return match.group(1)
+
+        # Step 3: Check for malformed URL patterns
+        # Pattern: /media/https:/... or http://localhost:8000/media/https:/...
+        if 'res.cloudinary.com' in url:
+            # Extract everything from res.cloudinary.com onwards
+            cloudinary_match = re.search(r'(res\.cloudinary\.com/[^\s]+)', url)
+            if cloudinary_match:
+                return 'https://' + cloudinary_match.group(1)
+
+        # Step 4: Fix common malformations
+        if url.startswith('/media/https:/'):
+            url = 'https://' + url[14:]  # Remove '/media/https:/'
+        elif url.startswith('/media/http:/'):
+            url = 'http://' + url[13:]
+        elif url.startswith('https:/') and not url.startswith('https://'):
+            url = 'https://' + url[7:]
+        elif url.startswith('http:/') and not url.startswith('http://'):
+            url = 'http://' + url[6:]
+
+        # Step 5: If it's already a valid URL, return it
+        if url.startswith('http://') or url.startswith('https://'):
+            return url
+
+        # Step 6: Try Cloudinary's build_url method if available
+        if hasattr(image_field, 'build_url'):
+            try:
+                built_url = image_field.build_url()
+                if built_url:
+                    return built_url
+            except Exception:
+                pass
+
+        # Step 7: For local development with relative paths
+        if request and url.startswith('/'):
+            return request.build_absolute_uri(url)
+
+        return url
+
+    except Exception as e:
+        print(f"Error getting image URL for {image_field}: {e}")
+        return None
+
+
 # ============ BRAND SERIALIZERS ============
 
 class BrandSerializer(serializers.ModelSerializer):
-    """Full brand serializer"""
     product_count = serializers.SerializerMethodField()
+    logo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Brand
         fields = [
-            'id', 'name', 'slug', 'logo', 'description',
+            'id', 'name', 'slug', 'logo', 'logo_url', 'description',
             'website', 'is_featured', 'product_count'
         ]
 
     def get_product_count(self, obj):
         return obj.products.filter(is_available=True).count()
 
+    def get_logo_url(self, obj):
+        return get_image_url(obj.logo, self.context.get('request'))
+
 
 class BrandListSerializer(serializers.ModelSerializer):
-    """Simplified brand serializer for lists"""
+    logo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Brand
-        fields = ['id', 'name', 'slug', 'logo']
+        fields = ['id', 'name', 'slug', 'logo', 'logo_url']
+
+    def get_logo_url(self, obj):
+        return get_image_url(obj.logo, self.context.get('request'))
 
 
 # ============ CATEGORY SERIALIZERS ============
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Full category serializer with nested children"""
     children = serializers.SerializerMethodField()
     product_count = serializers.SerializerMethodField()
     parent_name = serializers.CharField(source='parent.name', read_only=True)
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
         fields = [
-            'id', 'name', 'slug', 'description', 'image', 'icon',
+            'id', 'name', 'slug', 'description', 'image', 'image_url', 'icon',
             'parent', 'parent_name', 'children', 'product_count',
             'is_active', 'featured', 'display_order',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    def get_image_url(self, obj):
+        return get_image_url(obj.image, self.context.get('request'))
+
     def get_children(self, obj):
         children = obj.children.filter(is_active=True).order_by('display_order', 'name')
-        return CategoryListSerializer(children, many=True).data
+        return CategoryListSerializer(children, many=True, context=self.context).data
 
     def get_product_count(self, obj):
         count = obj.products.filter(is_available=True).count()
@@ -61,29 +153,35 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
-    """Simplified category serializer for lists and dropdowns"""
     product_count = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'image', 'icon', 'product_count', 'parent']
+        fields = ['id', 'name', 'slug', 'image', 'image_url', 'icon', 'product_count', 'parent']
+
+    def get_image_url(self, obj):
+        return get_image_url(obj.image, self.context.get('request'))
 
     def get_product_count(self, obj):
         return obj.products.filter(is_available=True).count()
 
 
 class CategoryTreeSerializer(serializers.ModelSerializer):
-    """Category with full tree structure for navigation"""
     children = serializers.SerializerMethodField()
     product_count = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'icon', 'image', 'children', 'product_count']
+        fields = ['id', 'name', 'slug', 'icon', 'image', 'image_url', 'children', 'product_count']
+
+    def get_image_url(self, obj):
+        return get_image_url(obj.image, self.context.get('request'))
 
     def get_children(self, obj):
         children = obj.children.filter(is_active=True).order_by('display_order', 'name')
-        return CategoryTreeSerializer(children, many=True).data
+        return CategoryTreeSerializer(children, many=True, context=self.context).data
 
     def get_product_count(self, obj):
         count = obj.products.filter(is_available=True).count()
@@ -93,7 +191,7 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
 
 
 # ============ PRODUCT IMAGE SERIALIZER ============
-# products/serializers.py
+
 class ProductImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 
@@ -102,41 +200,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image', 'image_url', 'alt_text', 'is_primary', 'order']
 
     def get_image_url(self, obj):
-        if not obj.image:
-            return None
+        return get_image_url(obj.image, self.context.get('request'))
 
-        try:
-            # Get the URL from the storage backend
-            url = obj.image.url
-
-            # Debug: print what we're getting
-            print(f"DEBUG - Image URL: {url}")
-
-            # Cloudinary URLs start with https://res.cloudinary.com
-            # If it's already a full Cloudinary URL, return it
-            if url.startswith('https://res.cloudinary.com'):
-                return url
-
-            # If it starts with http, return as-is (might be valid external URL)
-            if url.startswith('http://') or url.startswith('https://'):
-                return url
-
-            # For local development with relative URLs
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(url)
-
-            return url
-
-        except Exception as e:
-            print(f"Error getting image URL: {e}")
-            return None
 
 # ============ PRODUCT SPECIFICATION SERIALIZER ============
 
 class ProductSpecificationSerializer(serializers.ModelSerializer):
-    """Serializer for product specifications"""
-
     class Meta:
         model = ProductSpecification
         fields = ['id', 'name', 'value', 'order']
@@ -146,7 +215,6 @@ class ProductSpecificationSerializer(serializers.ModelSerializer):
 # ============ PRODUCT SERIALIZERS ============
 
 class ProductListSerializer(serializers.ModelSerializer):
-    """Serializer for product list (optimized for listing pages)"""
     category = CategoryListSerializer(read_only=True)
     brand = BrandListSerializer(read_only=True)
     primary_image = serializers.SerializerMethodField()
@@ -186,32 +254,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             return obj.reviews.filter(is_approved=True).count()
         return 0
 
-def get_primary_image(self, obj):
-    primary = obj.images.filter(is_primary=True).first()
-    if not primary:
-        primary = obj.images.first()
-    if primary:
-        return ProductImageSerializer(primary, context=self.context).data
-    return None
-
-    def get_average_rating(self, obj):
-        """Get average rating from reviews app"""
-        if hasattr(obj, 'reviews'):
-            reviews = obj.reviews.filter(is_approved=True)
-            if reviews.exists():
-                avg = reviews.aggregate(Avg('rating'))['rating__avg']
-                return round(avg, 1) if avg else 0
-        return 0
-
-    def get_review_count(self, obj):
-        """Get review count from reviews app"""
-        if hasattr(obj, 'reviews'):
-            return obj.reviews.filter(is_approved=True).count()
-        return 0
-
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    """Full product serializer for detail pages"""
     category = CategorySerializer(read_only=True)
     brand = BrandSerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
@@ -251,7 +295,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_average_rating(self, obj):
-        """Get average rating from reviews app"""
         if hasattr(obj, 'reviews'):
             reviews = obj.reviews.filter(is_approved=True)
             if reviews.exists():
@@ -260,7 +303,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         return 0
 
     def get_review_count(self, obj):
-        """Get review count from reviews app"""
         if hasattr(obj, 'reviews'):
             return obj.reviews.filter(is_approved=True).count()
         return 0
@@ -274,7 +316,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creating/updating products"""
     specifications = ProductSpecificationSerializer(many=True, required=False)
 
     class Meta:
@@ -313,7 +354,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 # ============ SHIPPING OPTION SERIALIZER ============
 
 class ShippingOptionSerializer(serializers.ModelSerializer):
-    """Serializer for shipping options"""
     delivery_estimate = serializers.ReadOnlyField()
 
     class Meta:
