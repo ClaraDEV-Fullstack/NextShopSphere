@@ -1,0 +1,4426 @@
+[
+{
+  "model": "products.category",
+  "pk": 87,
+  "fields": {
+    "name": "Electronics",
+    "slug": "electronics",
+    "description": "Latest smartphones, laptops, tablets, and audio equipment.",
+    "image": "",
+    "icon": "laptop",
+    "parent": null,
+    "is_active": true,
+    "display_order": 1,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.233Z",
+    "updated_at": "2025-12-25T20:59:14.233Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 88,
+  "fields": {
+    "name": "Fashion",
+    "slug": "fashion",
+    "description": "Trending clothing, footwear, and accessories.",
+    "image": "",
+    "icon": "shirt",
+    "parent": null,
+    "is_active": true,
+    "display_order": 2,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.240Z",
+    "updated_at": "2025-12-25T20:59:14.240Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 89,
+  "fields": {
+    "name": "Home & Living",
+    "slug": "home-living",
+    "description": "Furniture, home décor, and kitchen appliances.",
+    "image": "",
+    "icon": "home",
+    "parent": null,
+    "is_active": true,
+    "display_order": 3,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.246Z",
+    "updated_at": "2025-12-25T20:59:14.246Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 90,
+  "fields": {
+    "name": "Beauty & Skincare",
+    "slug": "beauty-skincare",
+    "description": "Premium skincare, makeup, and personal care.",
+    "image": "",
+    "icon": "sparkles",
+    "parent": null,
+    "is_active": true,
+    "display_order": 4,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.251Z",
+    "updated_at": "2025-12-25T20:59:14.251Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 91,
+  "fields": {
+    "name": "Books & Education",
+    "slug": "books-education",
+    "description": "Bestselling books, textbooks, and courses.",
+    "image": "",
+    "icon": "book-open",
+    "parent": null,
+    "is_active": true,
+    "display_order": 5,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.257Z",
+    "updated_at": "2025-12-25T20:59:14.257Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 92,
+  "fields": {
+    "name": "Sports & Fitness",
+    "slug": "sports-fitness",
+    "description": "Exercise equipment, sportswear, and recovery tools.",
+    "image": "",
+    "icon": "fire",
+    "parent": null,
+    "is_active": true,
+    "display_order": 6,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.262Z",
+    "updated_at": "2025-12-25T20:59:14.262Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 93,
+  "fields": {
+    "name": "Kids & Toys",
+    "slug": "kids-toys",
+    "description": "Educational toys, games, and outdoor play equipment.",
+    "image": "",
+    "icon": "puzzle",
+    "parent": null,
+    "is_active": true,
+    "display_order": 7,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.267Z",
+    "updated_at": "2025-12-25T20:59:14.267Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 94,
+  "fields": {
+    "name": "Digital Products",
+    "slug": "digital-products",
+    "description": "Software, subscriptions, and online courses.",
+    "image": "",
+    "icon": "cloud-download",
+    "parent": null,
+    "is_active": true,
+    "display_order": 8,
+    "featured": true,
+    "created_at": "2025-12-25T20:59:14.273Z",
+    "updated_at": "2025-12-25T20:59:14.273Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 32,
+  "fields": {
+    "name": "Apple",
+    "slug": "apple",
+    "logo": "",
+    "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories.",
+    "website": "https://www.apple.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:13.959Z",
+    "updated_at": "2025-12-25T20:59:13.959Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 33,
+  "fields": {
+    "name": "Samsung",
+    "slug": "samsung",
+    "logo": "",
+    "description": "Samsung Electronics is a global leader in technology, opening new possibilities for people everywhere.",
+    "website": "https://www.samsung.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:13.965Z",
+    "updated_at": "2025-12-25T20:59:13.965Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 34,
+  "fields": {
+    "name": "Sony",
+    "slug": "sony",
+    "logo": "",
+    "description": "Sony Corporation is a Japanese multinational conglomerate known for electronics, gaming, and entertainment.",
+    "website": "https://www.sony.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:13.972Z",
+    "updated_at": "2025-12-25T20:59:13.972Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 35,
+  "fields": {
+    "name": "Dell",
+    "slug": "dell",
+    "logo": "",
+    "description": "Dell Technologies provides computers, servers, data storage devices, and software.",
+    "website": "https://www.dell.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:13.978Z",
+    "updated_at": "2025-12-25T20:59:13.978Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 36,
+  "fields": {
+    "name": "Bose",
+    "slug": "bose",
+    "logo": "",
+    "description": "Bose Corporation sells audio equipment including premium headphones and speakers.",
+    "website": "https://www.bose.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:13.984Z",
+    "updated_at": "2025-12-25T20:59:13.984Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 37,
+  "fields": {
+    "name": "Nike",
+    "slug": "nike",
+    "logo": "",
+    "description": "Nike designs, develops, manufactures, and markets footwear, apparel, and accessories.",
+    "website": "https://www.nike.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:13.989Z",
+    "updated_at": "2025-12-25T20:59:13.989Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 38,
+  "fields": {
+    "name": "Adidas",
+    "slug": "adidas",
+    "logo": "",
+    "description": "Adidas is a German athletic apparel and footwear corporation.",
+    "website": "https://www.adidas.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:13.995Z",
+    "updated_at": "2025-12-25T20:59:13.995Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 39,
+  "fields": {
+    "name": "Levi's",
+    "slug": "levis",
+    "logo": "",
+    "description": "Levi Strauss & Co. is known worldwide for its Levi's brand of denim jeans.",
+    "website": "https://www.levi.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.000Z",
+    "updated_at": "2025-12-25T20:59:14.000Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 40,
+  "fields": {
+    "name": "Ray-Ban",
+    "slug": "ray-ban",
+    "logo": "",
+    "description": "Ray-Ban is a brand of luxury sunglasses and eyeglasses.",
+    "website": "https://www.ray-ban.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.006Z",
+    "updated_at": "2025-12-25T20:59:14.006Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 41,
+  "fields": {
+    "name": "Ralph Lauren",
+    "slug": "ralph-lauren",
+    "logo": "",
+    "description": "Ralph Lauren Corporation produces luxury and mainstream lifestyle collections.",
+    "website": "https://www.ralphlauren.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.013Z",
+    "updated_at": "2025-12-25T20:59:14.013Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 42,
+  "fields": {
+    "name": "IKEA",
+    "slug": "ikea",
+    "logo": "",
+    "description": "IKEA designs and sells ready-to-assemble furniture and home accessories.",
+    "website": "https://www.ikea.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.018Z",
+    "updated_at": "2025-12-25T20:59:14.018Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 43,
+  "fields": {
+    "name": "Dyson",
+    "slug": "dyson",
+    "logo": "",
+    "description": "Dyson is known for innovative vacuum cleaners, air purifiers, and hair care.",
+    "website": "https://www.dyson.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.024Z",
+    "updated_at": "2025-12-25T20:59:14.024Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 44,
+  "fields": {
+    "name": "Philips",
+    "slug": "philips",
+    "logo": "",
+    "description": "Philips is a health technology company focused on improving people's lives.",
+    "website": "https://www.philips.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.030Z",
+    "updated_at": "2025-12-25T20:59:14.030Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 45,
+  "fields": {
+    "name": "Le Creuset",
+    "slug": "le-creuset",
+    "logo": "",
+    "description": "Le Creuset is known for colorful, enameled cast-iron cookware.",
+    "website": "https://www.lecreuset.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.037Z",
+    "updated_at": "2025-12-25T20:59:14.037Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 46,
+  "fields": {
+    "name": "Nespresso",
+    "slug": "nespresso",
+    "logo": "",
+    "description": "Nespresso offers premium coffee pods and machines.",
+    "website": "https://www.nespresso.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.045Z",
+    "updated_at": "2025-12-25T20:59:14.045Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 47,
+  "fields": {
+    "name": "The Ordinary",
+    "slug": "the-ordinary",
+    "logo": "",
+    "description": "The Ordinary offers clinical formulations with integrity at affordable prices.",
+    "website": "https://theordinary.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.052Z",
+    "updated_at": "2025-12-25T20:59:14.052Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 48,
+  "fields": {
+    "name": "CeraVe",
+    "slug": "cerave",
+    "logo": "",
+    "description": "CeraVe is developed with dermatologists for all skin types.",
+    "website": "https://www.cerave.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.059Z",
+    "updated_at": "2025-12-25T20:59:14.059Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 49,
+  "fields": {
+    "name": "Estée Lauder",
+    "slug": "estee-lauder",
+    "logo": "",
+    "description": "Estée Lauder manufactures prestige skincare, makeup, and fragrance.",
+    "website": "https://www.esteelauder.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.066Z",
+    "updated_at": "2025-12-25T20:59:14.066Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 50,
+  "fields": {
+    "name": "Drunk Elephant",
+    "slug": "drunk-elephant",
+    "logo": "",
+    "description": "Drunk Elephant is known for its clean-clinical skincare philosophy.",
+    "website": "https://www.drunkelephant.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.073Z",
+    "updated_at": "2025-12-25T20:59:14.073Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 51,
+  "fields": {
+    "name": "Fenty Beauty",
+    "slug": "fenty-beauty",
+    "logo": "",
+    "description": "Fenty Beauty by Rihanna is known for inclusive shade ranges.",
+    "website": "https://fentybeauty.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.079Z",
+    "updated_at": "2025-12-25T20:59:14.079Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 52,
+  "fields": {
+    "name": "Penguin Random House",
+    "slug": "penguin-random-house",
+    "logo": "",
+    "description": "The world's largest trade book publisher.",
+    "website": "https://www.penguinrandomhouse.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.085Z",
+    "updated_at": "2025-12-25T20:59:14.086Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 53,
+  "fields": {
+    "name": "O'Reilly Media",
+    "slug": "oreilly-media",
+    "logo": "",
+    "description": "O'Reilly publishes books and produces tech conferences.",
+    "website": "https://www.oreilly.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.093Z",
+    "updated_at": "2025-12-25T20:59:14.093Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 54,
+  "fields": {
+    "name": "HarperCollins",
+    "slug": "harpercollins",
+    "logo": "",
+    "description": "One of the world's largest publishing companies.",
+    "website": "https://www.harpercollins.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.102Z",
+    "updated_at": "2025-12-25T20:59:14.102Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 55,
+  "fields": {
+    "name": "Pearson",
+    "slug": "pearson",
+    "logo": "",
+    "description": "The largest education company and book publisher in the world.",
+    "website": "https://www.pearson.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.111Z",
+    "updated_at": "2025-12-25T20:59:14.111Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 56,
+  "fields": {
+    "name": "McGraw Hill",
+    "slug": "mcgraw-hill",
+    "logo": "",
+    "description": "McGraw Hill provides educational content and services.",
+    "website": "https://www.mheducation.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.119Z",
+    "updated_at": "2025-12-25T20:59:14.119Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 57,
+  "fields": {
+    "name": "Peloton",
+    "slug": "peloton",
+    "logo": "",
+    "description": "Peloton offers internet-connected exercise equipment.",
+    "website": "https://www.onepeloton.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.127Z",
+    "updated_at": "2025-12-25T20:59:14.127Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 58,
+  "fields": {
+    "name": "Bowflex",
+    "slug": "bowflex",
+    "logo": "",
+    "description": "Bowflex is known for innovative home gym equipment.",
+    "website": "https://www.bowflex.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.135Z",
+    "updated_at": "2025-12-25T20:59:14.135Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 59,
+  "fields": {
+    "name": "Theragun",
+    "slug": "theragun",
+    "logo": "",
+    "description": "Therabody creates percussion therapy devices.",
+    "website": "https://www.therabody.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.145Z",
+    "updated_at": "2025-12-25T20:59:14.145Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 60,
+  "fields": {
+    "name": "Garmin",
+    "slug": "garmin",
+    "logo": "",
+    "description": "Garmin is known for GPS technology and fitness wearables.",
+    "website": "https://www.garmin.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.153Z",
+    "updated_at": "2025-12-25T20:59:14.153Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 61,
+  "fields": {
+    "name": "Manduka",
+    "slug": "manduka",
+    "logo": "",
+    "description": "Manduka is a leading yoga lifestyle brand.",
+    "website": "https://www.manduka.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.161Z",
+    "updated_at": "2025-12-25T20:59:14.161Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 62,
+  "fields": {
+    "name": "LEGO",
+    "slug": "lego",
+    "logo": "",
+    "description": "LEGO manufactures construction toys since 1932.",
+    "website": "https://www.lego.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.167Z",
+    "updated_at": "2025-12-25T20:59:14.167Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 63,
+  "fields": {
+    "name": "Nintendo",
+    "slug": "nintendo",
+    "logo": "",
+    "description": "Nintendo is known for Mario, Zelda, and Pokémon.",
+    "website": "https://www.nintendo.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.175Z",
+    "updated_at": "2025-12-25T20:59:14.175Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 64,
+  "fields": {
+    "name": "Mattel",
+    "slug": "mattel",
+    "logo": "",
+    "description": "Mattel is known for Barbie, Hot Wheels, and Fisher-Price.",
+    "website": "https://www.mattel.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.182Z",
+    "updated_at": "2025-12-25T20:59:14.182Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 65,
+  "fields": {
+    "name": "Hasbro",
+    "slug": "hasbro",
+    "logo": "",
+    "description": "Hasbro makes Monopoly, Transformers, and My Little Pony.",
+    "website": "https://www.hasbro.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.188Z",
+    "updated_at": "2025-12-25T20:59:14.188Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 66,
+  "fields": {
+    "name": "Melissa & Doug",
+    "slug": "melissa-doug",
+    "logo": "",
+    "description": "Melissa & Doug is known for wooden toys and educational products.",
+    "website": "https://www.melissaanddoug.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.195Z",
+    "updated_at": "2025-12-25T20:59:14.195Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 67,
+  "fields": {
+    "name": "Adobe",
+    "slug": "adobe",
+    "logo": "",
+    "description": "Adobe is known for Creative Cloud, Photoshop, and Acrobat.",
+    "website": "https://www.adobe.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.203Z",
+    "updated_at": "2025-12-25T20:59:14.203Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 68,
+  "fields": {
+    "name": "Microsoft",
+    "slug": "microsoft",
+    "logo": "",
+    "description": "Microsoft is the world's largest software maker.",
+    "website": "https://www.microsoft.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.211Z",
+    "updated_at": "2025-12-25T20:59:14.211Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 69,
+  "fields": {
+    "name": "Udemy",
+    "slug": "udemy",
+    "logo": "",
+    "description": "Udemy offers over 200,000 online courses.",
+    "website": "https://www.udemy.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.217Z",
+    "updated_at": "2025-12-25T20:59:14.217Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 70,
+  "fields": {
+    "name": "Spotify",
+    "slug": "spotify",
+    "logo": "",
+    "description": "Spotify is the world's largest music streaming service.",
+    "website": "https://www.spotify.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.222Z",
+    "updated_at": "2025-12-25T20:59:14.222Z"
+  }
+},
+{
+  "model": "products.brand",
+  "pk": 71,
+  "fields": {
+    "name": "Canva",
+    "slug": "canva",
+    "logo": "",
+    "description": "Canva is a graphic design platform for everyone.",
+    "website": "https://www.canva.com",
+    "is_active": true,
+    "is_featured": true,
+    "created_at": "2025-12-25T20:59:14.228Z",
+    "updated_at": "2025-12-25T20:59:14.228Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 173,
+  "fields": {
+    "name": "Apple iPhone 15 Pro Max 256GB - Natural Titanium",
+    "slug": "apple-iphone-15-pro-max-256gb-natural-titanium",
+    "description": "Experience the pinnacle of smartphone technology with iPhone 15 Pro Max. Forged in titanium with a stunning Natural Titanium finish.\n\n**A17 Pro Chip** - The first 3-nanometer chip in a smartphone enables console-quality gaming.\n\n**Pro Camera System**\n• 48MP Main camera with sensor-shift optical image stabilization\n• 5x optical zoom with the longest optical focal length ever on iPhone\n• ProRAW and ProRes video recording at up to 4K60 fps\n\n**Display** - 6.7-inch Super Retina XDR display with ProMotion technology.\n\n**Durability** - Aerospace-grade titanium design. Water resistant to 6 meters (IP68).\n\n**Battery** - Up to 29 hours of video playback. USB-C with MagSafe wireless charging.",
+    "short_description": "The most powerful iPhone ever with A17 Pro chip, titanium design, and 5x optical zoom.",
+    "product_type": "physical",
+    "price": "1199.00",
+    "compare_price": "1299.00",
+    "sku": "ELEC-IPHONE15PM-256-NT",
+    "stock": 45,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 87,
+    "brand": 32,
+    "weight": "0.22",
+    "dimensions": "15.99 x 7.69 x 0.83 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.305Z",
+    "updated_at": "2025-12-25T20:59:14.305Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 174,
+  "fields": {
+    "name": "Samsung Galaxy S24 Ultra 512GB - Titanium Black",
+    "slug": "samsung-galaxy-s24-ultra-512gb-titanium-black",
+    "description": "Introducing Galaxy S24 Ultra with groundbreaking Galaxy AI capabilities.\n\n**Galaxy AI Features**\n• Live Translate: Real-time call translation\n• Circle to Search with Google\n• Note Assist: Automatic formatting and summarization\n\n**200MP Camera System** - Capture incredible detail with the highest resolution camera on a Galaxy.\n\n**Display** - 6.8-inch Dynamic AMOLED 2X with 2600 nits peak brightness.\n\n**Built-in S Pen** - Create, annotate, and navigate with precision.\n\n**Battery** - 5000mAh with 45W super fast charging.",
+    "short_description": "Samsung's ultimate smartphone with Galaxy AI, S Pen, and 200MP camera system.",
+    "product_type": "physical",
+    "price": "1299.99",
+    "compare_price": "1419.99",
+    "sku": "ELEC-SAMS24U-512-TB",
+    "stock": 38,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 87,
+    "brand": 33,
+    "weight": "0.23",
+    "dimensions": "16.23 x 7.90 x 0.86 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.329Z",
+    "updated_at": "2025-12-25T20:59:14.329Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 175,
+  "fields": {
+    "name": "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
+    "slug": "sony-wh-1000xm5-wireless-noise-cancelling",
+    "description": "Sony WH-1000XM5 headphones rewrite the rules for distraction-free listening.\n\n**Industry-Leading Noise Cancellation** - Two processors control 8 microphones.\n\n**Exceptional Sound** - 30mm driver unit with LDAC support for Hi-Res Audio.\n\n**Crystal Clear Calls** - Four beamforming microphones with AI noise reduction.\n\n**30-Hour Battery** - Quick charge: 3 minutes = 3 hours playback.\n\n**Premium Comfort** - Soft fit leather, lightweight at just 250g.",
+    "short_description": "Industry-leading noise cancellation with exceptional sound quality.",
+    "product_type": "physical",
+    "price": "349.99",
+    "compare_price": "399.99",
+    "sku": "ELEC-SONYWH1KXM5-BLK",
+    "stock": 67,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 87,
+    "brand": 34,
+    "weight": "0.25",
+    "dimensions": "22.0 x 25.0 x 8.0 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": false,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.373Z",
+    "updated_at": "2025-12-25T20:59:14.373Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 176,
+  "fields": {
+    "name": "Apple MacBook Pro 14-inch M3 Pro - Space Black",
+    "slug": "apple-macbook-pro-14-m3-pro-space-black",
+    "description": "MacBook Pro 14-inch with M3 Pro supercharges your workflow.\n\n**M3 Pro Chip** - 11-core CPU, 14-core GPU, 18GB unified memory.\n\n**Liquid Retina XDR Display** - 3024 x 1964 resolution, ProMotion 120Hz, 1600 nits peak HDR.\n\n**All-Day Battery** - Up to 17 hours of video playback.\n\n**Pro Connectivity** - Three Thunderbolt 4 ports, HDMI, SD card, MagSafe 3.\n\n**Six-Speaker Sound System** - Spatial Audio with Dolby Atmos.",
+    "short_description": "Pro laptop with M3 Pro chip, 18GB unified memory, and Liquid Retina XDR display.",
+    "product_type": "physical",
+    "price": "1999.00",
+    "compare_price": "2199.00",
+    "sku": "ELEC-MBP14-M3P-SB",
+    "stock": 25,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 87,
+    "brand": 32,
+    "weight": "1.61",
+    "dimensions": "31.26 x 22.12 x 1.55 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:14.461Z",
+    "updated_at": "2025-12-25T20:59:14.461Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 177,
+  "fields": {
+    "name": "Apple iPad Pro 12.9-inch M2 256GB - Space Gray",
+    "slug": "apple-ipad-pro-12-9-m2-256gb-space-gray",
+    "description": "iPad Pro. Supercharged by M2. The ultimate iPad experience.\n\n**M2 Chip** - 8-core CPU, 10-core GPU, 15.8 trillion operations per second.\n\n**Liquid Retina XDR Display** - mini-LED backlighting, 1,000,000:1 contrast ratio.\n\n**Pro Camera System** - 12MP Wide, 10MP Ultra Wide, LiDAR Scanner.\n\n**Apple Pencil Hover** - Detects Apple Pencil up to 12mm above the display.\n\n**Thunderbolt Connectivity** - USB-C with Thunderbolt/USB 4 support.",
+    "short_description": "The ultimate iPad with M2 chip and Liquid Retina XDR display.",
+    "product_type": "physical",
+    "price": "1099.00",
+    "compare_price": "1199.00",
+    "sku": "ELEC-IPADPRO12-M2-256-SG",
+    "stock": 33,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 87,
+    "brand": 32,
+    "weight": "0.68",
+    "dimensions": "28.06 x 21.49 x 0.64 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:14.497Z",
+    "updated_at": "2025-12-25T20:59:14.497Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 178,
+  "fields": {
+    "name": "Nike Air Jordan 1 Retro High OG - Chicago",
+    "slug": "nike-air-jordan-1-retro-high-og-chicago",
+    "description": "The Air Jordan 1 Retro High OG \"Chicago\" celebrates the legendary colorway.\n\n**Premium Materials** - Full-grain leather upper with natural creasing.\n\n**Iconic Chicago Colorway** - Varsity Red overlays, white base, black Swoosh.\n\n**Air-Sole Cushioning** - Comfortable all-day wear.\n\n**Authentic Details** - Wings logo, Nike Air branding, OG high-cut silhouette.",
+    "short_description": "Iconic Chicago colorway with premium leather construction.",
+    "product_type": "physical",
+    "price": "180.00",
+    "compare_price": "220.00",
+    "sku": "FASH-AJ1-CHI-LAF",
+    "stock": 24,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 88,
+    "brand": 37,
+    "weight": "0.95",
+    "dimensions": "35 x 22 x 14 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.522Z",
+    "updated_at": "2025-12-25T20:59:14.522Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 179,
+  "fields": {
+    "name": "Levi's 501 Original Fit Men's Jeans - Stonewash",
+    "slug": "levis-501-original-fit-mens-jeans-stonewash",
+    "description": "Since 1873, the Levi's 501 has been the gold standard for denim.\n\n**Original Fit** - Straight leg from hip to ankle, classic rise.\n\n**Premium Denim** - 100% cotton, 12.5 oz. heavyweight fabric.\n\n**Iconic Details** - Two Horse leather patch, Arcuate stitching, Red Tab.\n\n**Sustainable** - Water<Less® finishing uses up to 96% less water.",
+    "short_description": "The original blue jean since 1873. Straight leg, button fly.",
+    "product_type": "physical",
+    "price": "69.50",
+    "compare_price": "89.50",
+    "sku": "FASH-LEVI501-SW-32",
+    "stock": 85,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 88,
+    "brand": 39,
+    "weight": "0.65",
+    "dimensions": "42 x 32 x 5 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": false,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.549Z",
+    "updated_at": "2025-12-25T20:59:14.549Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 180,
+  "fields": {
+    "name": "Ray-Ban Aviator Classic Sunglasses - Gold/Green",
+    "slug": "ray-ban-aviator-classic-sunglasses-gold-green",
+    "description": "Originally designed in 1937 for U.S. aviators.\n\n**Crystal Green G-15 Lenses** - Blocks 85% of visible light, natural vision.\n\n**Gold Metal Frame** - Electroplated gold finish, adjustable nose pads.\n\n**100% UV Protection** - Blocks all UVA and UVB rays.\n\n**Authentic Details** - Etched \"RB\" on lens, original case included.",
+    "short_description": "The iconic pilot silhouette. Crystal green G-15 lenses.",
+    "product_type": "physical",
+    "price": "161.00",
+    "compare_price": "198.00",
+    "sku": "FASH-RB-AVIATOR-GG",
+    "stock": 42,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 88,
+    "brand": 40,
+    "weight": "0.03",
+    "dimensions": "14.5 x 5.5 x 5.0 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.574Z",
+    "updated_at": "2025-12-25T20:59:14.574Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 181,
+  "fields": {
+    "name": "Adidas Ultraboost 23 Running Shoes - Core Black",
+    "slug": "adidas-ultraboost-23-running-shoes-core-black",
+    "description": "Adidas Ultraboost 23 delivers legendary energy return.\n\n**Boost Technology** - Thousands of TPU capsules store and unleash energy.\n\n**Primeknit+ Upper** - Seamless stretch for natural movement.\n\n**Continental™ Rubber Outsole** - Trusted grip in all conditions.\n\n**Sustainability** - Made with Primeblue recycled materials.",
+    "short_description": "Energy-returning Boost midsole with Primeknit+ upper.",
+    "product_type": "physical",
+    "price": "190.00",
+    "compare_price": "220.00",
+    "sku": "FASH-ADUB23-BLK-10",
+    "stock": 55,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 88,
+    "brand": 38,
+    "weight": "0.68",
+    "dimensions": "33 x 20 x 12 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": false,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.600Z",
+    "updated_at": "2025-12-25T20:59:14.600Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 182,
+  "fields": {
+    "name": "Ralph Lauren Classic Fit Mesh Polo - Newport Navy",
+    "slug": "ralph-lauren-classic-fit-mesh-polo-navy",
+    "description": "The Ralph Lauren Polo Shirt is an American icon.\n\n**Classic Fit** - Relaxed through chest and body, straight hem.\n\n**Premium Cotton Mesh** - Soft, breathable, lightweight.\n\n**Signature Details** - Embroidered Polo Pony, ribbed collar and cuffs.\n\n**Versatile Styling** - From office to weekend.",
+    "short_description": "Iconic mesh polo with embroidered Pony logo.",
+    "product_type": "physical",
+    "price": "98.50",
+    "compare_price": "125.00",
+    "sku": "FASH-RL-POLO-NN-L",
+    "stock": 120,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 88,
+    "brand": 41,
+    "weight": "0.25",
+    "dimensions": "38 x 30 x 3 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:14.625Z",
+    "updated_at": "2025-12-25T20:59:14.625Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 183,
+  "fields": {
+    "name": "Dyson V15 Detect Absolute Cordless Vacuum",
+    "slug": "dyson-v15-detect-absolute-cordless-vacuum",
+    "description": "Dyson V15 Detect reveals invisible dust with laser technology.\n\n**Laser Dust Detection** - Green laser reveals invisible particles.\n\n**Piezo Sensor** - Counts particles 24,000 times per second.\n\n**Hyperdymium Motor** - 230 air watts of suction power.\n\n**HEPA Filtration** - Captures 99.99% of particles as small as 0.3 microns.\n\n**60-Minute Runtime** - Fade-free power with intelligent power adaptation.",
+    "short_description": "Laser reveals invisible dust. Up to 60 minutes runtime.",
+    "product_type": "physical",
+    "price": "749.99",
+    "compare_price": "849.99",
+    "sku": "HOME-DYSONV15-DET-ABS",
+    "stock": 28,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 89,
+    "brand": 43,
+    "weight": "2.74",
+    "dimensions": "25.4 x 126.4 x 25.0 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.673Z",
+    "updated_at": "2025-12-25T20:59:14.673Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 184,
+  "fields": {
+    "name": "IKEA MALM Queen Bed Frame with Storage - White Oak",
+    "slug": "ikea-malm-queen-bed-frame-storage-white-oak",
+    "description": "The MALM bed frame combines Scandinavian design with smart storage.\n\n**Smart Storage** - 4 spacious rolling drawers.\n\n**Quality Construction** - Particleboard with white oak veneer.\n\n**Mattress Support** - 17 wooden slats included.\n\n**Clean Design** - Modern, minimalist aesthetic.\n\n**Assembly Required** - Approximately 1.5 hours, 2-person recommended.",
+    "short_description": "Modern bed frame with 4 storage drawers.",
+    "product_type": "physical",
+    "price": "449.00",
+    "compare_price": "549.00",
+    "sku": "HOME-MALM-BED-Q-WO",
+    "stock": 18,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 89,
+    "brand": 42,
+    "weight": "95.00",
+    "dimensions": "209 x 156 x 100 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.703Z",
+    "updated_at": "2025-12-25T20:59:14.703Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 185,
+  "fields": {
+    "name": "Philips Hue White and Color Ambiance Starter Kit",
+    "slug": "philips-hue-white-color-ambiance-starter-kit",
+    "description": "Transform your home with Philips Hue smart lighting.\n\n**What's Included** - 4 color bulbs + Hue Bridge.\n\n**16 Million Colors** - Full spectrum RGB plus warm to cool white.\n\n**Smart Control** - App, voice (Alexa, Google, Siri), automation.\n\n**Energy Efficient** - LED uses 80% less energy, 25,000-hour lifespan.\n\n**Expandable** - Add up to 50 lights to one Bridge.",
+    "short_description": "Smart lighting with 4 color bulbs and Hue Bridge. 16 million colors.",
+    "product_type": "physical",
+    "price": "199.99",
+    "compare_price": "249.99",
+    "sku": "HOME-PHILIPSHUE-WCASK",
+    "stock": 45,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 89,
+    "brand": 44,
+    "weight": "0.95",
+    "dimensions": "20 x 15 x 10 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": false,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.731Z",
+    "updated_at": "2025-12-25T20:59:14.731Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 186,
+  "fields": {
+    "name": "Le Creuset Signature Dutch Oven 5.5 Qt - Flame",
+    "slug": "le-creuset-signature-dutch-oven-5-5-qt-flame",
+    "description": "Le Creuset has been crafting premium French cookware since 1925.\n\n**Handcrafted** - Cast individually in sand molds by French artisans.\n\n**Superior Heat Distribution** - Even cooking without hot spots.\n\n**Versatile Cooking** - Braising, roasting, baking, and more.\n\n**Oven Safe** - Up to 500°F, works on all cooktops including induction.\n\n**Lifetime Warranty** - Backed by Le Creuset quality.",
+    "short_description": "Iconic French cookware. Premium enameled cast iron.",
+    "product_type": "physical",
+    "price": "379.95",
+    "compare_price": "439.95",
+    "sku": "HOME-LECREUSET-DO55-FL",
+    "stock": 22,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 89,
+    "brand": 45,
+    "weight": "5.67",
+    "dimensions": "30.5 x 26.7 x 15.2 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:14.756Z",
+    "updated_at": "2025-12-25T20:59:14.756Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 187,
+  "fields": {
+    "name": "Nespresso Vertuo Next Premium Coffee Machine",
+    "slug": "nespresso-vertuo-next-premium-coffee-machine",
+    "description": "Nespresso Vertuo Next brews the perfect cup every time.\n\n**Centrifusion™ Technology** - Spins capsule at 7,000 RPM for optimal extraction.\n\n**5 Coffee Sizes** - From Espresso to Alto (14 oz).\n\n**Barcode Recognition** - Automatic brewing parameters per capsule.\n\n**Smart Connected** - Bluetooth and Wi-Fi enabled.\n\n**Fast Heat-Up** - Ready in 30 seconds.",
+    "short_description": "Single-serve coffee with Centrifusion technology. 5 coffee sizes.",
+    "product_type": "physical",
+    "price": "179.00",
+    "compare_price": "229.00",
+    "sku": "HOME-NESPVNEXT-CHR",
+    "stock": 35,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 89,
+    "brand": 46,
+    "weight": "4.00",
+    "dimensions": "14.2 x 42.9 x 31.4 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": false,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.840Z",
+    "updated_at": "2025-12-25T20:59:14.840Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 188,
+  "fields": {
+    "name": "CeraVe Hydrating Facial Cleanser 473ml",
+    "slug": "cerave-hydrating-facial-cleanser-473ml",
+    "description": "CeraVe Hydrating Facial Cleanser for normal to dry skin.\n\n**Key Ingredients** - 3 essential ceramides + hyaluronic acid.\n\n**Gentle Formula** - Non-foaming, fragrance-free.\n\n**MVE Technology** - Long-lasting hydration.\n\n**Developed with Dermatologists** - Accepted by National Eczema Association.",
+    "short_description": "Gentle, non-foaming cleanser with ceramides and hyaluronic acid.",
+    "product_type": "physical",
+    "price": "18.99",
+    "compare_price": "24.99",
+    "sku": "BEAUTY-CERAVE-001",
+    "stock": 150,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 90,
+    "brand": 48,
+    "weight": "0.55",
+    "dimensions": "8 x 5 x 20 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.866Z",
+    "updated_at": "2025-12-25T20:59:14.866Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 189,
+  "fields": {
+    "name": "The Ordinary Niacinamide 10% + Zinc 1% Serum",
+    "slug": "the-ordinary-niacinamide-zinc-serum-30ml",
+    "description": "The Ordinary Niacinamide 10% + Zinc 1% targets blemishes and enlarged pores.\n\n**10% Niacinamide** - Visible pore reduction.\n\n**1% Zinc PCA** - Regulates sebum production.\n\n**Lightweight** - Water-based formula.\n\n**Vegan & Cruelty-Free** - Alcohol-free, silicone-free.",
+    "short_description": "High-strength vitamin and mineral formula for blemishes and pores.",
+    "product_type": "physical",
+    "price": "12.50",
+    "compare_price": "16.00",
+    "sku": "BEAUTY-ORDINARY-002",
+    "stock": 200,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 90,
+    "brand": 47,
+    "weight": "0.08",
+    "dimensions": "3 x 3 x 10 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:14.979Z",
+    "updated_at": "2025-12-25T20:59:14.979Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 190,
+  "fields": {
+    "name": "Drunk Elephant Protini Polypeptide Cream",
+    "slug": "drunk-elephant-protini-polypeptide-cream",
+    "description": "Drunk Elephant Protini delivers visible improvement in skin's tone and texture.\n\n**Signal Peptides** - Support skin's natural collagen.\n\n**Growth Factors** - Improve firmness and elasticity.\n\n**Amino Acids** - Provide essential building blocks.\n\n**Clean Formula** - Free of the \"Suspicious 6.\"",
+    "short_description": "Protein moisturizer with peptides for firmer, stronger skin.",
+    "product_type": "physical",
+    "price": "68.00",
+    "compare_price": "78.00",
+    "sku": "BEAUTY-DE-PROTINI-001",
+    "stock": 65,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 90,
+    "brand": 50,
+    "weight": "0.12",
+    "dimensions": "5 x 5 x 5 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:15.024Z",
+    "updated_at": "2025-12-25T20:59:15.024Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 191,
+  "fields": {
+    "name": "Fenty Beauty Pro Filt'r Soft Matte Foundation",
+    "slug": "fenty-beauty-pro-filtr-foundation",
+    "description": "Fenty Beauty Pro Filt'r delivers buildable, longwear coverage.\n\n**50 Shades** - Inclusive range for all skin tones.\n\n**Soft Matte Finish** - Controls shine without drying.\n\n**Buildable Coverage** - Medium to full.\n\n**Longwear** - Up to 12 hours of wear.",
+    "short_description": "Soft matte foundation in 50 shades for all skin tones.",
+    "product_type": "physical",
+    "price": "40.00",
+    "compare_price": "48.00",
+    "sku": "BEAUTY-FENTY-FOUND-001",
+    "stock": 180,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 90,
+    "brand": 51,
+    "weight": "0.10",
+    "dimensions": "4 x 4 x 12 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.069Z",
+    "updated_at": "2025-12-25T20:59:15.069Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 192,
+  "fields": {
+    "name": "Estée Lauder Advanced Night Repair Serum",
+    "slug": "estee-lauder-advanced-night-repair-serum",
+    "description": "Estée Lauder Advanced Night Repair - The world's #1 repair serum.\n\n**Chronolux™ Power Signal Technology** - Supports skin's natural repair.\n\n**Reduces Lines & Wrinkles** - Visible results in 3 weeks.\n\n**7 Key Signs of Aging** - Addresses lines, wrinkles, dryness, dullness, and more.\n\n**Lightweight** - Fast-absorbing, non-greasy formula.",
+    "short_description": "The #1 repair serum. Reduces lines and wrinkles in just 3 weeks.",
+    "product_type": "physical",
+    "price": "105.00",
+    "compare_price": "125.00",
+    "sku": "BEAUTY-EL-ANR-001",
+    "stock": 55,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 90,
+    "brand": 49,
+    "weight": "0.15",
+    "dimensions": "5 x 5 x 12 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.106Z",
+    "updated_at": "2025-12-25T20:59:15.106Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 193,
+  "fields": {
+    "name": "Atomic Habits by James Clear - Hardcover",
+    "slug": "atomic-habits-james-clear-hardcover",
+    "description": "Atomic Habits by James Clear - over 15 million copies sold worldwide.\n\n**Key Concepts** - The 1% Rule, Four Laws of Behavior Change, Habit Stacking.\n\n**Proven Framework** - For building good habits and breaking bad ones.\n\n**320 Pages** - Hardcover with dust jacket.\n\n**Translated** - Available in 50+ languages.",
+    "short_description": "#1 New York Times bestseller on building good habits and breaking bad ones.",
+    "product_type": "physical",
+    "price": "24.99",
+    "compare_price": "32.00",
+    "sku": "BOOKS-ATOMIC-001",
+    "stock": 75,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 91,
+    "brand": 52,
+    "weight": "0.45",
+    "dimensions": "21 x 14 x 3 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.129Z",
+    "updated_at": "2025-12-25T20:59:15.129Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 194,
+  "fields": {
+    "name": "Python Crash Course 3rd Edition",
+    "slug": "python-crash-course-3rd-edition",
+    "description": "Python Crash Course by Eric Matthes - over 1.5 million copies sold.\n\n**Part 1** - Python Fundamentals: variables, functions, classes, files.\n\n**Part 2** - Three Real-World Projects: game, data visualization, web app.\n\n**Updated** - For Python 3.11+ with modern best practices.\n\n**552 Pages** - Full-color illustrations with downloadable code.",
+    "short_description": "The world's best-selling Python book. Hands-on, project-based.",
+    "product_type": "physical",
+    "price": "39.99",
+    "compare_price": "49.99",
+    "sku": "BOOKS-PYTHON-002",
+    "stock": 60,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 91,
+    "brand": 53,
+    "weight": "0.85",
+    "dimensions": "23 x 18 x 3 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.149Z",
+    "updated_at": "2025-12-25T20:59:15.149Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 195,
+  "fields": {
+    "name": "The Psychology of Money - Morgan Housel",
+    "slug": "psychology-of-money-morgan-housel",
+    "description": "The Psychology of Money by Morgan Housel - a new way to think about money.\n\n**19 Short Stories** - Exploring the strange ways people think about money.\n\n**Timeless Lessons** - On wealth, greed, and happiness.\n\n**256 Pages** - Accessible and engaging read.\n\n**#1 Best Seller** - Over 3 million copies sold.",
+    "short_description": "Timeless lessons on wealth, greed, and happiness.",
+    "product_type": "physical",
+    "price": "18.99",
+    "compare_price": "24.00",
+    "sku": "BOOKS-PSYMONEY-003",
+    "stock": 90,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 91,
+    "brand": 54,
+    "weight": "0.30",
+    "dimensions": "20 x 13 x 2 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.169Z",
+    "updated_at": "2025-12-25T20:59:15.169Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 196,
+  "fields": {
+    "name": "Clean Code: A Handbook - Robert C. Martin",
+    "slug": "clean-code-robert-martin",
+    "description": "Clean Code by Robert C. Martin (Uncle Bob) - essential reading for developers.\n\n**Part 1** - Principles, patterns, and practices of clean code.\n\n**Part 2** - Case studies of increasing complexity.\n\n**Part 3** - Heuristics and smells for clean code.\n\n**464 Pages** - Comprehensive coverage with code examples.",
+    "short_description": "The definitive guide to writing readable, maintainable code.",
+    "product_type": "physical",
+    "price": "44.99",
+    "compare_price": "54.99",
+    "sku": "BOOKS-CLEANCODE-004",
+    "stock": 45,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 91,
+    "brand": 55,
+    "weight": "0.70",
+    "dimensions": "24 x 18 x 3 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:15.191Z",
+    "updated_at": "2025-12-25T20:59:15.191Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 197,
+  "fields": {
+    "name": "Sapiens: A Brief History of Humankind",
+    "slug": "sapiens-brief-history-humankind",
+    "description": "Sapiens by Yuval Noah Harari - over 25 million copies sold.\n\n**Cognitive Revolution** - 70,000 years ago.\n\n**Agricultural Revolution** - 12,000 years ago.\n\n**Scientific Revolution** - 500 years ago.\n\n**512 Pages** - Sweeping narrative of human history.",
+    "short_description": "Yuval Noah Harari explores the history of our species.",
+    "product_type": "physical",
+    "price": "22.99",
+    "compare_price": "29.99",
+    "sku": "BOOKS-SAPIENS-005",
+    "stock": 70,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 91,
+    "brand": 54,
+    "weight": "0.50",
+    "dimensions": "23 x 15 x 3 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.229Z",
+    "updated_at": "2025-12-25T20:59:15.229Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 198,
+  "fields": {
+    "name": "Peloton Bike+ Indoor Exercise Bike",
+    "slug": "peloton-bike-plus-indoor-exercise",
+    "description": "Peloton Bike+ - The ultimate connected fitness experience.\n\n**23.8\" HD Touchscreen** - Rotates 360° for on and off-bike workouts.\n\n**Apple GymKit** - Seamless Apple Watch integration.\n\n**Auto-Follow** - Automatic resistance adjustments during class.\n\n**Thousands of Classes** - Live and on-demand cycling, strength, yoga, and more.",
+    "short_description": "Premium connected bike with rotating 23.8\" HD touchscreen.",
+    "product_type": "physical",
+    "price": "2495.00",
+    "compare_price": "2795.00",
+    "sku": "SPORTS-PELOTON-BIKE-001",
+    "stock": 12,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 92,
+    "brand": 57,
+    "weight": "63.50",
+    "dimensions": "150 x 60 x 135 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.261Z",
+    "updated_at": "2025-12-25T20:59:15.261Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 199,
+  "fields": {
+    "name": "Bowflex SelectTech 552 Adjustable Dumbbells",
+    "slug": "bowflex-selecttech-552-adjustable-dumbbells",
+    "description": "Bowflex SelectTech 552 - Space-saving adjustable dumbbells.\n\n**15 Weight Settings** - 5 to 52.5 lbs in 2.5 lb increments.\n\n**Quick-Change Dial** - Switch weights in seconds.\n\n**Replaces 30 Dumbbells** - Save space in your home gym.\n\n**2-Year Warranty** - Backed by Bowflex quality.",
+    "short_description": "Replaces 15 sets of weights. 5-52.5 lbs per dumbbell.",
+    "product_type": "physical",
+    "price": "429.00",
+    "compare_price": "549.00",
+    "sku": "SPORTS-BOWFLEX-552-001",
+    "stock": 35,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 92,
+    "brand": 58,
+    "weight": "24.00",
+    "dimensions": "43 x 21 x 23 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.283Z",
+    "updated_at": "2025-12-25T20:59:15.283Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 200,
+  "fields": {
+    "name": "Theragun PRO Percussive Therapy Device",
+    "slug": "theragun-pro-percussive-therapy-device",
+    "description": "Theragun PRO - The professional-grade deep muscle treatment.\n\n**60 lbs Force** - Deepest muscle treatment available.\n\n**5 Built-In Speeds** - 1750-2400 PPMs.\n\n**QuietForce Technology** - Proprietary brushless motor.\n\n**OLED Screen** - Force meter and speed controls.\n\n**Rotating Arm** - Ergonomic multi-grip design.",
+    "short_description": "Professional-grade percussive therapy. 60 lbs force, 5 speeds.",
+    "product_type": "physical",
+    "price": "449.00",
+    "compare_price": "599.00",
+    "sku": "SPORTS-THERAGUN-PRO-001",
+    "stock": 40,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 92,
+    "brand": 59,
+    "weight": "1.30",
+    "dimensions": "25 x 18 x 8 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:15.304Z",
+    "updated_at": "2025-12-25T20:59:15.304Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 201,
+  "fields": {
+    "name": "Garmin Forerunner 965 GPS Running Watch",
+    "slug": "garmin-forerunner-965-gps-running-watch",
+    "description": "Garmin Forerunner 965 - The ultimate running companion.\n\n**1.4\" AMOLED Display** - Bright, colorful, always-on.\n\n**Full Color Maps** - Turn-by-turn navigation.\n\n**Training Readiness** - Know when to push and when to rest.\n\n**23-Day Battery** - Smartwatch mode with AMOLED display.\n\n**All Sports** - Running, cycling, swimming, and more.",
+    "short_description": "Premium triathlon smartwatch with AMOLED display and full maps.",
+    "product_type": "physical",
+    "price": "599.99",
+    "compare_price": "649.99",
+    "sku": "SPORTS-GARMIN-FR965-001",
+    "stock": 28,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 92,
+    "brand": 60,
+    "weight": "0.05",
+    "dimensions": "4.7 x 4.7 x 1.4 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.326Z",
+    "updated_at": "2025-12-25T20:59:15.326Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 202,
+  "fields": {
+    "name": "Manduka PRO Yoga Mat 6mm - Black",
+    "slug": "manduka-pro-yoga-mat-6mm-black",
+    "description": "Manduka PRO - The gold standard of yoga mats.\n\n**6mm Density** - Superior joint protection and cushioning.\n\n**Closed-Cell Surface** - Hygienic, prevents sweat absorption.\n\n**High-Density Cushion** - Never wears out, never bunches.\n\n**Lifetime Guarantee** - Built to last a lifetime.\n\n**Trusted by Teachers** - The #1 choice of yoga professionals.",
+    "short_description": "The legendary PRO mat. Dense cushioning, lifetime guarantee.",
+    "product_type": "physical",
+    "price": "120.00",
+    "compare_price": "140.00",
+    "sku": "SPORTS-MANDUKA-PRO-001",
+    "stock": 55,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 92,
+    "brand": 61,
+    "weight": "3.40",
+    "dimensions": "180 x 66 x 0.6 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.348Z",
+    "updated_at": "2025-12-25T20:59:15.348Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 203,
+  "fields": {
+    "name": "LEGO Star Wars Millennium Falcon 75375",
+    "slug": "lego-star-wars-millennium-falcon-75375",
+    "description": "LEGO Star Wars Millennium Falcon - The fastest ship in the galaxy.\n\n**921 Pieces** - Ages 9+, 4-6 hour build time.\n\n**6 Minifigures** - Han Solo, Chewbacca, Leia, Luke, Obi-Wan, C-3PO.\n\n**Authentic Details** - Opening cockpit, rotating turrets, secret compartment.\n\n**Display or Play** - Includes display stand with nameplate.",
+    "short_description": "Build the legendary Millennium Falcon with 921 pieces and 6 minifigures.",
+    "product_type": "physical",
+    "price": "84.99",
+    "compare_price": "99.99",
+    "sku": "KIDS-LEGO-MF-001",
+    "stock": 35,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 93,
+    "brand": 62,
+    "weight": "1.45",
+    "dimensions": "48 x 28 x 8 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.371Z",
+    "updated_at": "2025-12-25T20:59:15.371Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 204,
+  "fields": {
+    "name": "Nintendo Switch OLED Model - White",
+    "slug": "nintendo-switch-oled-model-white",
+    "description": "Nintendo Switch OLED Model - Play at home or on the go.\n\n**7-inch OLED Screen** - Vibrant colors and crisp contrast.\n\n**64GB Internal Storage** - Double the original model.\n\n**Enhanced Audio** - New speakers for handheld/tabletop play.\n\n**Wide Adjustable Stand** - Improved tabletop mode.\n\n**Wired LAN Port** - Included in dock for stable online play.",
+    "short_description": "Vibrant 7-inch OLED screen with enhanced audio and 64GB storage.",
+    "product_type": "physical",
+    "price": "349.99",
+    "compare_price": "399.99",
+    "sku": "KIDS-SWITCH-OLED-001",
+    "stock": 42,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 93,
+    "brand": 63,
+    "weight": "0.42",
+    "dimensions": "24 x 10 x 1.4 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.397Z",
+    "updated_at": "2025-12-25T20:59:15.397Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 205,
+  "fields": {
+    "name": "Barbie Dreamhouse 2023 Edition",
+    "slug": "barbie-dreamhouse-2023-edition",
+    "description": "Barbie Dreamhouse 2023 - The ultimate dollhouse experience.\n\n**3.75 Feet Tall** - 10 indoor/outdoor areas.\n\n**Working Elevator** - Fits Barbie doll and wheelchair.\n\n**Pool Slide** - From top floor to ground level.\n\n**75+ Pieces** - Furniture, accessories, and decor included.\n\n**Lights and Sounds** - Interactive play features.",
+    "short_description": "3.75-foot tall dollhouse with 10 rooms, slide, elevator, and 75+ pieces.",
+    "product_type": "physical",
+    "price": "199.99",
+    "compare_price": "249.99",
+    "sku": "KIDS-BARBIE-DH-001",
+    "stock": 22,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 93,
+    "brand": 64,
+    "weight": "8.50",
+    "dimensions": "110 x 80 x 30 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:15.425Z",
+    "updated_at": "2025-12-25T20:59:15.425Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 206,
+  "fields": {
+    "name": "Melissa & Doug Wooden Building Blocks Set",
+    "slug": "melissa-doug-wooden-building-blocks-100",
+    "description": "Melissa & Doug Wooden Building Blocks - Classic open-ended play.\n\n**100 Pieces** - Solid hardwood construction.\n\n**4 Colors** - Blue, green, red, yellow, plus natural wood.\n\n**9 Shapes** - Cubes, cylinders, arches, triangles, and more.\n\n**Durable** - Built to last for generations.\n\n**Storage Case** - Wooden crate with handles included.",
+    "short_description": "100 solid wood blocks in 4 colors and 9 shapes. Classic play.",
+    "product_type": "physical",
+    "price": "29.99",
+    "compare_price": "39.99",
+    "sku": "KIDS-MD-BLOCKS-001",
+    "stock": 85,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 93,
+    "brand": 66,
+    "weight": "2.00",
+    "dimensions": "35 x 25 x 10 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.451Z",
+    "updated_at": "2025-12-25T20:59:15.451Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 207,
+  "fields": {
+    "name": "Hasbro Monopoly Classic Board Game",
+    "slug": "hasbro-monopoly-classic-board-game",
+    "description": "Monopoly Classic - The world's favorite family game.\n\n**Buy Properties** - Build houses and hotels.\n\n**Collect Rent** - Bankrupt your opponents.\n\n**Classic Tokens** - Includes 8 iconic metal tokens.\n\n**2-8 Players** - Ages 8 and up.\n\n**Everything Included** - Board, tokens, cards, money, dice.",
+    "short_description": "The classic property trading game. 2-8 players, ages 8+.",
+    "product_type": "physical",
+    "price": "19.99",
+    "compare_price": "24.99",
+    "sku": "KIDS-MONOPOLY-001",
+    "stock": 120,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 93,
+    "brand": 65,
+    "weight": "0.90",
+    "dimensions": "40 x 27 x 5 cm",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": false,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.492Z",
+    "updated_at": "2025-12-25T20:59:15.492Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 208,
+  "fields": {
+    "name": "Complete Web Development Bootcamp 2024",
+    "slug": "complete-web-development-bootcamp-2024",
+    "description": "Complete Web Development Bootcamp - From zero to full-stack developer.\n\n**65+ Hours** - HD video content with lifetime access.\n\n**Frontend** - HTML, CSS, JavaScript, React.\n\n**Backend** - Node.js, Express, MongoDB, PostgreSQL.\n\n**15 Projects** - Real-world portfolio projects.\n\n**Certificate** - Upon completion.",
+    "short_description": "Master HTML, CSS, JavaScript, React, Node.js with 65+ hours of content.",
+    "product_type": "digital",
+    "price": "19.99",
+    "compare_price": "199.99",
+    "sku": "DIGITAL-WEBDEV-001",
+    "stock": 9999,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 94,
+    "brand": 69,
+    "weight": null,
+    "dimensions": "",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.517Z",
+    "updated_at": "2025-12-25T20:59:15.517Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 209,
+  "fields": {
+    "name": "Adobe Creative Cloud All Apps - 1 Year",
+    "slug": "adobe-creative-cloud-all-apps-1-year",
+    "description": "Adobe Creative Cloud All Apps - The complete creative toolkit.\n\n**20+ Apps** - Photoshop, Illustrator, Premiere Pro, After Effects, and more.\n\n**100GB Cloud Storage** - Store and sync your files.\n\n**Adobe Fonts** - Access thousands of fonts.\n\n**Behance Integration** - Showcase your work.\n\n**Always Updated** - Latest features and updates.",
+    "short_description": "All 20+ creative apps including Photoshop, Illustrator, Premiere Pro.",
+    "product_type": "digital",
+    "price": "599.88",
+    "compare_price": "719.88",
+    "sku": "DIGITAL-ADOBE-CC-001",
+    "stock": 9999,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 94,
+    "brand": 67,
+    "weight": null,
+    "dimensions": "",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.542Z",
+    "updated_at": "2025-12-25T20:59:15.542Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 210,
+  "fields": {
+    "name": "Microsoft 365 Family - 1 Year Subscription",
+    "slug": "microsoft-365-family-1-year",
+    "description": "Microsoft 365 Family - The complete productivity solution.\n\n**Up to 6 Users** - Each with their own account.\n\n**1TB OneDrive Each** - 6TB total cloud storage.\n\n**Premium Office Apps** - Word, Excel, PowerPoint, Outlook.\n\n**Advanced Security** - Defender for identity protection.\n\n**Mobile Apps** - iOS and Android included.",
+    "short_description": "Office apps for up to 6 people. 1TB OneDrive per person.",
+    "product_type": "digital",
+    "price": "99.99",
+    "compare_price": "129.99",
+    "sku": "DIGITAL-M365-FAM-001",
+    "stock": 9999,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 94,
+    "brand": 68,
+    "weight": null,
+    "dimensions": "",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.569Z",
+    "updated_at": "2025-12-25T20:59:15.569Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 211,
+  "fields": {
+    "name": "Spotify Premium - 12 Month Gift Card",
+    "slug": "spotify-premium-12-month-gift-card",
+    "description": "Spotify Premium - Music without limits.\n\n**Ad-Free Listening** - No interruptions, ever.\n\n**Offline Downloads** - Listen without internet.\n\n**Unlimited Skips** - Skip as many tracks as you want.\n\n**High Quality Audio** - Up to 320kbps streaming.\n\n**100+ Million Tracks** - Plus podcasts and audiobooks.",
+    "short_description": "Ad-free music streaming with offline downloads and unlimited skips.",
+    "product_type": "digital",
+    "price": "129.99",
+    "compare_price": "143.88",
+    "sku": "DIGITAL-SPOTIFY-12M-001",
+    "stock": 9999,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 94,
+    "brand": 70,
+    "weight": null,
+    "dimensions": "",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": false,
+    "is_new": true,
+    "is_bestseller": true,
+    "created_at": "2025-12-25T20:59:15.596Z",
+    "updated_at": "2025-12-25T20:59:15.596Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 212,
+  "fields": {
+    "name": "Canva Pro Annual Subscription",
+    "slug": "canva-pro-annual-subscription",
+    "description": "Canva Pro - Design anything, publish anywhere.\r\n\r\n**100+ Million Assets** - Photos, videos, graphics, audio.\r\n\r\n**Premium Templates** - Thousands of pro-designed templates.\r\n\r\n**Brand Kit** - Store your logos, colors, and fonts.\r\n\r\n**Magic Tools** - AI-powered design assistance.\r\n\r\n**1TB Storage** - For all your designs and assets.",
+    "short_description": "Premium design platform with 100+ million assets and AI tools.",
+    "product_type": "digital",
+    "price": "119.99",
+    "compare_price": "155.88",
+    "sku": "DIGITAL-CANVA-PRO-001",
+    "stock": 9999,
+    "low_stock_threshold": 5,
+    "is_available": true,
+    "category": 94,
+    "brand": 71,
+    "weight": null,
+    "dimensions": "",
+    "meta_title": "",
+    "meta_description": "",
+    "featured": true,
+    "is_new": true,
+    "is_bestseller": false,
+    "created_at": "2025-12-25T20:59:15.624Z",
+    "updated_at": "2025-12-25T21:48:45.556Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 172,
+  "fields": {
+    "product": 212,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766702440/eiq5bqd0zg0jscevmmox.jpg",
+    "alt_text": "Canva Pro Annual Subscription image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.670Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 173,
+  "fields": {
+    "product": 211,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698775/cnqvkjyvfyrtx2mpboe2.jpg",
+    "alt_text": "Spotify Premium - 12 Month Gift Card image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.680Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 174,
+  "fields": {
+    "product": 210,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698776/caxe5t04nxifcnhyagve.jpg",
+    "alt_text": "Microsoft 365 Family - 1 Year Subscription image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.689Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 175,
+  "fields": {
+    "product": 209,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698777/amxxjk39j2vwv3nebfyp.jpg",
+    "alt_text": "Adobe Creative Cloud All Apps - 1 Year image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.697Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 176,
+  "fields": {
+    "product": 208,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698777/omweh0sjakqstotqh653.jpg",
+    "alt_text": "Complete Web Development Bootcamp 2024 image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.705Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 177,
+  "fields": {
+    "product": 207,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698778/amrtz6mg3detrzfqpg7g.jpg",
+    "alt_text": "Hasbro Monopoly Classic Board Game image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.715Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 178,
+  "fields": {
+    "product": 206,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698779/wgt1tq4ur8af9lu9fvei.jpg",
+    "alt_text": "Melissa & Doug Wooden Building Blocks Set image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.722Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 179,
+  "fields": {
+    "product": 205,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698780/ctdq4cvgjoph0km9tkm2.jpg",
+    "alt_text": "Barbie Dreamhouse 2023 Edition image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.731Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 180,
+  "fields": {
+    "product": 204,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698780/tbxxxazru8ryarqqsh1f.jpg",
+    "alt_text": "Nintendo Switch OLED Model - White image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.740Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 181,
+  "fields": {
+    "product": 203,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698781/qwghbi3amltzfumy3nfv.jpg",
+    "alt_text": "LEGO Star Wars Millennium Falcon 75375 image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.749Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 182,
+  "fields": {
+    "product": 202,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698782/jmrsd4bcnl8bmzffgi9l.jpg",
+    "alt_text": "Manduka PRO Yoga Mat 6mm - Black image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.758Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 183,
+  "fields": {
+    "product": 201,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698782/aj6r3zqqx7o6jv5l31vd.jpg",
+    "alt_text": "Garmin Forerunner 965 GPS Running Watch image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.767Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 184,
+  "fields": {
+    "product": 200,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698784/qdmjvf5j48ulhc2oit4h.jpg",
+    "alt_text": "Theragun PRO Percussive Therapy Device image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.776Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 185,
+  "fields": {
+    "product": 199,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698784/di8br19r1u3e66t6ivht.jpg",
+    "alt_text": "Bowflex SelectTech 552 Adjustable Dumbbells image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.784Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 186,
+  "fields": {
+    "product": 198,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698785/khhlvtndtvzsm69ta6gn.jpg",
+    "alt_text": "Peloton Bike+ Indoor Exercise Bike image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.794Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 187,
+  "fields": {
+    "product": 197,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698785/wjcs5zh5qurxxwrw5mhs.jpg",
+    "alt_text": "Sapiens: A Brief History of Humankind image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.803Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 188,
+  "fields": {
+    "product": 196,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698786/pjzn5fy6lwg8gccezb4n.jpg",
+    "alt_text": "Clean Code: A Handbook - Robert C. Martin image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.812Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 189,
+  "fields": {
+    "product": 195,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698787/k3gy816bosvotqme7wwe.jpg",
+    "alt_text": "The Psychology of Money - Morgan Housel image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.819Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 190,
+  "fields": {
+    "product": 194,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698787/lwyznhapznk8bzgz9xu6.jpg",
+    "alt_text": "Python Crash Course 3rd Edition image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.829Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 191,
+  "fields": {
+    "product": 193,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698788/o4amm56ue1hslfsrfrlt.jpg",
+    "alt_text": "Atomic Habits by James Clear - Hardcover image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.836Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 192,
+  "fields": {
+    "product": 192,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698789/wkueex4qcwrppybyliv4.jpg",
+    "alt_text": "Estée Lauder Advanced Night Repair Serum image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.844Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 193,
+  "fields": {
+    "product": 191,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698789/wuzbgeofwxbgiybxi3tp.jpg",
+    "alt_text": "Fenty Beauty Pro Filt'r Soft Matte Foundation image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.852Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 194,
+  "fields": {
+    "product": 190,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698791/epr5stjy9pq8my6hrko5.jpg",
+    "alt_text": "Drunk Elephant Protini Polypeptide Cream image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.872Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 195,
+  "fields": {
+    "product": 189,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698791/cudcamxk78qlwybgmhg9.jpg",
+    "alt_text": "The Ordinary Niacinamide 10% + Zinc 1% Serum image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.885Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 196,
+  "fields": {
+    "product": 188,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698793/godajdzmiuviysqxeyx8.jpg",
+    "alt_text": "CeraVe Hydrating Facial Cleanser 473ml image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.895Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 197,
+  "fields": {
+    "product": 187,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698794/bddi2gwouc6tscgafnna.jpg",
+    "alt_text": "Nespresso Vertuo Next Premium Coffee Machine image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.903Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 198,
+  "fields": {
+    "product": 186,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698794/lprt2mrvecsggfuiwkhs.jpg",
+    "alt_text": "Le Creuset Signature Dutch Oven 5.5 Qt - Flame image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.957Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 199,
+  "fields": {
+    "product": 185,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698795/djv1h0pv3s8nqrkicbif.jpg",
+    "alt_text": "Philips Hue White and Color Ambiance Starter Kit image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.965Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 200,
+  "fields": {
+    "product": 184,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698797/mqb7pibcilphjze1nz1o.jpg",
+    "alt_text": "IKEA MALM Queen Bed Frame with Storage - White Oak image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.975Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 201,
+  "fields": {
+    "product": 183,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698797/pfmfruwahcvandn839lq.jpg",
+    "alt_text": "Dyson V15 Detect Absolute Cordless Vacuum image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.983Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 202,
+  "fields": {
+    "product": 182,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698798/xiafnoo52ilbl3mhfjlv.jpg",
+    "alt_text": "Ralph Lauren Classic Fit Mesh Polo - Newport Navy image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:15.992Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 203,
+  "fields": {
+    "product": 181,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698799/tmjnlidvsnmgbmktdsiz.jpg",
+    "alt_text": "Adidas Ultraboost 23 Running Shoes - Core Black image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.000Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 204,
+  "fields": {
+    "product": 180,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698800/dz0jdwxlsluaniqzakdq.jpg",
+    "alt_text": "Ray-Ban Aviator Classic Sunglasses - Gold/Green image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.008Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 205,
+  "fields": {
+    "product": 179,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698801/yqbicf3f7xdzn8mk2gz9.jpg",
+    "alt_text": "Levi's 501 Original Fit Men's Jeans - Stonewash image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.015Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 206,
+  "fields": {
+    "product": 178,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698801/pbxzdvgk2kqaverlgjji.jpg",
+    "alt_text": "Nike Air Jordan 1 Retro High OG - Chicago image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.024Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 207,
+  "fields": {
+    "product": 177,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698802/voascuiivbkq0u9kdxda.jpg",
+    "alt_text": "Apple iPad Pro 12.9-inch M2 256GB - Space Gray image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.032Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 208,
+  "fields": {
+    "product": 176,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698803/inzidpv8pkhkvffu1wza.jpg",
+    "alt_text": "Apple MacBook Pro 14-inch M3 Pro - Space Black image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.042Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 209,
+  "fields": {
+    "product": 175,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766698803/iwbmsapr2dedh82ltlfy.jpg",
+    "alt_text": "Sony WH-1000XM5 Wireless Noise Cancelling Headphones image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.050Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 210,
+  "fields": {
+    "product": 174,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766702522/k106u25uybohwk2mjegu.webp",
+    "alt_text": "Samsung Galaxy S24 Ultra 512GB - Titanium Black image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.059Z"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 211,
+  "fields": {
+    "product": 173,
+    "image": "https://res.cloudinary.com/dfdw17xrx/image/upload/v1766706329/ne8uu7gdkyyf24tbcbm6.png",
+    "alt_text": "Apple iPhone 15 Pro Max 256GB - Natural Titanium image",
+    "is_primary": true,
+    "order": 0,
+    "created_at": "2025-12-25T20:59:16.067Z"
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 504,
+  "fields": {
+    "product": 173,
+    "name": "Display",
+    "value": "6.7-inch Super Retina XDR OLED",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 505,
+  "fields": {
+    "product": 173,
+    "name": "Chip",
+    "value": "A17 Pro with 6-core GPU",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 506,
+  "fields": {
+    "product": 173,
+    "name": "Storage",
+    "value": "256GB",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 507,
+  "fields": {
+    "product": 173,
+    "name": "Main Camera",
+    "value": "48MP with ƒ/1.78 aperture",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 508,
+  "fields": {
+    "product": 173,
+    "name": "Battery",
+    "value": "Up to 29 hours video playback",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 509,
+  "fields": {
+    "product": 173,
+    "name": "Water Resistance",
+    "value": "IP68",
+    "order": 5
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 510,
+  "fields": {
+    "product": 174,
+    "name": "Display",
+    "value": "6.8-inch Dynamic AMOLED 2X",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 511,
+  "fields": {
+    "product": 174,
+    "name": "Processor",
+    "value": "Snapdragon 8 Gen 3",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 512,
+  "fields": {
+    "product": 174,
+    "name": "RAM",
+    "value": "12GB",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 513,
+  "fields": {
+    "product": 174,
+    "name": "Storage",
+    "value": "512GB",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 514,
+  "fields": {
+    "product": 174,
+    "name": "Main Camera",
+    "value": "200MP with OIS",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 515,
+  "fields": {
+    "product": 174,
+    "name": "Battery",
+    "value": "5000mAh",
+    "order": 5
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 516,
+  "fields": {
+    "product": 175,
+    "name": "Driver Unit",
+    "value": "30mm",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 517,
+  "fields": {
+    "product": 175,
+    "name": "Noise Cancellation",
+    "value": "8 Microphones",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 518,
+  "fields": {
+    "product": 175,
+    "name": "Battery Life",
+    "value": "Up to 30 hours",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 519,
+  "fields": {
+    "product": 175,
+    "name": "Bluetooth",
+    "value": "5.2 with LDAC",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 520,
+  "fields": {
+    "product": 175,
+    "name": "Weight",
+    "value": "250g",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 521,
+  "fields": {
+    "product": 176,
+    "name": "Chip",
+    "value": "Apple M3 Pro",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 522,
+  "fields": {
+    "product": 176,
+    "name": "Memory",
+    "value": "18GB Unified",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 523,
+  "fields": {
+    "product": 176,
+    "name": "Storage",
+    "value": "512GB SSD",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 524,
+  "fields": {
+    "product": 176,
+    "name": "Display",
+    "value": "14.2-inch Liquid Retina XDR",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 525,
+  "fields": {
+    "product": 176,
+    "name": "Battery",
+    "value": "Up to 17 hours",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 526,
+  "fields": {
+    "product": 177,
+    "name": "Chip",
+    "value": "Apple M2",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 527,
+  "fields": {
+    "product": 177,
+    "name": "Display",
+    "value": "12.9-inch Liquid Retina XDR",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 528,
+  "fields": {
+    "product": 177,
+    "name": "Storage",
+    "value": "256GB",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 529,
+  "fields": {
+    "product": 177,
+    "name": "Cameras",
+    "value": "12MP Wide + 10MP Ultra Wide",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 530,
+  "fields": {
+    "product": 177,
+    "name": "Battery",
+    "value": "Up to 10 hours",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 531,
+  "fields": {
+    "product": 178,
+    "name": "Style",
+    "value": "High Top",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 532,
+  "fields": {
+    "product": 178,
+    "name": "Material",
+    "value": "Premium Leather",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 533,
+  "fields": {
+    "product": 178,
+    "name": "Colorway",
+    "value": "Varsity Red/Black/White",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 534,
+  "fields": {
+    "product": 178,
+    "name": "Midsole",
+    "value": "Air-Sole Unit",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 535,
+  "fields": {
+    "product": 178,
+    "name": "Closure",
+    "value": "Lace-up",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 536,
+  "fields": {
+    "product": 179,
+    "name": "Fit",
+    "value": "Original Straight Leg",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 537,
+  "fields": {
+    "product": 179,
+    "name": "Material",
+    "value": "100% Cotton",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 538,
+  "fields": {
+    "product": 179,
+    "name": "Fly",
+    "value": "Button",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 539,
+  "fields": {
+    "product": 179,
+    "name": "Wash",
+    "value": "Stonewash",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 540,
+  "fields": {
+    "product": 179,
+    "name": "Pockets",
+    "value": "5-Pocket Styling",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 541,
+  "fields": {
+    "product": 180,
+    "name": "Model",
+    "value": "RB3025 Aviator Classic",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 542,
+  "fields": {
+    "product": 180,
+    "name": "Frame",
+    "value": "Gold Metal",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 543,
+  "fields": {
+    "product": 180,
+    "name": "Lens",
+    "value": "Crystal Green G-15",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 544,
+  "fields": {
+    "product": 180,
+    "name": "Lens Size",
+    "value": "58mm",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 545,
+  "fields": {
+    "product": 180,
+    "name": "UV Protection",
+    "value": "100% UV400",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 546,
+  "fields": {
+    "product": 181,
+    "name": "Style",
+    "value": "Running",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 547,
+  "fields": {
+    "product": 181,
+    "name": "Upper",
+    "value": "Primeknit+ Textile",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 548,
+  "fields": {
+    "product": 181,
+    "name": "Midsole",
+    "value": "Boost Foam",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 549,
+  "fields": {
+    "product": 181,
+    "name": "Outsole",
+    "value": "Continental Rubber",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 550,
+  "fields": {
+    "product": 181,
+    "name": "Drop",
+    "value": "10mm",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 551,
+  "fields": {
+    "product": 182,
+    "name": "Fit",
+    "value": "Classic Fit",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 552,
+  "fields": {
+    "product": 182,
+    "name": "Material",
+    "value": "100% Cotton Mesh",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 553,
+  "fields": {
+    "product": 182,
+    "name": "Collar",
+    "value": "Ribbed Polo Collar",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 554,
+  "fields": {
+    "product": 182,
+    "name": "Closure",
+    "value": "Two-Button Placket",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 555,
+  "fields": {
+    "product": 182,
+    "name": "Color",
+    "value": "Newport Navy",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 556,
+  "fields": {
+    "product": 183,
+    "name": "Motor",
+    "value": "Hyperdymium (125,000 RPM)",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 557,
+  "fields": {
+    "product": 183,
+    "name": "Suction Power",
+    "value": "230 AW",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 558,
+  "fields": {
+    "product": 183,
+    "name": "Runtime",
+    "value": "Up to 60 minutes",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 559,
+  "fields": {
+    "product": 183,
+    "name": "Filtration",
+    "value": "Whole-machine HEPA",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 560,
+  "fields": {
+    "product": 183,
+    "name": "Bin Capacity",
+    "value": "0.76 liters",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 561,
+  "fields": {
+    "product": 184,
+    "name": "Size",
+    "value": "Queen (60\" x 80\" mattress)",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 562,
+  "fields": {
+    "product": 184,
+    "name": "Material",
+    "value": "Particleboard, White Oak Veneer",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 563,
+  "fields": {
+    "product": 184,
+    "name": "Storage",
+    "value": "4 Drawers",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 564,
+  "fields": {
+    "product": 184,
+    "name": "Max Weight",
+    "value": "450 lbs",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 565,
+  "fields": {
+    "product": 184,
+    "name": "Assembly",
+    "value": "Required",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 566,
+  "fields": {
+    "product": 185,
+    "name": "Bulbs",
+    "value": "4 x A19 Color",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 567,
+  "fields": {
+    "product": 185,
+    "name": "Lumens",
+    "value": "800 per bulb",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 568,
+  "fields": {
+    "product": 185,
+    "name": "Colors",
+    "value": "16 million",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 569,
+  "fields": {
+    "product": 185,
+    "name": "Voice Control",
+    "value": "Alexa, Google, Siri",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 570,
+  "fields": {
+    "product": 185,
+    "name": "Bridge Capacity",
+    "value": "Up to 50 lights",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 571,
+  "fields": {
+    "product": 186,
+    "name": "Capacity",
+    "value": "5.5 quarts",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 572,
+  "fields": {
+    "product": 186,
+    "name": "Material",
+    "value": "Enameled Cast Iron",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 573,
+  "fields": {
+    "product": 186,
+    "name": "Color",
+    "value": "Flame Orange",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 574,
+  "fields": {
+    "product": 186,
+    "name": "Oven Safe",
+    "value": "Up to 500°F",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 575,
+  "fields": {
+    "product": 186,
+    "name": "Made In",
+    "value": "France",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 576,
+  "fields": {
+    "product": 187,
+    "name": "Technology",
+    "value": "Centrifusion™",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 577,
+  "fields": {
+    "product": 187,
+    "name": "Cup Sizes",
+    "value": "5 (Espresso to Alto)",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 578,
+  "fields": {
+    "product": 187,
+    "name": "Water Tank",
+    "value": "37 oz",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 579,
+  "fields": {
+    "product": 187,
+    "name": "Heat-up Time",
+    "value": "30 seconds",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 580,
+  "fields": {
+    "product": 187,
+    "name": "Connectivity",
+    "value": "Bluetooth, Wi-Fi",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 581,
+  "fields": {
+    "product": 188,
+    "name": "Volume",
+    "value": "473ml / 16 fl oz",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 582,
+  "fields": {
+    "product": 188,
+    "name": "Skin Type",
+    "value": "Normal to Dry",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 583,
+  "fields": {
+    "product": 188,
+    "name": "Key Ingredients",
+    "value": "Ceramides, Hyaluronic Acid",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 584,
+  "fields": {
+    "product": 188,
+    "name": "Fragrance",
+    "value": "Fragrance-Free",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 585,
+  "fields": {
+    "product": 188,
+    "name": "Cruelty-Free",
+    "value": "Yes",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 586,
+  "fields": {
+    "product": 189,
+    "name": "Volume",
+    "value": "30ml / 1 fl oz",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 587,
+  "fields": {
+    "product": 189,
+    "name": "Active Ingredients",
+    "value": "10% Niacinamide, 1% Zinc",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 588,
+  "fields": {
+    "product": 189,
+    "name": "Skin Type",
+    "value": "Oily, Combination, Acne-Prone",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 589,
+  "fields": {
+    "product": 189,
+    "name": "Format",
+    "value": "Water-Based Serum",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 590,
+  "fields": {
+    "product": 189,
+    "name": "Vegan",
+    "value": "Yes",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 591,
+  "fields": {
+    "product": 190,
+    "name": "Volume",
+    "value": "50ml / 1.69 fl oz",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 592,
+  "fields": {
+    "product": 190,
+    "name": "Skin Type",
+    "value": "All Skin Types",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 593,
+  "fields": {
+    "product": 190,
+    "name": "Key Ingredients",
+    "value": "Peptides, Amino Acids",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 594,
+  "fields": {
+    "product": 190,
+    "name": "Format",
+    "value": "Moisturizer",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 595,
+  "fields": {
+    "product": 190,
+    "name": "Clean",
+    "value": "Yes - Suspicious 6 Free",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 596,
+  "fields": {
+    "product": 191,
+    "name": "Volume",
+    "value": "32ml / 1.08 fl oz",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 597,
+  "fields": {
+    "product": 191,
+    "name": "Finish",
+    "value": "Soft Matte",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 598,
+  "fields": {
+    "product": 191,
+    "name": "Coverage",
+    "value": "Medium to Full",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 599,
+  "fields": {
+    "product": 191,
+    "name": "Shades",
+    "value": "50",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 600,
+  "fields": {
+    "product": 191,
+    "name": "Wear Time",
+    "value": "Up to 12 hours",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 601,
+  "fields": {
+    "product": 192,
+    "name": "Volume",
+    "value": "50ml / 1.7 fl oz",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 602,
+  "fields": {
+    "product": 192,
+    "name": "Skin Type",
+    "value": "All Skin Types",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 603,
+  "fields": {
+    "product": 192,
+    "name": "Key Technology",
+    "value": "Chronolux™",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 604,
+  "fields": {
+    "product": 192,
+    "name": "Benefits",
+    "value": "Anti-Aging, Hydrating, Firming",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 605,
+  "fields": {
+    "product": 192,
+    "name": "Use",
+    "value": "Morning and Night",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 606,
+  "fields": {
+    "product": 193,
+    "name": "Author",
+    "value": "James Clear",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 607,
+  "fields": {
+    "product": 193,
+    "name": "Pages",
+    "value": "320",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 608,
+  "fields": {
+    "product": 193,
+    "name": "Format",
+    "value": "Hardcover",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 609,
+  "fields": {
+    "product": 193,
+    "name": "Language",
+    "value": "English",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 610,
+  "fields": {
+    "product": 193,
+    "name": "ISBN",
+    "value": "978-0735211292",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 611,
+  "fields": {
+    "product": 194,
+    "name": "Author",
+    "value": "Eric Matthes",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 612,
+  "fields": {
+    "product": 194,
+    "name": "Edition",
+    "value": "3rd Edition (2023)",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 613,
+  "fields": {
+    "product": 194,
+    "name": "Pages",
+    "value": "552",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 614,
+  "fields": {
+    "product": 194,
+    "name": "Format",
+    "value": "Paperback",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 615,
+  "fields": {
+    "product": 194,
+    "name": "Skill Level",
+    "value": "Beginner to Intermediate",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 616,
+  "fields": {
+    "product": 195,
+    "name": "Author",
+    "value": "Morgan Housel",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 617,
+  "fields": {
+    "product": 195,
+    "name": "Pages",
+    "value": "256",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 618,
+  "fields": {
+    "product": 195,
+    "name": "Format",
+    "value": "Paperback",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 619,
+  "fields": {
+    "product": 195,
+    "name": "Topic",
+    "value": "Personal Finance, Psychology",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 620,
+  "fields": {
+    "product": 195,
+    "name": "ISBN",
+    "value": "978-0857197689",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 621,
+  "fields": {
+    "product": 196,
+    "name": "Author",
+    "value": "Robert C. Martin",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 622,
+  "fields": {
+    "product": 196,
+    "name": "Pages",
+    "value": "464",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 623,
+  "fields": {
+    "product": 196,
+    "name": "Format",
+    "value": "Paperback",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 624,
+  "fields": {
+    "product": 196,
+    "name": "Topic",
+    "value": "Software Development",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 625,
+  "fields": {
+    "product": 196,
+    "name": "Skill Level",
+    "value": "Intermediate to Advanced",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 626,
+  "fields": {
+    "product": 197,
+    "name": "Author",
+    "value": "Yuval Noah Harari",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 627,
+  "fields": {
+    "product": 197,
+    "name": "Pages",
+    "value": "512",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 628,
+  "fields": {
+    "product": 197,
+    "name": "Format",
+    "value": "Paperback",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 629,
+  "fields": {
+    "product": 197,
+    "name": "Topic",
+    "value": "History, Anthropology",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 630,
+  "fields": {
+    "product": 197,
+    "name": "ISBN",
+    "value": "978-0062316110",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 631,
+  "fields": {
+    "product": 198,
+    "name": "Screen",
+    "value": "23.8\" HD Rotating Touchscreen",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 632,
+  "fields": {
+    "product": 198,
+    "name": "Resistance Levels",
+    "value": "100",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 633,
+  "fields": {
+    "product": 198,
+    "name": "Weight Capacity",
+    "value": "297 lbs",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 634,
+  "fields": {
+    "product": 198,
+    "name": "Dimensions",
+    "value": "59\"L x 22\"W x 53\"H",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 635,
+  "fields": {
+    "product": 198,
+    "name": "Subscription",
+    "value": "Required for full experience",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 636,
+  "fields": {
+    "product": 199,
+    "name": "Weight Range",
+    "value": "5-52.5 lbs per dumbbell",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 637,
+  "fields": {
+    "product": 199,
+    "name": "Increments",
+    "value": "2.5 lbs",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 638,
+  "fields": {
+    "product": 199,
+    "name": "Includes",
+    "value": "2 Dumbbells + Trays",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 639,
+  "fields": {
+    "product": 199,
+    "name": "Material",
+    "value": "Steel with rubber coating",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 640,
+  "fields": {
+    "product": 199,
+    "name": "Warranty",
+    "value": "2 Years",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 641,
+  "fields": {
+    "product": 200,
+    "name": "Force",
+    "value": "Up to 60 lbs",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 642,
+  "fields": {
+    "product": 200,
+    "name": "Speeds",
+    "value": "5 (1750-2400 PPMs)",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 643,
+  "fields": {
+    "product": 200,
+    "name": "Battery Life",
+    "value": "150 minutes",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 644,
+  "fields": {
+    "product": 200,
+    "name": "Attachments",
+    "value": "6 included",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 645,
+  "fields": {
+    "product": 200,
+    "name": "Warranty",
+    "value": "2 Years",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 646,
+  "fields": {
+    "product": 201,
+    "name": "Display",
+    "value": "1.4\" AMOLED",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 647,
+  "fields": {
+    "product": 201,
+    "name": "Battery",
+    "value": "Up to 23 days",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 648,
+  "fields": {
+    "product": 201,
+    "name": "Water Rating",
+    "value": "5 ATM",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 649,
+  "fields": {
+    "product": 201,
+    "name": "GPS",
+    "value": "Multi-band with maps",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 650,
+  "fields": {
+    "product": 201,
+    "name": "Music Storage",
+    "value": "Up to 2000 songs",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 651,
+  "fields": {
+    "product": 202,
+    "name": "Thickness",
+    "value": "6mm",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 652,
+  "fields": {
+    "product": 202,
+    "name": "Dimensions",
+    "value": "71\" x 26\"",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 653,
+  "fields": {
+    "product": 202,
+    "name": "Material",
+    "value": "PVC",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 654,
+  "fields": {
+    "product": 202,
+    "name": "Weight",
+    "value": "7.5 lbs",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 655,
+  "fields": {
+    "product": 202,
+    "name": "Warranty",
+    "value": "Lifetime Guarantee",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 656,
+  "fields": {
+    "product": 203,
+    "name": "Pieces",
+    "value": "921",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 657,
+  "fields": {
+    "product": 203,
+    "name": "Age Range",
+    "value": "9+ years",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 658,
+  "fields": {
+    "product": 203,
+    "name": "Minifigures",
+    "value": "6 included",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 659,
+  "fields": {
+    "product": 203,
+    "name": "Theme",
+    "value": "Star Wars",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 660,
+  "fields": {
+    "product": 203,
+    "name": "Dimensions",
+    "value": "17\" x 12\" x 5\"",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 661,
+  "fields": {
+    "product": 204,
+    "name": "Screen",
+    "value": "7\" OLED",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 662,
+  "fields": {
+    "product": 204,
+    "name": "Storage",
+    "value": "64GB",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 663,
+  "fields": {
+    "product": 204,
+    "name": "Battery Life",
+    "value": "4.5-9 hours",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 664,
+  "fields": {
+    "product": 204,
+    "name": "Modes",
+    "value": "TV, Tabletop, Handheld",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 665,
+  "fields": {
+    "product": 204,
+    "name": "Online",
+    "value": "Nintendo Switch Online required",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 666,
+  "fields": {
+    "product": 205,
+    "name": "Height",
+    "value": "3.75 feet",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 667,
+  "fields": {
+    "product": 205,
+    "name": "Rooms",
+    "value": "10 areas",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 668,
+  "fields": {
+    "product": 205,
+    "name": "Pieces",
+    "value": "75+ included",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 669,
+  "fields": {
+    "product": 205,
+    "name": "Age Range",
+    "value": "3-7 years",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 670,
+  "fields": {
+    "product": 205,
+    "name": "Assembly",
+    "value": "Adult assembly required",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 671,
+  "fields": {
+    "product": 206,
+    "name": "Pieces",
+    "value": "100",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 672,
+  "fields": {
+    "product": 206,
+    "name": "Material",
+    "value": "Solid Hardwood",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 673,
+  "fields": {
+    "product": 206,
+    "name": "Colors",
+    "value": "4 colors + natural",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 674,
+  "fields": {
+    "product": 206,
+    "name": "Age Range",
+    "value": "3+ years",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 675,
+  "fields": {
+    "product": 206,
+    "name": "Storage",
+    "value": "Wooden crate included",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 676,
+  "fields": {
+    "product": 207,
+    "name": "Players",
+    "value": "2-8",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 677,
+  "fields": {
+    "product": 207,
+    "name": "Age Range",
+    "value": "8+ years",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 678,
+  "fields": {
+    "product": 207,
+    "name": "Play Time",
+    "value": "60-180 minutes",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 679,
+  "fields": {
+    "product": 207,
+    "name": "Tokens",
+    "value": "8 metal tokens",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 680,
+  "fields": {
+    "product": 207,
+    "name": "Contents",
+    "value": "Board, cards, money, dice",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 681,
+  "fields": {
+    "product": 208,
+    "name": "Duration",
+    "value": "65+ hours",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 682,
+  "fields": {
+    "product": 208,
+    "name": "Skill Level",
+    "value": "Beginner to Advanced",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 683,
+  "fields": {
+    "product": 208,
+    "name": "Projects",
+    "value": "15 Real-World Projects",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 684,
+  "fields": {
+    "product": 208,
+    "name": "Access",
+    "value": "Lifetime",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 685,
+  "fields": {
+    "product": 208,
+    "name": "Certificate",
+    "value": "Yes",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 686,
+  "fields": {
+    "product": 209,
+    "name": "Apps Included",
+    "value": "20+",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 687,
+  "fields": {
+    "product": 209,
+    "name": "Cloud Storage",
+    "value": "100GB",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 688,
+  "fields": {
+    "product": 209,
+    "name": "Subscription",
+    "value": "12 Months",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 689,
+  "fields": {
+    "product": 209,
+    "name": "Platforms",
+    "value": "Windows, Mac, iOS, Android",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 690,
+  "fields": {
+    "product": 209,
+    "name": "Delivery",
+    "value": "Instant - Email License",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 691,
+  "fields": {
+    "product": 210,
+    "name": "Users",
+    "value": "Up to 6",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 692,
+  "fields": {
+    "product": 210,
+    "name": "Storage",
+    "value": "1TB per person",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 693,
+  "fields": {
+    "product": 210,
+    "name": "Apps",
+    "value": "Word, Excel, PowerPoint, Outlook",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 694,
+  "fields": {
+    "product": 210,
+    "name": "Subscription",
+    "value": "12 Months",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 695,
+  "fields": {
+    "product": 210,
+    "name": "Platforms",
+    "value": "PC, Mac, iOS, Android",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 696,
+  "fields": {
+    "product": 211,
+    "name": "Duration",
+    "value": "12 Months",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 697,
+  "fields": {
+    "product": 211,
+    "name": "Audio Quality",
+    "value": "Up to 320kbps",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 698,
+  "fields": {
+    "product": 211,
+    "name": "Offline Mode",
+    "value": "Yes",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 699,
+  "fields": {
+    "product": 211,
+    "name": "Ad-Free",
+    "value": "Yes",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 700,
+  "fields": {
+    "product": 211,
+    "name": "Delivery",
+    "value": "Instant - Code via email",
+    "order": 4
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 701,
+  "fields": {
+    "product": 212,
+    "name": "Subscription",
+    "value": "12 Months",
+    "order": 0
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 702,
+  "fields": {
+    "product": 212,
+    "name": "Premium Assets",
+    "value": "100+ million",
+    "order": 1
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 703,
+  "fields": {
+    "product": 212,
+    "name": "Storage",
+    "value": "1TB",
+    "order": 2
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 704,
+  "fields": {
+    "product": 212,
+    "name": "Brand Kits",
+    "value": "Unlimited",
+    "order": 3
+  }
+},
+{
+  "model": "products.productspecification",
+  "pk": 705,
+  "fields": {
+    "product": 212,
+    "name": "Team Features",
+    "value": "Up to 5 members",
+    "order": 4
+  }
+},
+{
+  "model": "products.shippingoption",
+  "pk": 6,
+  "fields": {
+    "name": "Standard Shipping",
+    "description": "Regular delivery via ground shipping.",
+    "price": "5.99",
+    "estimated_days_min": 5,
+    "estimated_days_max": 7,
+    "is_active": true,
+    "is_default": true,
+    "free_shipping_threshold": "50.00",
+    "regions": "worldwide",
+    "display_order": 1,
+    "created_at": "2025-12-25T20:59:14.279Z"
+  }
+},
+{
+  "model": "products.shippingoption",
+  "pk": 7,
+  "fields": {
+    "name": "Express Shipping",
+    "description": "Faster delivery with priority handling.",
+    "price": "12.99",
+    "estimated_days_min": 2,
+    "estimated_days_max": 3,
+    "is_active": true,
+    "is_default": false,
+    "free_shipping_threshold": "100.00",
+    "regions": "worldwide",
+    "display_order": 2,
+    "created_at": "2025-12-25T20:59:14.285Z"
+  }
+},
+{
+  "model": "products.shippingoption",
+  "pk": 8,
+  "fields": {
+    "name": "Next Day Delivery",
+    "description": "Order by 2 PM for next business day delivery.",
+    "price": "24.99",
+    "estimated_days_min": 1,
+    "estimated_days_max": 1,
+    "is_active": true,
+    "is_default": false,
+    "free_shipping_threshold": "200.00",
+    "regions": "worldwide",
+    "display_order": 3,
+    "created_at": "2025-12-25T20:59:14.291Z"
+  }
+},
+{
+  "model": "products.shippingoption",
+  "pk": 9,
+  "fields": {
+    "name": "Free Shipping",
+    "description": "Free standard shipping on qualifying orders.",
+    "price": "0.00",
+    "estimated_days_min": 7,
+    "estimated_days_max": 10,
+    "is_active": true,
+    "is_default": false,
+    "free_shipping_threshold": null,
+    "regions": "worldwide",
+    "display_order": 4,
+    "created_at": "2025-12-25T20:59:14.298Z"
+  }
+}
+]
