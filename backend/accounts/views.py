@@ -75,9 +75,8 @@ class AvatarUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Delete old avatar if exists
-        if request.user.avatar:
-            request.user.avatar.delete(save=False)
+        # For CloudinaryField, just assign the new file (old one stays in Cloudinary)
+        # If you want to delete old avatar from Cloudinary, use cloudinary.uploader.destroy()
 
         # Save new avatar
         request.user.avatar = avatar_file
@@ -90,7 +89,9 @@ class AvatarUploadView(APIView):
     def delete(self, request):
         """Remove avatar"""
         if request.user.avatar:
-            request.user.avatar.delete(save=True)
+            # For CloudinaryField, set to None/empty
+            request.user.avatar = None
+            request.user.save()
 
         serializer = UserSerializer(request.user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
