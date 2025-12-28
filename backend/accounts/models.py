@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from cloudinary.models import CloudinaryField  # Add this import
 
 
 class User(AbstractUser):
@@ -32,16 +33,16 @@ class User(AbstractUser):
         null=True,
         help_text="Country name (e.g., United States)"
     )
-    avatar = models.ImageField(
-        upload_to='avatars/',
+    avatar = CloudinaryField(  # ✅ Changed to CloudinaryField
+        'avatar',
         blank=True,
         null=True,
-        help_text="Profile picture (JPG, PNG)"
+        folder='avatars',  # Organizes files in Cloudinary
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    USERNAME_FIELD = 'email'  # Login with email
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     def __str__(self):

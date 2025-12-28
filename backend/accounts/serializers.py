@@ -1,8 +1,58 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from urllib.parse import unquote
+import re
 
 User = get_user_model()
+
+
+def get_cloudinary_url(image_field):
+    """Extract clean Cloudinary URL from image field"""
+    if not image_field:
+        return None
+
+    try:
+        if hasattr(image_field, 'url'):
+            url = image_field.url
+        else:
+            url = str(image_field)
+
+        if not url:
+            return None
+
+        # Decode URL-encoded characters
+        if '%3A' in url or '%2F' in url:
+            url = unquote(url)
+
+        # Fix malformed URLs
+        if '/media/' in url and 'cloudinary' in url:
+            url = url.replace('/media/', '')
+            if not url.startswith('http'):
+                url = 'https://' + url.lstrip('/')
+
+        if url.startswith('/https:/'):
+            url = 'https://' + url[8:]
+        elif url.startswith('/https://'):
+            url = url[1:]
+        elif url.startswith('https:/') and not url.startswith('https://'):
+            url = 'https://' + url[7:]
+
+        # Check for res.cloudinary.com
+        if 'res.cloudinary.com' in url and not url.startswith('http'):
+            match = re.search(r'(res\.cloudinary\.com/[^\s]+)', url)
+            if match:
+                url = 'https://' + match.group(1)
+
+        # If already a valid URL, return it
+        if url.startswith('https://') or url.startswith('http://'):
+            return url
+
+        return url
+
+    except Exception as e:
+        print(f"Error getting image URL: {e}")
+        return None
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,13 +70,8 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'email', 'username', 'created_at', 'updated_at', 'avatar_url']
 
     def get_avatar_url(self, obj):
-        """Return full URL for avatar"""
-        if obj.avatar:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.avatar.url)
-            return obj.avatar.url
-        return None
+        """Return full URL for avatar (Cloudinary compatible)"""
+        return get_cloudinary_url(obj.avatar)
 
     def update(self, instance, validated_data):
         """Update user profile fields"""
@@ -39,9 +84,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         # Handle avatar if provided
         if 'avatar' in validated_data:
-            # Delete old avatar if exists
-            if instance.avatar:
-                instance.avatar.delete(save=False)
             instance.avatar = validated_data.get('avatar')
 
         instance.save()
