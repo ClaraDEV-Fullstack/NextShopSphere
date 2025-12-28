@@ -277,6 +277,10 @@ const OrderDetail = () => {
                                                         src={getImageUrl(item.product_image)}
                                                         alt={item.product_name}
                                                         className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.src = '/placeholder-product.jpg';
+                                                        }}
                                                     />
                                                 </Link>
                                             ) : (
@@ -284,6 +288,10 @@ const OrderDetail = () => {
                                                     src={getImageUrl(item.product_image)}
                                                     alt={item.product_name}
                                                     className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = '/placeholder-product.jpg';
+                                                    }}
                                                 />
                                             )}
                                         </div>

@@ -28,14 +28,49 @@ import { useTheme } from '../../context/ThemeContext';
 import SmartSearch from '../search/SmartSearch';
 import toast from 'react-hot-toast';
 
-// Helper function to get user avatar
+
+// Helper function to get user avatar (Cloudinary compatible)
 const getUserAvatar = (user) => {
-    if (user?.avatar_url) return user.avatar_url;
-    if (user?.avatar) {
-        // If avatar is a relative path, prepend backend URL
-        if (user.avatar.startsWith('http')) return user.avatar;
-        return `http://127.0.0.1:8000${user.avatar}`;
+    // Prefer avatar_url (processed by backend)
+    if (user?.avatar_url) {
+        return user.avatar_url;
     }
+
+    if (user?.avatar) {
+        let url = user.avatar;
+
+        // Already a valid URL
+        if (url.startsWith('https://') || url.startsWith('http://')) {
+            return url;
+        }
+
+        // Fix malformed Cloudinary URLs
+        if (url.includes('res.cloudinary.com')) {
+            // Extract cloudinary path
+            const match = url.match(/(res\.cloudinary\.com\/[^\s]+)/);
+            if (match) {
+                return 'https://' + match[1];
+            }
+        }
+
+        // Fix /media/https:/ pattern
+        if (url.includes('/media/') && url.includes('cloudinary')) {
+            url = url.replace('/media/', '');
+            if (url.startsWith('https:/') && !url.startsWith('https://')) {
+                url = 'https://' + url.substring(7);
+            }
+            return url;
+        }
+
+        // For relative paths, use environment variable or fallback
+        if (url.startsWith('/')) {
+            const baseUrl = import.meta.env.VITE_API_URL || 'https://nextshopsphere.onrender.com';
+            return `${baseUrl}${url}`;
+        }
+
+        return url;
+    }
+
     return null;
 };
 

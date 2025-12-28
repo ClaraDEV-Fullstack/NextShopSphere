@@ -272,8 +272,8 @@ const Profile = () => {
                                 <div className="relative -mt-10 md:-mt-12 mb-3">
                                     <div className="relative inline-block">
                                         <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center overflow-hidden border-3 md:border-4 border-white shadow-lg">
-                                            {user.avatar ? (
-                                                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                                            {(user.avatar_url || user.avatar) ? (
+                                                <img src={user.avatar_url || user.avatar} alt="Profile" className="w-full h-full object-cover" />
                                             ) : (
                                                 <HiUser className="w-8 h-8 md:w-10 md:h-10 text-blue-500" />
                                             )}

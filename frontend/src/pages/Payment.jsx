@@ -410,6 +410,10 @@ const Payment = () => {
                                                 src={getImageUrl(item.product_image)}
                                                 alt={item.product_name}
                                                 className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNGM0Y0RjYiLz48cGF0aCBkPSJNODAgODVIMTIwVjExNUg4MFY4NVoiIGZpbGw9IiNEMUQ1REIiLz48cGF0aCBkPSJNNzAgMTI1SDEzMFYxMzBINzBWMTI1WiIgZmlsbD0iI0QxRDVEQiIvPjwvc3ZnPg==';
+                                                }}
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
