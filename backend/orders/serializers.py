@@ -99,7 +99,7 @@ class CreateOrderSerializer(serializers.Serializer):
 
             image_url = None
             if primary_image:
-                image_url = primary_image.image.url
+                image_url = str(primary_image.image)
 
             OrderItem.objects.create(
                 order=order,

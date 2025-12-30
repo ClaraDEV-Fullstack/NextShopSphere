@@ -406,7 +406,7 @@ const Home = () => {
                             transition={{ duration: 0.8, delay: 0.2 }}
                             className="relative flex items-center justify-center order-1 lg:order-2 w-full"
                         >
-                            <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[400px] lg:max-w-lg xl:max-w-xl">
+                            <div className="relative w-[100%] max-w-full mx-auto">
                                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-500/30 rounded-[30px] md:rounded-[40px] blur-2xl md:blur-3xl transform scale-90" />
 
                                 <motion.div
@@ -421,31 +421,14 @@ const Home = () => {
                                     className="relative"
                                 >
                                     <img
-                                        src="/images/hero-shopping.jpg"  // Changed to local image
+                                        src="/images/hero-shopping.jpg"
                                         alt="Premium Shopping Experience"
-                                        className="w-full h-[200px] sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[500px] object-cover rounded-[30px] md:rounded-[40px] shadow-2xl"
+                                        className="w-full h-[220px] sm:h-[280px] md:h-[380px] lg:h-[450px] xl:h-[520px] object-cover rounded-[30px] md:rounded-[40px] shadow-2xl"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-primary-900/60 via-transparent to-transparent rounded-[30px] md:rounded-[40px]" />
                                 </motion.div>
 
                                 {/* Floating Cards */}
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.6, delay: 0.6 }}
-                                    whileHover={{ scale: 1.05, y: -5 }}
-                                    className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 md:-top-4 md:-right-4 xl:-top-6 xl:-right-8 bg-white rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4 shadow-xl"
-                                >
-                                    <div className="flex items-center gap-2 md:gap-3">
-                                        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg md:rounded-xl flex items-center justify-center">
-                                            <HiShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
-                                        </div>
-                                        <div className="hidden sm:block">
-                                            <p className="text-[10px] md:text-xs text-gray-500">New Arrivals</p>
-                                            <p className="text-xs md:text-sm font-bold text-gray-900">1000+ Products</p>
-                                        </div>
-                                    </div>
-                                </motion.div>
 
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
@@ -656,55 +639,50 @@ const Home = () => {
 
             {/* Featured Products */}
             {featuredProducts.length > 0 && (
-                <section className="py-16 md:py-20 bg-gradient-to-br from-white via-emerald-50/40 to-teal-50/30 dark:from-secondary-900 dark:via-secondary-900 dark:to-secondary-800 relative overflow-hidden">
-                    {/* Decorative Background Elements */}
+                <section className="py-6 sm:py-10 md:py-14 bg-gradient-to-b from-green-50 via-emerald-50/30 to-white dark:from-secondary-900 dark:via-secondary-800/50 dark:to-secondary-900 relative">
+                    {/* Subtle Background */}
                     <div className="absolute inset-0 pointer-events-none">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-100/50 dark:bg-emerald-900/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                        <div className="absolute bottom-0 left-0 w-80 h-80 bg-teal-100/50 dark:bg-teal-900/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+                        <div className="absolute top-0 right-0 w-48 h-48 sm:w-72 sm:h-72 bg-gradient-to-bl from-green-100/50 to-transparent dark:from-green-900/20 rounded-full blur-2xl" />
+                        <div className="absolute bottom-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-gradient-to-tr from-emerald-100/50 to-transparent dark:from-emerald-900/20 rounded-full blur-2xl" />
                     </div>
 
-                    <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-4 relative">
-                        {/* Section Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 md:mb-12">
-                            <div className="flex items-start gap-3 md:gap-4">
-                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25 flex-shrink-0">
-                                    <HiSparkles className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative">
+                        {/* Compact Header */}
+                        <div className="flex items-center justify-between mb-3 sm:mb-5">
+                            <div className="flex items-center gap-2 sm:gap-2.5">
+                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center shadow-md shadow-green-500/20">
+                                    <HiSparkles className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-white" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-secondary-900 dark:text-white mb-1">
-                                        Featured Products
-                                    </h2>
-                                    <p className="text-secondary-500 dark:text-secondary-400 text-base md:text-lg">
-                                        Handpicked just for you
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-secondary-900 dark:text-white">
+                                            Featured
+                                        </h2>
+                                        <span className="hidden xs:inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 rounded">
+                                {featuredProducts.length}
+                            </span>
+                                    </div>
+                                    <p className="text-[10px] sm:text-xs text-secondary-500 dark:text-secondary-400">
+                                        Curated picks
                                     </p>
                                 </div>
                             </div>
 
                             <Link
                                 to="/products?featured=true"
-                                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-secondary-800 text-emerald-600 dark:text-emerald-400 font-semibold rounded-full shadow-sm border-emerald-100 dark:border-secondary-700 hover:shadow-md hover:border-emerald-200 dark:hover:border-secondary-600 transition-all group"
+                                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
                             >
-                                View All
-                                <HiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                <span className="hidden xs:inline">See all</span>
+                                <span className="xs:hidden">All</span>
+                                <HiArrowRight className="w-3.5 h-3.5" />
                             </Link>
                         </div>
 
-                        {/* Products Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+                        {/* Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
                             {featuredProducts.slice(0, 8).map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
-                        </div>
-
-                        {/* Mobile View All */}
-                        <div className="mt-10 text-center sm:hidden">
-                            <Link
-                                to="/products?featured=true"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30 transition-all"
-                            >
-                                View All Featured
-                                <HiArrowRight className="w-5 h-5" />
-                            </Link>
                         </div>
                     </div>
                 </section>
@@ -712,32 +690,44 @@ const Home = () => {
 
             {/* Sale Banner */}
             {onSale.length > 0 && (
-                <section className="py-12 md:py-16 bg-gradient-to-r from-amber-100 to-yellow-200 text-amber-900">
-                    <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-4">
-                        <div className="text-center mb-8 md:mb-10">
-                            <span className="inline-block px-4 py-2 bg-amber-500/30 backdrop-blur-sm rounded-full text-sm font-medium mb-4">
-                                🔥 Limited Time Offer
+                <section className="py-6 sm:py-10 md:py-12 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 dark:from-amber-900/20 dark:via-yellow-900/20 dark:to-amber-900/20 border-y border-amber-200/50 dark:border-amber-800/30">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-3 sm:mb-5">
+                            <div className="flex items-center gap-2 sm:gap-2.5">
+                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-md shadow-amber-500/20">
+                                    <HiTag className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-white" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-amber-900 dark:text-amber-100">
+                                            Hot Deals
+                                        </h2>
+                                        <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold bg-red-500 text-white rounded animate-pulse">
+                                SALE
                             </span>
-                            <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">Hot Deals & Discounts</h2>
-                            <p className="text-amber-800 max-w-2xl mx-auto text-sm md:text-base">
-                                Don't miss out on these amazing deals. Save up to 50% on selected items!
-                            </p>
+                                    </div>
+                                    <p className="text-[10px] sm:text-xs text-amber-700 dark:text-amber-400">
+                                        Up to 50% off
+                                    </p>
+                                </div>
+                            </div>
+
+                            <Link
+                                to="/products?on_sale=true"
+                                className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40 hover:bg-amber-200 dark:hover:bg-amber-900/60 rounded-lg transition-colors"
+                            >
+                                <span className="hidden xs:inline">View All</span>
+                                <span className="xs:hidden">All</span>
+                                <HiArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                            </Link>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+                        {/* Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
                             {onSale.slice(0, 4).map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
-                        </div>
-
-                        <div className="text-center mt-8 md:mt-10">
-                            <Link
-                                to="/products?on_sale=true"
-                                className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-semibold rounded-xl hover:from-amber-700 hover:to-yellow-700 transition-all shadow-lg"
-                            >
-                                View All Deals
-                                <HiArrowRight className="w-5 h-5" />
-                            </Link>
                         </div>
                     </div>
                 </section>
@@ -745,32 +735,41 @@ const Home = () => {
 
             {/* New Arrivals */}
             {newArrivals.length > 0 && (
-                <section className="py-12 md:py-16 bg-secondary-50 dark:bg-secondary-800/50">
-                    <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-4">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-10">
-                            <div className="flex items-center gap-3 mb-4 md:mb-0">
-                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                    <HiLightningBolt className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
+                <section className="py-6 sm:py-10 md:py-12 bg-white dark:bg-secondary-900">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-3 sm:mb-5">
+                            <div className="flex items-center gap-2 sm:gap-2.5">
+                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-blue-600 to-sky-500 flex items-center justify-center shadow-md shadow-blue-500/20">
+                                    <HiLightningBolt className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-white" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl md:text-3xl font-bold text-secondary-900 dark:text-white">
-                                        New Arrivals
-                                    </h2>
-                                    <p className="text-secondary-500 dark:text-secondary-400 text-sm md:text-base">
-                                        The latest additions to our collection
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-secondary-900 dark:text-white">
+                                            New Arrivals
+                                        </h2>
+                                        <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded">
+                                NEW
+                            </span>
+                                    </div>
+                                    <p className="text-[10px] sm:text-xs text-secondary-500 dark:text-secondary-400">
+                                        Latest additions
                                     </p>
                                 </div>
                             </div>
+
                             <Link
                                 to="/products?ordering=-created_at"
-                                className="hidden md:flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
+                                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                             >
-                                View All
-                                <HiArrowRight className="w-5 h-5" />
+                                <span className="hidden xs:inline">View All</span>
+                                <span className="xs:hidden">All</span>
+                                <HiArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             </Link>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+                        {/* Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
                             {newArrivals.slice(0, 8).map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
@@ -781,51 +780,45 @@ const Home = () => {
 
             {/* Bestsellers */}
             {bestsellers.length > 0 && (
-                <section className="py-12 md:py-16 bg-gradient-to-br from-emerald-50 to-teal-50">
-                    <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-4">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-10">
-                            <div className="flex items-center gap-3 mb-4 md:mb-0">
-                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
-                                    <HiStar className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                <section className="py-6 sm:py-10 md:py-12 bg-gradient-to-b from-sky-100/70 to-white dark:from-secondary-800/50 dark:to-secondary-900">
+                    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-3 sm:mb-5">
+                            <div className="flex items-center gap-2 sm:gap-2.5">
+                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-md shadow-amber-500/20">
+                                    <HiStar className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-white" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                                        Bestsellers
-                                    </h2>
-                                    <p className="text-gray-600 mt-1 text-sm md:text-base">
-                                        Most loved by our customers
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-secondary-900 dark:text-white">
+                                            Bestsellers
+                                        </h2>
+                                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 rounded">
+                                <HiStar className="w-2.5 h-2.5" />
+                                TOP
+                            </span>
+                                    </div>
+                                    <p className="text-[10px] sm:text-xs text-secondary-500 dark:text-secondary-400">
+                                        Customer favorites
                                     </p>
                                 </div>
                             </div>
+
                             <Link
                                 to="/products?is_bestseller=true"
-                                className="hidden md:flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium"
+                                className="flex items-center gap-1 text-xs sm:text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors"
                             >
-                                View All
-                                <HiArrowRight className="w-5 h-5" />
+                                <span className="hidden xs:inline">View All</span>
+                                <span className="xs:hidden">All</span>
+                                <HiArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             </Link>
                         </div>
 
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 rounded-3xl blur-xl"></div>
-                            <div className="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
-                                {bestsellers.slice(0, 8).map((product, index) => (
-                                    <div
-                                        key={product.id}
-                                        className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-emerald-100 transform hover:-translate-y-1"
-                                        style={{ animationDelay: `${index * 0.05}s` }}
-                                    >
-                                        <ProductCard product={product} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="mt-10 md:mt-12 text-center">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full text-xs md:text-sm font-medium">
-                                <HiStar className="w-4 h-4" />
-                                Based on customer ratings and sales data
-                            </div>
+                        {/* Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
+                            {bestsellers.slice(0, 8).map((product) => (
+                                <ProductCard key={product.id} product={product} />
+                            ))}
                         </div>
                     </div>
                 </section>

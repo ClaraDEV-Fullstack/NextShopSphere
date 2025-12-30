@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     HiMinus, HiPlus, HiShoppingCart, HiCheck, HiStar,
     HiChevronRight, HiHome, HiTag, HiUser, HiChatAlt2,
-    HiDocumentText, HiShare, HiHeart
+    HiDocumentText, HiShare, HiHeart, HiShieldCheck,
+    HiTruck, HiRefresh, HiCube, HiChevronLeft
 } from 'react-icons/hi';
 import { productsAPI, reviewsAPI } from '../api/api';
 import { addToCart, openCart } from '../store/cartSlice';
@@ -29,6 +30,7 @@ const ProductDetail = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
 
     // Reviews
     const [reviews, setReviews] = useState([]);
@@ -82,15 +84,12 @@ const ProductDetail = () => {
         }
     };
 
-    // At the top, update the handleAddToCart function:
     const handleAddToCart = () => {
         if (!product) return;
+        setIsAddingToCart(true);
 
-        // Get the primary image URL correctly
         let imageUrl = null;
-
         if (product.images && product.images.length > 0) {
-            // Use image_url from the first image
             imageUrl = getImageUrl(product.images[0]);
         } else if (product.primary_image) {
             imageUrl = getImageUrl(product.primary_image);
@@ -105,8 +104,12 @@ const ProductDetail = () => {
                 slug: product.slug,
             }));
         }
-        dispatch(openCart());
-        toast.success(`Added ${quantity} item(s) to cart!`);
+
+        setTimeout(() => {
+            dispatch(openCart());
+            toast.success(`Added ${quantity} item(s) to cart!`);
+            setIsAddingToCart(false);
+        }, 300);
     };
 
     const handleSubmitReview = async (reviewData) => {
@@ -125,10 +128,17 @@ const ProductDetail = () => {
     // Loading State
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50/30">
                 <div className="text-center">
-                    <Loader size="lg" />
-                    <p className="text-gray-500 mt-4 text-sm">Loading product...</p>
+                    <div className="relative">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-indigo-100 flex items-center justify-center mx-auto animate-pulse">
+                            <HiCube className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400" />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <Loader size="lg" />
+                        </div>
+                    </div>
+                    <p className="text-gray-500 mt-4 text-xs sm:text-sm">Loading product details...</p>
                 </div>
             </div>
         );
@@ -137,15 +147,18 @@ const ProductDetail = () => {
     // Not Found State
     if (!product) {
         return (
-            <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+            <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-50 to-indigo-50/30">
                 <div className="text-center max-w-sm">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <HiTag className="w-8 h-8 text-blue-500" />
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <HiTag className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-500" />
                     </div>
-                    <h1 className="text-xl font-bold mb-2">Product Not Found</h1>
-                    <p className="text-gray-500 mb-6 text-sm">This product doesn't exist or has been removed.</p>
-                    <Link to="/products" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-full hover:bg-blue-700 transition-colors">
-                        <HiChevronRight className="w-4 h-4 rotate-180" />
+                    <h1 className="text-lg sm:text-xl font-bold mb-2 text-gray-900">Product Not Found</h1>
+                    <p className="text-gray-500 mb-4 sm:mb-6 text-xs sm:text-sm">This product doesn't exist or has been removed.</p>
+                    <Link
+                        to="/products"
+                        className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25"
+                    >
+                        <HiChevronLeft className="w-4 h-4" />
                         Back to Products
                     </Link>
                 </div>
@@ -153,12 +166,10 @@ const ProductDetail = () => {
         );
     }
 
-    // Prepare images array - USE image_url field
+    // Prepare images array
     const images = [];
-
     if (product.images && product.images.length > 0) {
         product.images.forEach(img => {
-            // Prefer image_url (processed URL from serializer)
             const imgUrl = getImageUrl(img);
             if (imgUrl && !images.find(i => i.image === imgUrl)) {
                 images.push({
@@ -168,8 +179,6 @@ const ProductDetail = () => {
             }
         });
     }
-
-// Fallback if no images
     if (images.length === 0) {
         images.push({
             image: '/placeholder-product.jpg',
@@ -178,91 +187,124 @@ const ProductDetail = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
-
-            {/* Breadcrumb - Compact */}
-            <div className="bg-white border-b border-gray-100">
-                <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-2 md:py-3">
-                    <nav className="text-xs md:text-sm">
-                        <ol className="flex items-center gap-1.5 md:gap-2 text-gray-500 overflow-x-auto whitespace-nowrap">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+            {/* Breadcrumb */}
+            <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-10">
+                <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto py-2 sm:py-2.5">
+                    <nav className="text-[10px] sm:text-xs md:text-sm">
+                        <ol className="flex items-center gap-1 sm:gap-1.5 text-gray-500 overflow-x-auto whitespace-nowrap scrollbar-hide">
                             <li>
-                                <Link to="/" className="flex items-center gap-1 hover:text-blue-600 transition-colors">
-                                    <HiHome className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                    <span className="hidden sm:inline">Home</span>
+                                <Link to="/" className="flex items-center gap-1 hover:text-indigo-600 transition-colors p-1">
+                                    <HiHome className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                    <span className="hidden xs:inline">Home</span>
                                 </Link>
                             </li>
-                            <li className="text-gray-300">/</li>
+                            <HiChevronRight className="w-3 h-3 text-gray-300 flex-shrink-0" />
                             <li>
-                                <Link to="/products" className="hover:text-blue-600 transition-colors">Products</Link>
+                                <Link to="/products" className="hover:text-indigo-600 transition-colors p-1">Products</Link>
                             </li>
                             {product.category && (
                                 <>
-                                    <li className="text-gray-300">/</li>
+                                    <HiChevronRight className="w-3 h-3 text-gray-300 flex-shrink-0" />
                                     <li>
-                                        <Link to={`/products?category=${product.category.slug}`} className="hover:text-blue-600 transition-colors">
+                                        <Link to={`/products?category=${product.category.slug}`} className="hover:text-indigo-600 transition-colors p-1">
                                             {product.category.name}
                                         </Link>
                                     </li>
                                 </>
                             )}
-                            <li className="text-gray-300">/</li>
-                            <li className="text-gray-900 font-medium truncate max-w-[120px] md:max-w-xs">{product.name}</li>
+                            <HiChevronRight className="w-3 h-3 text-gray-300 flex-shrink-0" />
+                            <li className="text-gray-800 font-medium truncate max-w-[100px] sm:max-w-[150px] md:max-w-xs">{product.name}</li>
                         </ol>
                     </nav>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-8">
+            <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto py-3 sm:py-4 md:py-6 lg:py-8">
 
                 {/* Product Detail Grid */}
-                <div className="grid lg:grid-cols-2 gap-4 md:gap-8 lg:gap-12 mb-8 md:mb-16">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 xl:gap-12 mb-6 sm:mb-8 md:mb-12">
 
                     {/* Images Section */}
-                    <div className="space-y-3 md:space-y-4">
+                    <div className="space-y-2 sm:space-y-3">
                         {/* Main Image */}
-                        <div className="relative aspect-square bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+                        <div className="relative aspect-square bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-gray-100 group">
                             {images[selectedImage]?.image ? (
                                 <img
                                     src={images[selectedImage].image}
                                     alt={images[selectedImage].alt}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-50">
-                                    <HiTag className="w-16 h-16 text-gray-300" />
+                                    <HiCube className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300" />
                                 </div>
                             )}
 
-                            {/* Discount Badge */}
-                            {product.discount_percentage > 0 && (
-                                <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-red-500 text-white px-2 py-1 rounded-lg text-xs md:text-sm font-bold shadow-lg">
-                                    -{product.discount_percentage}%
-                                </div>
+                            {/* Image Navigation Arrows */}
+                            {images.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={() => setSelectedImage(prev => prev === 0 ? images.length - 1 : prev - 1)}
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                                    >
+                                        <HiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedImage(prev => prev === images.length - 1 ? 0 : prev + 1)}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                                    >
+                                        <HiChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                                    </button>
+                                </>
                             )}
 
-                            {/* Badges */}
-                            <div className="absolute top-2 right-2 md:top-3 md:right-3 flex flex-col gap-1.5">
+                            {/* Badges Container */}
+                            <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-1.5">
+                                {product.discount_percentage > 0 && (
+                                    <span className="bg-gradient-to-r from-red-500 to-rose-500 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-bold shadow-lg">
+                                        -{product.discount_percentage}% OFF
+                                    </span>
+                                )}
                                 {product.is_new && (
-                                    <span className="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-medium">NEW</span>
+                                    <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-bold shadow-lg">
+                                        NEW
+                                    </span>
                                 )}
                                 {product.is_bestseller && (
-                                    <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-medium">BESTSELLER</span>
+                                    <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-bold shadow-lg">
+                                        BESTSELLER
+                                    </span>
                                 )}
                             </div>
+
+                            {/* Share & Wishlist - Desktop */}
+                            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 sm:gap-2">
+                                <button className="w-8 h-8 sm:w-9 sm:h-9 bg-white/90 backdrop-blur-sm rounded-full shadow-md flex items-center justify-center hover:bg-white hover:scale-110 transition-all">
+                                    <HiShare className="w-4 h-4 text-gray-600" />
+                                </button>
+                            </div>
+
+                            {/* Image Counter */}
+                            {images.length > 1 && (
+                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white text-[10px] sm:text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">
+                                    {selectedImage + 1} / {images.length}
+                                </div>
+                            )}
                         </div>
 
                         {/* Thumbnail Images */}
                         {images.length > 1 && (
-                            <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-hide">
                                 {images.map((img, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedImage(idx)}
-                                        className={`w-14 h-14 md:w-20 md:h-20 rounded-lg md:rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
+                                        className={`w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-lg sm:rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
                                             selectedImage === idx
-                                                ? 'border-blue-500 ring-2 ring-blue-200 scale-105'
-                                                : 'border-gray-200 hover:border-blue-300'
+                                                ? 'border-indigo-500 ring-2 ring-indigo-200 scale-105 shadow-md'
+                                                : 'border-gray-200 hover:border-indigo-300 opacity-70 hover:opacity-100'
                                         }`}
                                     >
                                         <img src={img.image} alt={img.alt} className="w-full h-full object-cover" />
@@ -270,56 +312,75 @@ const ProductDetail = () => {
                                 ))}
                             </div>
                         )}
+
+                        {/* Trust Badges - Mobile Only */}
+                        <div className="grid grid-cols-3 gap-2 lg:hidden mt-2">
+                            {[
+                                { icon: HiTruck, label: 'Free Shipping', sub: 'Orders $50+' },
+                                { icon: HiShieldCheck, label: 'Secure', sub: 'Checkout' },
+                                { icon: HiRefresh, label: 'Easy', sub: 'Returns' },
+                            ].map((item, idx) => (
+                                <div key={idx} className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-lg p-2 text-center">
+                                    <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-500 mx-auto mb-0.5" />
+                                    <p className="text-[9px] sm:text-[10px] font-medium text-gray-800">{item.label}</p>
+                                    <p className="text-[8px] sm:text-[9px] text-gray-500">{item.sub}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Product Info */}
-                    <div className="space-y-4 md:space-y-6">
-
+                    <div className="space-y-3 sm:space-y-4">
                         {/* Category Badge */}
                         {product.category && (
                             <Link
                                 to={`/products?category=${product.category.slug}`}
-                                className="inline-flex items-center gap-1.5 text-xs md:text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full transition-colors"
+                                className="inline-flex items-center gap-1 text-[10px] sm:text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full transition-colors font-medium"
                             >
-                                <HiTag className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                <HiTag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                 {product.category.name}
                             </Link>
                         )}
 
                         {/* Product Name */}
-                        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">
+                        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">
                             {product.name}
                         </h1>
 
-                        {/* Rating */}
+                        {/* Rating & Reviews */}
                         {reviewStats && reviewStats.total_reviews > 0 && (
-                            <div className="flex items-center gap-2 md:gap-3">
-                                <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg">
-                                    <HiStar className="w-4 h-4 text-amber-500 fill-current" />
-                                    <span className="text-sm font-semibold text-amber-700">{reviewStats.average_rating}</span>
+                            <button
+                                onClick={() => setActiveTab('reviews')}
+                                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                            >
+                                <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                                    <HiStar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 fill-current" />
+                                    <span className="text-xs sm:text-sm font-bold text-amber-700">{reviewStats.average_rating}</span>
                                 </div>
-                                <span className="text-xs md:text-sm text-gray-500">
-                                    ({reviewStats.total_reviews} {reviewStats.total_reviews === 1 ? 'review' : 'reviews'})
+                                <span className="text-[10px] sm:text-xs text-gray-500 underline underline-offset-2">
+                                    {reviewStats.total_reviews} {reviewStats.total_reviews === 1 ? 'review' : 'reviews'}
                                 </span>
-                            </div>
+                            </button>
                         )}
 
                         {/* Price Section */}
-                        <div className="flex flex-wrap items-baseline gap-2 md:gap-3">
-                            <span className="text-2xl md:text-3xl font-bold text-blue-600">${product.price}</span>
+                        <div className="flex flex-wrap items-baseline gap-2 sm:gap-3 py-2 sm:py-3 border-y border-gray-100">
+                            <span className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                ${product.price}
+                            </span>
                             {product.compare_price && (
-                                <span className="text-lg md:text-xl text-gray-400 line-through">${product.compare_price}</span>
-                            )}
-                            {product.discount_percentage > 0 && (
-                                <span className="text-xs md:text-sm text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded">
-                                    Save ${(product.compare_price - product.price).toFixed(2)}
-                                </span>
+                                <>
+                                    <span className="text-base sm:text-lg md:text-xl text-gray-400 line-through">${product.compare_price}</span>
+                                    <span className="text-[10px] sm:text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                                        Save ${(product.compare_price - product.price).toFixed(2)}
+                                    </span>
+                                </>
                             )}
                         </div>
 
                         {/* Short Description */}
                         {product.short_description && (
-                            <p className="text-sm md:text-base text-gray-600 leading-relaxed bg-gray-50 p-3 md:p-4 rounded-xl border border-gray-100">
+                            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
                                 {product.short_description}
                             </p>
                         )}
@@ -327,115 +388,153 @@ const ProductDetail = () => {
                         {/* Stock Status */}
                         <div className="flex items-center gap-2">
                             {product.in_stock ? (
-                                <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full text-xs md:text-sm font-medium">
-                                    <HiCheck className="w-4 h-4" />
+                                <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium border border-emerald-100">
+                                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                                     <span>In Stock</span>
-                                    <span className="text-emerald-600">({product.stock} available)</span>
+                                    <span className="text-emerald-600">• {product.stock} available</span>
                                 </div>
                             ) : (
-                                <div className="text-red-700 bg-red-50 px-3 py-1.5 rounded-full text-xs md:text-sm font-medium">
+                                <div className="flex items-center gap-1.5 text-red-700 bg-red-50 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium border border-red-100">
+                                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full"></div>
                                     Out of Stock
                                 </div>
                             )}
                         </div>
 
                         {/* Quantity & Add to Cart */}
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            {/* Quantity Selector */}
-                            <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                        <div className="flex flex-col gap-2 sm:gap-3 pt-2">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                {/* Quantity Selector */}
+                                <div className="flex items-center bg-gray-100 rounded-lg sm:rounded-xl overflow-hidden">
+                                    <button
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        disabled={quantity <= 1}
+                                        className="p-2 sm:p-2.5 md:p-3 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        <HiMinus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                    </button>
+                                    <span className="px-3 sm:px-4 md:px-5 font-bold text-sm sm:text-base md:text-lg min-w-[2rem] sm:min-w-[2.5rem] text-center text-gray-800">
+                                        {quantity}
+                                    </span>
+                                    <button
+                                        onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                                        disabled={quantity >= product.stock}
+                                        className="p-2 sm:p-2.5 md:p-3 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        <HiPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                    </button>
+                                </div>
+
+                                {/* Add to Cart Button */}
                                 <button
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    disabled={quantity <= 1}
-                                    className="p-2.5 md:p-3 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    onClick={handleAddToCart}
+                                    disabled={!product.in_stock || isAddingToCart}
+                                    className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-2.5 sm:py-3 md:py-3.5 px-4 sm:px-5 md:px-6 rounded-lg sm:rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm md:text-base active:scale-[0.98]"
                                 >
-                                    <HiMinus className="w-4 h-4 md:w-5 md:h-5" />
+                                    {isAddingToCart ? (
+                                        <>
+                                            <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            <span className="hidden xs:inline">Adding...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <HiShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                                            <span>Add to Cart</span>
+                                        </>
+                                    )}
                                 </button>
-                                <span className="px-4 md:px-5 font-semibold text-base md:text-lg min-w-[2.5rem] text-center">{quantity}</span>
-                                <button
-                                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                                    disabled={quantity >= product.stock}
-                                    className="p-2.5 md:p-3 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <HiPlus className="w-4 h-4 md:w-5 md:h-5" />
-                                </button>
+
+                                {/* Wishlist Button - Desktop */}
+                                <div className="hidden sm:block">
+                                    <WishlistButton productId={product.id} size="md" />
+                                </div>
                             </div>
 
-                            {/* Add to Cart Button */}
-                            <button
-                                onClick={handleAddToCart}
-                                disabled={!product.in_stock}
-                                className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
-                            >
-                                <HiShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
-                                Add to Cart
-                            </button>
-
-                            {/* Wishlist Button */}
-                            <div className="hidden sm:block">
-                                <WishlistButton productId={product.id} size="md" />
+                            {/* Mobile Wishlist & Share */}
+                            <div className="flex sm:hidden gap-2">
+                                <WishlistButton productId={product.id} size="sm" className="flex-1" />
+                                <button className="flex-1 flex items-center justify-center gap-1.5 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-xs font-medium text-gray-600">
+                                    <HiShare className="w-4 h-4" />
+                                    Share
+                                </button>
                             </div>
                         </div>
 
-                        {/* Mobile Wishlist */}
-                        <div className="flex sm:hidden gap-2">
-                            <WishlistButton productId={product.id} size="md" className="flex-1" />
-                            <button className="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                                <HiShare className="w-5 h-5 text-gray-600" />
-                            </button>
+                        {/* SKU & Meta */}
+                        <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-gray-500 pt-2 border-t border-gray-100">
+                            <span className="bg-gray-100 px-2 py-1 rounded font-mono">
+                                SKU: <span className="text-gray-700 font-medium">{product.sku}</span>
+                            </span>
+                            {product.category && (
+                                <span className="bg-gray-100 px-2 py-1 rounded">
+                                    Category: <span className="text-gray-700 font-medium">{product.category.name}</span>
+                                </span>
+                            )}
                         </div>
 
-                        {/* SKU */}
-                        <div className="text-xs md:text-sm text-gray-500 bg-gray-50 p-2.5 md:p-3 rounded-lg inline-flex items-center gap-2">
-                            <span>SKU:</span>
-                            <span className="font-mono font-medium text-gray-700">{product.sku}</span>
+                        {/* Trust Badges - Desktop */}
+                        <div className="hidden lg:grid grid-cols-3 gap-2 pt-3">
+                            {[
+                                { icon: HiTruck, label: 'Free Shipping', desc: 'On orders $50+', color: 'indigo' },
+                                { icon: HiShieldCheck, label: 'Secure Checkout', desc: '256-bit SSL', color: 'emerald' },
+                                { icon: HiRefresh, label: 'Easy Returns', desc: '30-day policy', color: 'amber' },
+                            ].map((item, idx) => (
+                                <div key={idx} className="bg-white border border-gray-100 rounded-xl p-3 text-center hover:shadow-md transition-shadow">
+                                    <item.icon className={`w-5 h-5 text-${item.color}-500 mx-auto mb-1`} />
+                                    <p className="text-xs font-semibold text-gray-800">{item.label}</p>
+                                    <p className="text-[10px] text-gray-500">{item.desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Tabs Section - Mobile Friendly */}
-                <div className="mb-8 md:mb-16">
+                {/* Tabs Section */}
+                <div className="mb-6 sm:mb-8 md:mb-12">
                     {/* Tab Headers */}
-                    <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-4 md:mb-6 overflow-x-auto">
+                    <div className="flex bg-gray-100/80 backdrop-blur-sm p-1 rounded-lg sm:rounded-xl mb-3 sm:mb-4 overflow-x-auto gap-1 sticky top-12 z-10">
                         {[
-                            { id: 'description', label: 'Description', icon: HiDocumentText },
-                            { id: 'reviews', label: `Reviews (${reviewStats?.total_reviews || 0})`, icon: HiChatAlt2 },
+                            { id: 'description', label: 'Description', mobileLabel: 'Details', icon: HiDocumentText },
+                            { id: 'reviews', label: `Reviews (${reviewStats?.total_reviews || 0})`, mobileLabel: `Reviews (${reviewStats?.total_reviews || 0})`, icon: HiChatAlt2 },
                         ].map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex-1 flex items-center justify-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap ${
+                                className={`flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs md:text-sm font-medium transition-all whitespace-nowrap ${
                                     activeTab === tab.id
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-white text-indigo-600 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                                 }`}
                             >
-                                <tab.icon className="w-4 h-4" />
-                                {tab.label}
+                                <tab.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <span className="hidden xs:inline">{tab.label}</span>
+                                <span className="xs:hidden">{tab.mobileLabel}</span>
                             </button>
                         ))}
                     </div>
 
                     {/* Tab Content */}
-                    <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
-
+                    <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 shadow-sm border border-gray-100">
                         {/* Description Tab */}
                         {activeTab === 'description' && (
                             <div>
-                                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4 flex items-center gap-2">
-                                    <HiDocumentText className="w-5 h-5 text-blue-500" />
+                                <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-2 sm:mb-3 flex items-center gap-2">
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                        <HiDocumentText className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                                    </div>
                                     Product Description
                                 </h2>
-                                <div className="prose prose-sm md:prose-base max-w-none text-gray-600">
-                                    <p className="leading-relaxed whitespace-pre-line">{product.description}</p>
+                                <div className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
+                                    <p className="whitespace-pre-line">{product.description}</p>
                                 </div>
 
-                                {/* Specifications if available */}
+                                {/* Specifications */}
                                 {product.specifications?.length > 0 && (
-                                    <div className="mt-6 pt-6 border-t border-gray-100">
-                                        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-3">Specifications</h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-100">
+                                        <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Specifications</h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
                                             {product.specifications.map((spec, idx) => (
-                                                <div key={idx} className="flex justify-between py-2 px-3 bg-gray-50 rounded-lg text-sm">
+                                                <div key={idx} className="flex justify-between py-2 px-3 bg-gray-50 rounded-lg text-xs sm:text-sm">
                                                     <span className="text-gray-500">{spec.name}</span>
                                                     <span className="font-medium text-gray-900">{spec.value}</span>
                                                 </div>
@@ -450,15 +549,17 @@ const ProductDetail = () => {
                         {activeTab === 'reviews' && (
                             <div>
                                 {/* Review Header */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 md:mb-6">
-                                    <h2 className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-                                        <HiChatAlt2 className="w-5 h-5 text-blue-500" />
+                                <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
+                                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
+                                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                            <HiChatAlt2 className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                                        </div>
                                         Customer Reviews
                                     </h2>
                                     {isAuthenticated && !hasReviewed && !showReviewForm && (
                                         <button
                                             onClick={() => setShowReviewForm(true)}
-                                            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold py-2 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all"
+                                            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-[10px] sm:text-xs md:text-sm font-semibold py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md"
                                         >
                                             Write a Review
                                         </button>
@@ -467,31 +568,33 @@ const ProductDetail = () => {
 
                                 {/* Rating Summary */}
                                 {reviewStats && reviewStats.total_reviews > 0 && (
-                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 md:p-6 mb-6">
-                                        <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
+                                    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-3 sm:p-4 md:p-5 mb-4 sm:mb-6 border border-indigo-100">
+                                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6">
                                             {/* Average Rating */}
-                                            <div className="text-center sm:pr-6 sm:border-r border-blue-200">
-                                                <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-1">{reviewStats.average_rating}</div>
-                                                <StarRating rating={Math.round(reviewStats.average_rating)} readonly size="md" />
-                                                <p className="text-xs md:text-sm text-gray-500 mt-1">{reviewStats.total_reviews} reviews</p>
+                                            <div className="text-center sm:pr-4 md:pr-6 sm:border-r border-indigo-200">
+                                                <div className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
+                                                    {reviewStats.average_rating}
+                                                </div>
+                                                <StarRating rating={Math.round(reviewStats.average_rating)} readonly size="sm" />
+                                                <p className="text-[10px] sm:text-xs text-gray-500 mt-1">{reviewStats.total_reviews} reviews</p>
                                             </div>
 
                                             {/* Rating Distribution */}
-                                            <div className="flex-1 space-y-1.5 md:space-y-2">
+                                            <div className="flex-1 space-y-1 sm:space-y-1.5">
                                                 {[5, 4, 3, 2, 1].map(star => {
                                                     const count = reviewStats.rating_distribution?.[star] || 0;
                                                     const percentage = reviewStats.total_reviews ? (count / reviewStats.total_reviews) * 100 : 0;
                                                     return (
-                                                        <div key={star} className="flex items-center gap-2 md:gap-3">
-                                                            <span className="text-xs md:text-sm text-gray-600 w-4">{star}</span>
-                                                            <HiStar className="w-3.5 h-3.5 text-amber-400 fill-current" />
-                                                            <div className="flex-1 h-2 md:h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                                                        <div key={star} className="flex items-center gap-1.5 sm:gap-2">
+                                                            <span className="text-[10px] sm:text-xs text-gray-600 w-3">{star}</span>
+                                                            <HiStar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 fill-current" />
+                                                            <div className="flex-1 h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden">
                                                                 <div
                                                                     className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all"
                                                                     style={{ width: `${percentage}%` }}
                                                                 />
                                                             </div>
-                                                            <span className="text-xs text-gray-500 w-6 text-right">{count}</span>
+                                                            <span className="text-[10px] sm:text-xs text-gray-500 w-4 sm:w-5 text-right">{count}</span>
                                                         </div>
                                                     );
                                                 })}
@@ -502,7 +605,7 @@ const ProductDetail = () => {
 
                                 {/* Review Form */}
                                 {showReviewForm && (
-                                    <div className="mb-6">
+                                    <div className="mb-4 sm:mb-6">
                                         <ReviewForm
                                             productId={product.id}
                                             onSubmit={handleSubmitReview}
@@ -513,15 +616,15 @@ const ProductDetail = () => {
 
                                 {/* Login Prompt */}
                                 {!isAuthenticated && (
-                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 text-center border border-blue-100">
-                                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <HiUser className="w-6 h-6 text-blue-500" />
+                                    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 text-center border border-indigo-100">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                                            <HiUser className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
                                         </div>
-                                        <h3 className="text-base md:text-lg font-bold text-gray-900 mb-1">Login to Review</h3>
-                                        <p className="text-sm text-gray-600 mb-4">Please login to write a review for this product.</p>
+                                        <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 mb-1">Login to Review</h3>
+                                        <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 mb-3 sm:mb-4">Please login to write a review for this product.</p>
                                         <Link
                                             to="/login"
-                                            className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors"
+                                            className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg transition-all shadow-md"
                                         >
                                             Login
                                             <HiChevronRight className="w-4 h-4" />
@@ -531,9 +634,9 @@ const ProductDetail = () => {
 
                                 {/* Already Reviewed */}
                                 {isAuthenticated && hasReviewed && !showReviewForm && (
-                                    <div className="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-100">
-                                        <p className="text-blue-700 flex items-center gap-2 text-sm">
-                                            <HiStar className="w-5 h-5" />
+                                    <div className="bg-indigo-50 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 border border-indigo-100">
+                                        <p className="text-indigo-700 flex items-center gap-2 text-xs sm:text-sm">
+                                            <HiCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                                             You have already reviewed this product.
                                         </p>
                                     </div>
@@ -548,9 +651,11 @@ const ProductDetail = () => {
 
                                 {/* No Reviews */}
                                 {(!reviews || reviews.length === 0) && (
-                                    <div className="text-center py-8">
-                                        <HiChatAlt2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                        <p className="text-gray-500 text-sm">No reviews yet. Be the first to review this product!</p>
+                                    <div className="text-center py-6 sm:py-8">
+                                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                                            <HiChatAlt2 className="w-6 h-6 sm:w-7 sm:h-7 text-gray-400" />
+                                        </div>
+                                        <p className="text-gray-500 text-xs sm:text-sm">No reviews yet. Be the first to review!</p>
                                     </div>
                                 )}
                             </div>
@@ -560,20 +665,20 @@ const ProductDetail = () => {
 
                 {/* Related Products */}
                 {relatedProducts.length > 0 && (
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between mb-4 md:mb-6">
-                            <div className="flex items-center gap-2 md:gap-3">
-                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                                    <HiTag className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />
+                    <div>
+                        <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                    <HiTag className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-emerald-600" />
                                 </div>
-                                <h2 className="text-lg md:text-2xl font-bold text-gray-900">Related Products</h2>
+                                <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900">You May Also Like</h2>
                             </div>
                             <Link
                                 to={`/products?category=${product.category?.slug}`}
-                                className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                                className="text-[10px] sm:text-xs md:text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1 hover:gap-1.5 transition-all"
                             >
                                 View All
-                                <HiChevronRight className="w-4 h-4" />
+                                <HiChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </Link>
                         </div>
                         <ProductGrid products={relatedProducts} isLoading={false} />

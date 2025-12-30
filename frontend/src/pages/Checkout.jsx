@@ -79,8 +79,11 @@ const Checkout = () => {
             navigate(`/orders/${response.data.id}`);
         } catch (error) {
             console.error('Order error:', error);
+            console.error('Error response:', error.response?.data);
             const errorMsg = error.response?.data?.items?.[0]
                 || error.response?.data?.detail
+                || error.response?.data?.message
+                || JSON.stringify(error.response?.data)
                 || 'Failed to place order. Please try again.';
             toast.error(errorMsg);
         } finally {
@@ -91,16 +94,16 @@ const Checkout = () => {
     // Empty Cart State
     if (cartItems.length === 0) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center px-4 py-12">
-                <div className="text-center max-w-sm">
-                    <div className="w-16 h-16 md:w-20 md:h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <HiShoppingCart className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
+            <div className="min-h-[60vh] flex items-center justify-center px-4 py-8 sm:py-12">
+                <div className="text-center max-w-sm w-full">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <HiShoppingCart className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-red-400" />
                     </div>
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Your Cart is Empty</h1>
-                    <p className="text-sm md:text-base text-gray-600 mb-6">Looks like you haven't added any items yet.</p>
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Your Cart is Empty</h1>
+                    <p className="text-xs sm:text-sm md:text-base text-gray-600 mb-4 sm:mb-6">Looks like you haven't added any items yet.</p>
                     <Link
                         to="/products"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors"
                     >
                         <HiShoppingCart className="w-4 h-4" />
                         Continue Shopping
@@ -113,16 +116,16 @@ const Checkout = () => {
     // Not Authenticated State
     if (!isAuthenticated) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center px-4 py-12">
-                <div className="text-center max-w-sm">
-                    <div className="w-16 h-16 md:w-20 md:h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <HiLockClosed className="w-8 h-8 md:w-10 md:h-10 text-blue-400" />
+            <div className="min-h-[60vh] flex items-center justify-center px-4 py-8 sm:py-12">
+                <div className="text-center max-w-sm w-full">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <HiLockClosed className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-blue-400" />
                     </div>
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Please Login</h1>
-                    <p className="text-sm md:text-base text-gray-600 mb-6">You need to be logged in to complete your purchase.</p>
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">Please Login</h1>
+                    <p className="text-xs sm:text-sm md:text-base text-gray-600 mb-4 sm:mb-6">You need to be logged in to complete your purchase.</p>
                     <Link
                         to="/login"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors"
                     >
                         <HiLockClosed className="w-4 h-4" />
                         Login to Your Account
@@ -136,8 +139,8 @@ const Checkout = () => {
         <div className="min-h-screen bg-gray-50">
             {/* Progress Bar */}
             <div className="bg-white border-b border-gray-100">
-                <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-3 md:py-4">
-                    <div className="flex items-center justify-center gap-2 md:gap-4">
+                <div className="w-full px-3 sm:px-4 md:px-6 lg:w-[90%] max-w-7xl mx-auto py-2.5 sm:py-3 md:py-4">
+                    <div className="flex items-center justify-center gap-1 xs:gap-2 sm:gap-3 md:gap-4">
                         {[
                             { icon: HiShoppingCart, label: 'Cart', done: true },
                             { icon: HiTruck, label: 'Shipping', active: true },
@@ -145,26 +148,26 @@ const Checkout = () => {
                             { icon: HiCheckCircle, label: 'Done', done: false },
                         ].map((step, idx) => (
                             <div key={idx} className="flex items-center">
-                                <div className={`flex items-center gap-1.5 md:gap-2 ${
+                                <div className={`flex items-center gap-1 sm:gap-1.5 md:gap-2 ${
                                     step.active
                                         ? 'text-indigo-600'
                                         : step.done
                                             ? 'text-green-600'
                                             : 'text-gray-400'
                                 }`}>
-                                    <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center ${
+                                    <div className={`w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center ${
                                         step.active
                                             ? 'bg-indigo-100 text-indigo-600'
                                             : step.done
                                                 ? 'bg-green-100 text-green-600'
                                                 : 'bg-gray-100 text-gray-400'
                                     }`}>
-                                        <step.icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                        <step.icon className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
                                     </div>
-                                    <span className="hidden sm:inline text-xs md:text-sm font-medium">{step.label}</span>
+                                    <span className="hidden sm:inline text-[10px] sm:text-xs md:text-sm font-medium">{step.label}</span>
                                 </div>
                                 {idx < 3 && (
-                                    <div className={`w-6 md:w-12 h-0.5 mx-1 md:mx-2 ${
+                                    <div className={`w-4 xs:w-6 sm:w-8 md:w-12 h-0.5 mx-0.5 xs:mx-1 sm:mx-1.5 md:mx-2 ${
                                         step.done ? 'bg-green-300' : 'bg-gray-200'
                                     }`} />
                                 )}
@@ -174,44 +177,44 @@ const Checkout = () => {
                 </div>
             </div>
 
-            <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-8">
+            <div className="w-full px-3 sm:px-4 md:px-6 lg:w-[90%] max-w-7xl mx-auto py-4 sm:py-6 md:py-8">
                 {/* Header */}
-                <div className="mb-4 md:mb-8">
+                <div className="mb-4 sm:mb-6 md:mb-8">
                     <Link
                         to="/cart"
-                        className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 transition-colors mb-3 md:mb-4"
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors mb-2 sm:mb-3 md:mb-4"
                     >
-                        <HiArrowLeft className="w-4 h-4" />
+                        <HiArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         Back to Cart
                     </Link>
-                    <div className="flex flex-wrap items-baseline gap-2 md:gap-4">
-                        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Checkout</h1>
-                        <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 text-xs md:text-sm font-medium rounded-full">
+                    <div className="flex flex-wrap items-baseline gap-2 sm:gap-3 md:gap-4">
+                        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Checkout</h1>
+                        <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] sm:text-xs md:text-sm font-medium rounded-full">
                             {cartItems.length} {cartItems.length === 1 ? 'Item' : 'Items'}
                         </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">Complete your order by providing shipping details</p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">Complete your order by providing shipping details</p>
                 </div>
 
-                <div className="grid lg:grid-cols-5 gap-4 md:gap-6 lg:gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
                     {/* Shipping Form - Takes 3 columns on large screens */}
-                    <div className="lg:col-span-3">
-                        <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-4 md:p-6 lg:p-8 border border-gray-100">
-                            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
-                                    <HiTruck className="w-4 h-4 md:w-5 md:h-5 text-indigo-600" />
+                    <div className="lg:col-span-3 order-2 lg:order-1">
+                        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-3 sm:p-4 md:p-6 lg:p-8 border border-gray-100">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                    <HiTruck className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-indigo-600" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg md:text-xl font-bold text-gray-900">Shipping Information</h2>
-                                    <p className="text-xs md:text-sm text-gray-500">Where should we send your order?</p>
+                                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">Shipping Information</h2>
+                                    <p className="text-[10px] sm:text-xs md:text-sm text-gray-500">Where should we send your order?</p>
                                 </div>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
+                            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
                                 {/* Address */}
                                 <div>
-                                    <label htmlFor="shipping_address" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
-                                        <HiHome className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                    <label htmlFor="shipping_address" className="flex items-center text-[11px] sm:text-xs md:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5 md:mb-2">
+                                        <HiHome className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 mr-1 sm:mr-1.5 text-gray-400" />
                                         Street Address <span className="text-red-500 ml-0.5">*</span>
                                     </label>
                                     <input
@@ -222,15 +225,15 @@ const Checkout = () => {
                                         onChange={handleChange}
                                         placeholder="123 Main Street, Apt 4B"
                                         required
-                                        className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                                        className="w-full px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
                                     />
                                 </div>
 
                                 {/* City & Country - 2 columns */}
-                                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                                     <div>
-                                        <label htmlFor="shipping_city" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
-                                            <HiLocationMarker className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                        <label htmlFor="shipping_city" className="flex items-center text-[11px] sm:text-xs md:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5 md:mb-2">
+                                            <HiLocationMarker className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 mr-1 sm:mr-1.5 text-gray-400" />
                                             City <span className="text-red-500 ml-0.5">*</span>
                                         </label>
                                         <input
@@ -241,12 +244,12 @@ const Checkout = () => {
                                             onChange={handleChange}
                                             placeholder="New York"
                                             required
-                                            className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                                            className="w-full px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="shipping_country" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
-                                            <svg className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <label htmlFor="shipping_country" className="flex items-center text-[11px] sm:text-xs md:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5 md:mb-2">
+                                            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 mr-1 sm:mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                             Country <span className="text-red-500 ml-0.5">*</span>
@@ -259,15 +262,15 @@ const Checkout = () => {
                                             onChange={handleChange}
                                             placeholder="United States"
                                             required
-                                            className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                                            className="w-full px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Phone */}
                                 <div>
-                                    <label htmlFor="shipping_phone" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
-                                        <HiPhone className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                    <label htmlFor="shipping_phone" className="flex items-center text-[11px] sm:text-xs md:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5 md:mb-2">
+                                        <HiPhone className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 mr-1 sm:mr-1.5 text-gray-400" />
                                         Phone Number <span className="text-red-500 ml-0.5">*</span>
                                     </label>
                                     <input
@@ -278,16 +281,16 @@ const Checkout = () => {
                                         onChange={handleChange}
                                         placeholder="+1 (555) 123-4567"
                                         required
-                                        className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                                        className="w-full px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
                                     />
                                 </div>
 
                                 {/* Notes */}
                                 <div>
-                                    <label htmlFor="notes" className="flex items-center text-xs md:text-sm font-medium text-gray-700 mb-1.5 md:mb-2">
-                                        <HiDocumentText className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 text-gray-400" />
+                                    <label htmlFor="notes" className="flex items-center text-[11px] sm:text-xs md:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5 md:mb-2">
+                                        <HiDocumentText className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 mr-1 sm:mr-1.5 text-gray-400" />
                                         Order Notes
-                                        <span className="text-gray-400 ml-1 text-xs font-normal">(optional)</span>
+                                        <span className="text-gray-400 ml-1 text-[10px] sm:text-xs font-normal">(optional)</span>
                                     </label>
                                     <textarea
                                         id="notes"
@@ -296,18 +299,18 @@ const Checkout = () => {
                                         onChange={handleChange}
                                         placeholder="Special delivery instructions..."
                                         rows={2}
-                                        className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white resize-none"
+                                        className="w-full px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white resize-none"
                                     />
                                 </div>
 
                                 {/* Trust Badges - Mobile */}
-                                <div className="grid grid-cols-2 gap-2 py-3 md:hidden">
-                                    <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg">
-                                        <HiShieldCheck className="w-4 h-4 text-green-500" />
+                                <div className="grid grid-cols-2 gap-2 py-2 sm:py-3 md:hidden">
+                                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-gray-600 bg-gray-50 p-1.5 sm:p-2 rounded-lg">
+                                        <HiShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
                                         <span>Secure Checkout</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg">
-                                        <HiTruck className="w-4 h-4 text-blue-500" />
+                                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-gray-600 bg-gray-50 p-1.5 sm:p-2 rounded-lg">
+                                        <HiTruck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
                                         <span>Fast Delivery</span>
                                     </div>
                                 </div>
@@ -316,16 +319,16 @@ const Checkout = () => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full py-3 md:py-3.5 px-4 md:px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm md:text-base font-semibold rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full py-2.5 sm:py-3 md:py-3.5 px-3 sm:px-4 md:px-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs sm:text-sm md:text-base font-semibold rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? (
                                         <>
-                                            <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                             <span>Processing...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <HiLockClosed className="w-4 h-4 md:w-5 md:h-5" />
+                                            <HiLockClosed className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
                                             <span>Place Order • ${total.toFixed(2)}</span>
                                         </>
                                     )}
@@ -354,23 +357,23 @@ const Checkout = () => {
                     </div>
 
                     {/* Order Summary - Takes 2 columns on large screens */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-4 md:p-6 border border-gray-100 lg:sticky lg:top-24">
-                            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                                    <HiShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />
+                    <div className="lg:col-span-2 order-1 lg:order-2">
+                        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-3 sm:p-4 md:p-6 border border-gray-100 lg:sticky lg:top-24">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                    <HiShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-emerald-600" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg md:text-xl font-bold text-gray-900">Order Summary</h2>
-                                    <p className="text-xs md:text-sm text-gray-500">{cartItems.length} items in cart</p>
+                                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900">Order Summary</h2>
+                                    <p className="text-[10px] sm:text-xs md:text-sm text-gray-500">{cartItems.length} items in cart</p>
                                 </div>
                             </div>
 
                             {/* Cart Items */}
-                            <div className="space-y-3 mb-4 md:mb-6 max-h-48 md:max-h-64 overflow-y-auto pr-1 scrollbar-thin">
+                            <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4 md:mb-6 max-h-36 sm:max-h-48 md:max-h-64 overflow-y-auto pr-1 scrollbar-thin">
                                 {cartItems.map((item) => (
-                                    <div key={item.id} className="flex gap-3 p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                        <div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white">
+                                    <div key={item.id} className="flex gap-2 sm:gap-3 p-1.5 sm:p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                        <div className="w-11 h-11 sm:w-14 sm:h-14 md:w-16 md:h-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white">
                                             <img
                                                 src={getImageUrl(item.image)}
                                                 alt={item.name}
@@ -378,16 +381,16 @@ const Checkout = () => {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+                                            <p className="text-[11px] sm:text-xs md:text-sm font-medium text-gray-900 truncate">{item.name}</p>
+                                            <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
+                                                <span className="text-[9px] sm:text-[10px] md:text-xs bg-gray-200 text-gray-600 px-1 sm:px-1.5 py-0.5 rounded">
                                                     Qty: {item.quantity}
                                                 </span>
-                                                <span className="text-xs text-gray-500">× ${item.price.toFixed(2)}</span>
+                                                <span className="text-[9px] sm:text-[10px] md:text-xs text-gray-500">× ${item.price.toFixed(2)}</span>
                                             </div>
                                         </div>
                                         <div className="text-right flex-shrink-0">
-                                            <p className="text-sm md:text-base font-bold text-indigo-600">
+                                            <p className="text-[11px] sm:text-sm md:text-base font-bold text-indigo-600">
                                                 ${(item.price * item.quantity).toFixed(2)}
                                             </p>
                                         </div>
@@ -396,15 +399,15 @@ const Checkout = () => {
                             </div>
 
                             {/* Divider */}
-                            <div className="border-t border-gray-200 pt-4 space-y-2.5 md:space-y-3">
+                            <div className="border-t border-gray-200 pt-3 sm:pt-4 space-y-2 sm:space-y-2.5 md:space-y-3">
                                 {/* Subtotal */}
-                                <div className="flex justify-between text-sm text-gray-600">
+                                <div className="flex justify-between text-[11px] sm:text-xs md:text-sm text-gray-600">
                                     <span>Subtotal</span>
                                     <span className="font-medium">${cartTotal.toFixed(2)}</span>
                                 </div>
 
                                 {/* Shipping */}
-                                <div className="flex justify-between text-sm text-gray-600">
+                                <div className="flex justify-between text-[11px] sm:text-xs md:text-sm text-gray-600">
                                     <span>Shipping</span>
                                     <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
                                         {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
@@ -412,22 +415,22 @@ const Checkout = () => {
                                 </div>
 
                                 {/* Tax */}
-                                <div className="flex justify-between text-sm text-gray-600">
+                                <div className="flex justify-between text-[11px] sm:text-xs md:text-sm text-gray-600">
                                     <span>Tax (10%)</span>
                                     <span className="font-medium">${tax.toFixed(2)}</span>
                                 </div>
 
                                 {/* Free Shipping Banner */}
                                 {shippingCost > 0 && (
-                                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 md:p-3 mt-2">
-                                        <div className="flex items-start gap-2">
-                                            <HiTruck className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                                            <p className="text-xs text-amber-700">
+                                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 sm:p-2.5 md:p-3 mt-2">
+                                        <div className="flex items-start gap-1.5 sm:gap-2">
+                                            <HiTruck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <p className="text-[10px] sm:text-xs text-amber-700">
                                                 Add <span className="font-bold">${(50 - cartTotal).toFixed(2)}</span> more for free shipping!
                                             </p>
                                         </div>
                                         {/* Progress bar */}
-                                        <div className="mt-2 h-1.5 bg-amber-200 rounded-full overflow-hidden">
+                                        <div className="mt-1.5 sm:mt-2 h-1 sm:h-1.5 bg-amber-200 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-amber-500 rounded-full transition-all"
                                                 style={{ width: `${Math.min((cartTotal / 50) * 100, 100)}%` }}
@@ -438,10 +441,10 @@ const Checkout = () => {
 
                                 {/* Free Shipping Achieved */}
                                 {shippingCost === 0 && (
-                                    <div className="bg-green-50 border border-green-200 rounded-lg p-2.5 md:p-3 mt-2">
-                                        <div className="flex items-center gap-2">
-                                            <HiCheckCircle className="w-4 h-4 text-green-600" />
-                                            <p className="text-xs text-green-700 font-medium">
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-2 sm:p-2.5 md:p-3 mt-2">
+                                        <div className="flex items-center gap-1.5 sm:gap-2">
+                                            <HiCheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600" />
+                                            <p className="text-[10px] sm:text-xs text-green-700 font-medium">
                                                 🎉 You've unlocked free shipping!
                                             </p>
                                         </div>
@@ -449,31 +452,31 @@ const Checkout = () => {
                                 )}
 
                                 {/* Total */}
-                                <div className="border-t border-gray-200 pt-3 mt-3">
+                                <div className="border-t border-gray-200 pt-2.5 sm:pt-3 mt-2 sm:mt-3">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-base md:text-lg font-bold text-gray-900">Total</span>
-                                        <span className="text-xl md:text-2xl font-bold text-indigo-600">${total.toFixed(2)}</span>
+                                        <span className="text-sm sm:text-base md:text-lg font-bold text-gray-900">Total</span>
+                                        <span className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600">${total.toFixed(2)}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Security Note */}
-                            <div className="mt-4 md:mt-6 bg-gray-50 rounded-lg p-3 border border-gray-100">
-                                <div className="flex items-start gap-2.5">
-                                    <HiShieldCheck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                            <div className="mt-3 sm:mt-4 md:mt-6 bg-gray-50 rounded-lg p-2 sm:p-2.5 md:p-3 border border-gray-100">
+                                <div className="flex items-start gap-2 sm:gap-2.5">
+                                    <HiShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 mt-0.5" />
                                     <div>
-                                        <p className="text-xs md:text-sm font-medium text-gray-800">Secure Checkout</p>
-                                        <p className="text-xs text-gray-500 mt-0.5">Your payment info is encrypted and secure.</p>
+                                        <p className="text-[10px] sm:text-xs md:text-sm font-medium text-gray-800">Secure Checkout</p>
+                                        <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-500 mt-0.5">Your payment info is encrypted and secure.</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Payment Methods */}
-                            <div className="mt-4 flex items-center justify-center gap-2">
-                                <span className="text-xs text-gray-400">We accept:</span>
-                                <div className="flex items-center gap-1.5">
+                            <div className="mt-3 sm:mt-4 flex items-center justify-center gap-1.5 sm:gap-2">
+                                <span className="text-[9px] sm:text-[10px] md:text-xs text-gray-400">We accept:</span>
+                                <div className="flex items-center gap-1 sm:gap-1.5">
                                     {['💳', '🏦', '📱'].map((icon, idx) => (
-                                        <span key={idx} className="text-lg">{icon}</span>
+                                        <span key={idx} className="text-sm sm:text-base md:text-lg">{icon}</span>
                                     ))}
                                 </div>
                             </div>

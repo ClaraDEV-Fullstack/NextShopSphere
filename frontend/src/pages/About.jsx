@@ -1,5 +1,3 @@
-// src/pages/About.jsx
-
 import { Link } from 'react-router-dom';
 import {
     HiShieldCheck,
@@ -10,95 +8,116 @@ import {
     HiHeart,
     HiLightningBolt,
     HiStar,
-    HiArrowRight
+    HiArrowRight,
+    HiSparkles,
+    HiCheckCircle,
+    HiLocationMarker,
+    HiPhone,
+    HiMail,
+    HiClock,
+    HiAcademicCap,
+    HiBadgeCheck,
+    HiUsers
 } from 'react-icons/hi';
 
 const About = () => {
     const stats = [
-        { value: '50K+', label: 'Happy Customers' },
-        { value: '1000+', label: 'Products' },
-        { value: '10', label: 'Regions Covered' },
-        { value: '24/7', label: 'Support' }
+        { value: '50K+', label: 'Happy Customers', icon: HiUsers },
+        { value: '1000+', label: 'Products', icon: HiSparkles },
+        { value: '10', label: 'Regions Covered', icon: HiLocationMarker },
+        { value: '24/7', label: 'Support', icon: HiClock }
     ];
 
     const values = [
         {
             icon: HiShieldCheck,
             title: 'Quality Assurance',
-            description: 'We carefully select and verify all products to ensure you receive only the best quality items.'
+            description: 'We carefully select and verify all products to ensure you receive only the best quality items.',
+            color: 'from-blue-500 to-blue-600'
         },
         {
             icon: HiTruck,
             title: 'Fast Delivery',
-            description: 'We deliver across all 10 regions of Cameroon with tracking available for every order.'
+            description: 'We deliver across all 10 regions of Cameroon with tracking available for every order.',
+            color: 'from-purple-500 to-purple-600'
         },
         {
             icon: HiCurrencyDollar,
             title: 'Fair Pricing',
-            description: 'We offer competitive prices and accept Mobile Money, making shopping accessible to everyone.'
+            description: 'We offer competitive prices and accept Mobile Money, making shopping accessible to everyone.',
+            color: 'from-green-500 to-green-600'
         },
         {
             icon: HiHeart,
             title: 'Customer First',
-            description: 'Your satisfaction is our priority. Our support team is always ready to help.'
+            description: 'Your satisfaction is our priority. Our support team is always ready to help.',
+            color: 'from-red-500 to-red-600'
         }
     ];
 
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-            {/* Hero Section - More Compact */}
-            <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-16 lg:py-20 relative overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl" />
-                </div>
+    const features = [
+        'Nationwide delivery across all 10 regions',
+        'Mobile Money payments (MTN MoMo & Orange Money)',
+        'Cash on delivery in Douala & Yaoundé',
+        '7-day return policy',
+        'Genuine products with quality guarantee',
+        'Bilingual support (French & English)'
+    ];
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-secondary-900">
+            {/* Hero Section - More Compact and Modern */}
+            <div className="relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800">
+                    <div className="absolute inset-0 bg-black/20"></div>
+                </div>
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
                     <div className="text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-4 text-white">
                             <HiGlobe className="w-4 h-4" />
                             Made in Cameroon
                         </div>
-                        <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
                             About NextShopSphere
                         </h1>
-                        <p className="text-lg lg:text-xl text-blue-100 max-w-2xl mx-auto">
+                        <p className="text-lg sm:text-xl text-blue-100 max-w-3xl mx-auto">
                             Your trusted online marketplace bringing quality products to every corner of Cameroon.
                             We're on a mission to make online shopping accessible, affordable, and enjoyable for everyone.
                         </p>
+
+                        {/* Stats in Hero */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-10 max-w-4xl mx-auto">
+                            {stats.map((stat, index) => (
+                                <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                                    <stat.icon className="w-6 h-6 mx-auto mb-2 text-white" />
+                                    <p className="text-2xl font-bold text-white">{stat.value}</p>
+                                    <p className="text-sm text-blue-100">{stat.label}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/30 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/30 rounded-full blur-3xl"></div>
             </div>
 
-            {/* Stats Section - More Compact */}
-            <div className="bg-white dark:bg-secondary-900 py-10 lg:py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                        {stats.map((stat, index) => (
-                            <div key={index} className="text-center">
-                                <p className="text-3xl lg:text-4xl font-bold text-blue-600 mb-1">{stat.value}</p>
-                                <p className="text-sm lg:text-base text-gray-600">{stat.label}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Our Story Section - More Compact */}
-            <section className="py-16 lg:py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+            {/* Our Story Section - More Compact and Modern */}
+            <section className="py-10 sm:py-12 lg:py-16 bg-white dark:bg-secondary-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium mb-4">
                                 <HiLightningBolt className="w-4 h-4" />
                                 Our Story
                             </div>
-                            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
                                 From Douala to All of Cameroon
                             </h2>
-                            <div className="space-y-3 text-gray-600 max-w-2xl mx-auto">
+                            <div className="space-y-4 text-gray-600 dark:text-gray-300">
                                 <p>
-                                    NextShopSphere was founded in 2023 in Douala, Cameroon, with a simple vision:
+                                    NextShopSphere was founded in 2024 in Douala, Cameroon, with a simple vision:
                                     to bring the convenience of online shopping to every Cameroonian.
                                 </p>
                                 <p>
@@ -112,94 +131,125 @@ const About = () => {
                                     products they love.
                                 </p>
                             </div>
+
+                            {/* Key Achievements */}
+                            <div className="grid grid-cols-2 gap-4 mt-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                                        <HiStar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-gray-900 dark:text-white">4.8 Rating</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">2,000+ reviews</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                                        <HiAcademicCap className="w-5 h-5 text-green-600 dark:text-green-400" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-gray-900 dark:text-white">Expert Team</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Dedicated support</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div className="relative">
-                            <div className="bg-gradient-to-br from-blue-100 to-indigo-100 rounded-3xl p-6 lg:p-8 lg:ml-8">
+                            <div className="relative rounded-2xl overflow-hidden shadow-xl">
                                 <img
                                     src="/images/about-store.jpg"
                                     alt="NextShopSphere Store"
-                                    className="rounded-2xl shadow-lg w-full"
+                                    className="w-full h-auto object-cover"
                                     onError={(e) => {
-                                        e.target.src = 'https://media.licdn.com/dms/image/v2/D4D12AQE-ET5TbPBAJg/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1695484810521?e=2147483647&v=beta&t=gKiUUK_DTfpwsW-njmhuTbbHe2XSCm3DrY-NKm_HqtU';
+                                        e.target.src = 'https://images.pexels.com/photos/8550655/pexels-photo-8550655.jpeg';
                                     }}
                                 />
-                                <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl p-4 lg:p-6 lg:ml-8">
-                                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                        <HiStar className="w-6 h-6 text-green-600" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-gray-900">4.8 Rating</p>
-                                        <p className="text-sm text-gray-500">From 2,000+ reviews</p>
-                                    </div>
-                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Our Values Section - More Compact */}
-            <section className="py-16 lg:py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+            {/* Our Values Section - More Compact and Modern */}
+            <section className="py-10 sm:py-12 lg:py-16 bg-gray-50 dark:bg-secondary-900">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-8 lg:mb-12">
-                        <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Our Values</h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto mb-8 lg:mb-12">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">Our Values</h2>
+                        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                             These principles guide everything we do at NextShopSphere
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                    <div className="grid grid-cols-2 gap-4 sm:gap-6 max-w-5xl mx-auto">
                         {values.map((value, index) => (
-                            <div key={index} className="bg-white dark:bg-secondary-800 rounded-2xl p-4 lg:p-6 shadow-lg hover:shadow-xl transition-shadow">
-                                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-3 lg:mb-4">
-                                    <value.icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
+                            <div key={index} className="group relative bg-white dark:bg-secondary-800 rounded-xl p-4 sm:p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                                <div className={`absolute inset-0 bg-gradient-to-br ${value.color} opacity-0 group-hover:opacity-5 rounded-xl transition-opacity`}></div>
+                                <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br ${value.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4`}>
+                                    <value.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                                 </div>
-                                <div>
-                                    <h3 className="text-lg lg:text-xl font-bold text-gray-900">{value.title}</h3>
-                                    <p className="text-sm text-gray-600">{value.description}</p>
-                                </div>
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2">{value.title}</h3>
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{value.description}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Why Choose Us Section - More Compact */}
-            <section className="py-16 lg:py-20 bg-gray-50 dark:bg-secondary-900">
+            {/* Why Choose Us Section - More Compact and Modern */}
+            <section className="py-10 sm:py-12 lg:py-16 bg-white dark:bg-secondary-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                         <div>
-                            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 lg:p-8 text-white relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-                                <div className="text-center">
-                                    <h2 className="text-2xl lg:text-3xl font-bold">Why Choose NextShopSphere?</h2>
-                                    <ul className="space-y-3 text-left">
-                                        {[
-                                            'Nationwide delivery across all 10 regions',
-                                            'Mobile Money payments (MTN MoMo & Orange Money)',
-                                            'Cash on delivery in Douala & Yaoundé',
-                                            '7-day return policy',
-                                            'Genuine products with quality guarantee',
-                                            'Bilingual support (French & English)'
-                                        ].map((item, index) => (
-                                            <li key={index} className="flex items-start gap-3">
-                                                <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center flex-shrink-0">
-                                                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L5 9l-4 4M7 7l4 4M9 5l4 4" />
-                                                    </svg>
-                                                </div>
-                                                <span>{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="lg:text-right mt-6 lg:mt-8">
-                                    <Link
-                                        to="/products"
-                                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-                                    >
-                                        Start Shopping
-                                        <HiArrowRight className="w-4 h-4" />
-                                    </Link>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium mb-4">
+                                <HiStar className="w-4 h-4" />
+                                Why Choose Us
+                            </div>
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                                What Makes NextShopSphere Special
+                            </h2>
+                            <div className="space-y-4">
+                                {features.map((feature, index) => (
+                                    <div key={index} className="flex items-start gap-3">
+                                        <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <HiCheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                        </div>
+                                        <p className="text-gray-700 dark:text-gray-300">{feature}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-8">
+                                <Link
+                                    to="/products"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
+                                >
+                                    Start Shopping
+                                    <HiArrowRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="relative">
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white dark:bg-secondary-800 rounded-xl p-4 text-center shadow-md">
+                                        <HiTruck className="w-8 h-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
+                                        <p className="font-semibold text-gray-900 dark:text-white">Free Shipping</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Orders above 10,000 XAF</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-secondary-800 rounded-xl p-4 text-center shadow-md">
+                                        <HiShieldCheck className="w-8 h-8 mx-auto mb-2 text-green-600 dark:text-green-400" />
+                                        <p className="font-semibold text-gray-900 dark:text-white">Secure Payment</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">100% Secure</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-secondary-800 rounded-xl p-4 text-center shadow-md">
+                                        <HiCurrencyDollar className="w-8 h-8 mx-auto mb-2 text-purple-600 dark:text-purple-400" />
+                                        <p className="font-semibold text-gray-900 dark:text-white">Best Price</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Guaranteed</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-secondary-800 rounded-xl p-4 text-center shadow-md">
+                                        <HiHeart className="w-8 h-8 mx-auto mb-2 text-red-600 dark:text-red-400" />
+                                        <p className="font-semibold text-gray-900 dark:text-white">Customer Care</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">24/7 Support</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,29 +257,47 @@ const About = () => {
                 </div>
             </section>
 
-            {/* Contact CTA Section - More Compact */}
-            <section className="py-16 lg:py-20 bg-gray-50 dark:bg-secondary-800">
+            {/* Contact CTA Section - More Compact and Modern */}
+            <section className="py-10 sm:py-12 lg:py-16 bg-gradient-to-br from-blue-600 to-indigo-700">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="mb-8 lg:mb-12">
-                        <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Have Questions?</h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto mb-6 lg:mb-8">
-                            Our team is here to help. Contact us anytime and we'll get back to you within 24 hours.
-                        </p>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Have Questions?</h2>
+                    <p className="text-blue-100 max-w-2xl mx-auto mb-8">
+                        Our team is here to help. Contact us anytime and we'll get back to you within 24 hours.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-8">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                            <HiPhone className="w-6 h-6 mx-auto mb-2 text-white" />
+                            <p className="text-sm text-blue-100">Call Us</p>
+                            <p className="font-semibold text-white">+237 683 669 723</p>
+                        </div>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                            <HiMail className="w-6 h-6 mx-auto mb-2 text-white" />
+                            <p className="text-sm text-blue-100">Email Us</p>
+                            <p className="font-semibold text-white">nextshopsphere@gmail.com</p>
+                        </div>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                            <HiLocationMarker className="w-6 h-6 mx-auto mb-2 text-white" />
+                            <p className="text-sm text-blue-100">Visit Us</p>
+                            <p className="font-semibold text-white">Douala, Cameroon</p>
+                        </div>
                     </div>
+
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
                             to="/contact"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors"
                         >
                             <HiUserGroup className="w-5 h-5" />
                             Contact Us
                         </Link>
-                        <a
-                            href="mailto:nextshopsphere@gmail.com"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                        <Link
+                            to="/products"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-500/20 backdrop-blur-sm border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-blue-500/30 transition-colors"
                         >
-                            nextshopsphere@gmail.com
-                        </a>
+                            Browse Products
+                            <HiArrowRight className="w-4 h-4" />
+                        </Link>
                     </div>
                 </div>
             </section>
