@@ -144,15 +144,56 @@ TEMPLATES = [
 WSGI_APPLICATION = 'nextshopsphere.wsgi.application'
 
 # =============================================================================
-# DATABASE CONFIGURATION
+# DATABASE CONFIGURATION - FIXED FOR RENDER BUILD
 # =============================================================================
+import sys
 
-DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-    )
-}
+# Get DATABASE_URL from environment
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+
+# Handle potential issues
+if DATABASE_URL:
+    # Handle bytes encoding (edge case)
+    if isinstance(DATABASE_URL, bytes):
+        DATABASE_URL = DATABASE_URL.decode('utf-8')
+
+    # Strip whitespace
+    DATABASE_URL = DATABASE_URL.strip()
+
+    # Make sure it starts with a valid scheme
+    if DATABASE_URL.startswith('postgres://') or DATABASE_URL.startswith('postgresql://'):
+        try:
+            DATABASES = {
+                "default": dj_database_url.parse(
+                    DATABASE_URL,
+                    conn_max_age=600,
+                    conn_health_checks=True,
+                )
+            }
+        except Exception as e:
+            print(f"Error parsing DATABASE_URL: {e}")
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': BASE_DIR / 'db.sqlite3',
+                }
+            }
+    else:
+        print(f"Invalid DATABASE_URL scheme, using SQLite")
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+else:
+    # No DATABASE_URL - use SQLite (for build time or local dev)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # =============================================================================
