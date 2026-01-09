@@ -7,8 +7,7 @@ from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-import os
-
+import dj_database_url
 
 # Load environment variables from .env file
 load_dotenv()
@@ -147,29 +146,13 @@ WSGI_APPLICATION = 'nextshopsphere.wsgi.application'
 # =============================================================================
 # DATABASE CONFIGURATION
 # =============================================================================
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'nextshopsphere'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        #'HOST': 'nextshopsphere_db_dev',        MySQL service name in docker-compose
-        'PORT': os.getenv('DB_PORT', '3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-        'CONN_MAX_AGE': 60,  # Connection pooling
-    }
-}
 
-# Only print debug info in development
-if DEBUG:
-    db_host = os.getenv('DB_HOST', 'localhost')
-    db_name = os.getenv('DB_NAME', 'nextshopsphere')
-    print(f"Database Host: {db_host}")
-    print(f"Database Name: {db_name}")
+DATABASES = {
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+    )
+}
 
 
 # =============================================================================

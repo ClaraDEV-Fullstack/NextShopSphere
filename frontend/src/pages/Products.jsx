@@ -1,6 +1,6 @@
 // src/pages/Products.jsx
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -15,7 +15,71 @@ import {
     HiShoppingBag
 } from 'react-icons/hi';
 import { productsAPI, categoriesAPI } from '../api/api';
-import ProductGrid from '../components/products/ProductGrid';
+import ProductCard from '../components/products/ProductCard';
+
+// ========== SIMPLE CACHE FOR API RESPONSES ==========
+const cache = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const getCachedData = (key) => {
+    const cached = cache.get(key);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return cached.data;
+    }
+    cache.delete(key);
+    return null;
+};
+
+const setCachedData = (key, data) => {
+    cache.set(key, { data, timestamp: Date.now() });
+};
+
+// ========== SKELETON LOADER COMPONENT ==========
+const ProductSkeleton = ({ count = 8 }) => {
+    return (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 lg:gap-4">
+            {[...Array(count)].map((_, index) => (
+                <div
+                    key={index}
+                    className="bg-white dark:bg-secondary-800 rounded-xl overflow-hidden border border-secondary-200 dark:border-secondary-700"
+                >
+                    {/* Image Skeleton */}
+                    <div className="relative h-32 sm:h-40 bg-secondary-100 dark:bg-secondary-700 animate-pulse">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                    </div>
+                    {/* Content Skeleton */}
+                    <div className="p-3 space-y-2">
+                        <div className="h-3 w-16 bg-secondary-200 dark:bg-secondary-700 rounded-full animate-pulse" />
+                        <div className="h-4 w-full bg-secondary-200 dark:bg-secondary-700 rounded animate-pulse" />
+                        <div className="h-4 w-3/4 bg-secondary-200 dark:bg-secondary-700 rounded animate-pulse" />
+                        <div className="flex gap-0.5 pt-1">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="w-3 h-3 bg-secondary-200 dark:bg-secondary-700 rounded-full animate-pulse" />
+                            ))}
+                        </div>
+                        <div className="flex items-center justify-between pt-2 border-t border-secondary-100 dark:border-secondary-700">
+                            <div className="h-5 w-16 bg-secondary-200 dark:bg-secondary-700 rounded animate-pulse" />
+                            <div className="w-8 h-8 bg-secondary-200 dark:bg-secondary-700 rounded-lg animate-pulse" />
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+// ========== PRODUCT GRID COMPONENT ==========
+const ProductGrid = ({ products }) => {
+    if (!products || products.length === 0) return null;
+
+    return (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 lg:gap-4">
+            {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+            ))}
+        </div>
+    );
+};
 
 const Products = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -23,6 +87,7 @@ const Products = () => {
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
+    const abortControllerRef = useRef(null);
 
     // Pagination state
     const [pagination, setPagination] = useState({
@@ -46,8 +111,8 @@ const Products = () => {
         page: parseInt(searchParams.get('page')) || 1,
     });
 
-    // Featured categories
-    const featuredCategories = [
+    // Featured categories - memoized
+    const featuredCategories = useMemo(() => [
         { name: 'Electronics', slug: 'electronics', icon: '💻', color: 'from-blue-500 to-blue-600' },
         { name: 'Fashion', slug: 'fashion', icon: '👗', color: 'from-pink-500 to-pink-600' },
         { name: 'Home', slug: 'home-living', icon: '🏠', color: 'from-amber-500 to-amber-600' },
@@ -56,26 +121,35 @@ const Products = () => {
         { name: 'Sports', slug: 'sports-fitness', icon: '🏃', color: 'from-red-500 to-red-600' },
         { name: 'Kids', slug: 'kids-toys', icon: '🧸', color: 'from-yellow-500 to-yellow-600' },
         { name: 'Digital', slug: 'digital-products', icon: '📱', color: 'from-cyan-500 to-cyan-600' },
-    ];
+    ], []);
 
-    // Organize categories into hierarchy
-    const organizeCategories = (categoriesList) => {
-        const mainCategories = categoriesList.filter(cat => !cat.parent);
-        const subCategories = categoriesList.filter(cat => cat.parent);
+    // Organize categories into hierarchy - memoized
+    const organizedCategories = useMemo(() => {
+        const mainCategories = categories.filter(cat => !cat.parent);
+        const subCategories = categories.filter(cat => cat.parent);
         return mainCategories.map(main => ({
             ...main,
             children: subCategories.filter(sub => sub.parent === main.id)
         }));
-    };
+    }, [categories]);
 
-    // Fetch categories
+    // Fetch categories - with caching
     useEffect(() => {
         const fetchCategories = async () => {
+            const cacheKey = 'categories_all';
+            const cached = getCachedData(cacheKey);
+
+            if (cached) {
+                setCategories(cached);
+                return;
+            }
+
             try {
                 const response = await categoriesAPI.getAll();
                 const data = response.data;
-                let categoriesList = Array.isArray(data) ? data : (data.results || []);
+                const categoriesList = Array.isArray(data) ? data : (data.results || []);
                 setCategories(categoriesList);
+                setCachedData(cacheKey, categoriesList);
 
                 if (filters.category) {
                     const selectedCat = categoriesList.find(c => c.slug === filters.category);
@@ -92,11 +166,32 @@ const Products = () => {
         fetchCategories();
     }, []);
 
-    // Fetch products
+    // Fetch products - with caching and abort controller
     const fetchProducts = useCallback(async () => {
+        // Cancel previous request
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+
+        // Create cache key from filters
+        const cacheKey = `products_${JSON.stringify(filters)}`;
+        const cached = getCachedData(cacheKey);
+
+        if (cached) {
+            setProducts(cached.products);
+            setPagination(prev => ({ ...prev, ...cached.pagination }));
+            setIsLoading(false);
+            return;
+        }
+
         setIsLoading(true);
+
         try {
-            const params = { page: filters.page, page_size: pagination.pageSize };
+            const params = {
+                page: filters.page,
+                page_size: pagination.pageSize
+            };
             if (filters.category) params.category = filters.category;
             if (filters.minPrice) params.min_price = filters.minPrice;
             if (filters.maxPrice) params.max_price = filters.maxPrice;
@@ -106,66 +201,97 @@ const Products = () => {
             const response = await productsAPI.getAll(params);
             const data = response.data;
 
+            let productsList = [];
+            let paginationData = {};
+
             if (Array.isArray(data)) {
-                setProducts(data);
-                setPagination(prev => ({ ...prev, count: data.length, totalPages: 1, next: null, previous: null }));
+                productsList = data;
+                paginationData = { count: data.length, totalPages: 1, next: null, previous: null };
             } else if (data.results) {
-                setProducts(data.results);
-                setPagination(prev => ({
-                    ...prev,
+                productsList = data.results;
+                paginationData = {
                     count: data.count,
                     next: data.next,
                     previous: data.previous,
                     totalPages: Math.ceil(data.count / pagination.pageSize),
-                }));
-            } else {
+                };
+            }
+
+            setProducts(productsList);
+            setPagination(prev => ({ ...prev, ...paginationData }));
+
+            // Cache the results
+            setCachedData(cacheKey, { products: productsList, pagination: paginationData });
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error('Error fetching products:', error);
                 setProducts([]);
             }
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            setProducts([]);
         } finally {
             setIsLoading(false);
         }
     }, [filters, pagination.pageSize]);
 
-    useEffect(() => { fetchProducts(); }, [fetchProducts]);
+    useEffect(() => {
+        fetchProducts();
 
-    const handleFilterChange = (key, value) => {
-        const newFilters = { ...filters, [key]: value };
-        if (key !== 'page') newFilters.page = 1;
-        setFilters(newFilters);
+        return () => {
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+        };
+    }, [fetchProducts]);
 
-        const newParams = new URLSearchParams();
-        if (newFilters.category) newParams.set('category', newFilters.category);
-        if (newFilters.minPrice) newParams.set('min_price', newFilters.minPrice);
-        if (newFilters.maxPrice) newParams.set('max_price', newFilters.maxPrice);
-        if (newFilters.search) newParams.set('search', newFilters.search);
-        if (newFilters.ordering && newFilters.ordering !== '-created_at') newParams.set('ordering', newFilters.ordering);
-        if (newFilters.page > 1) newParams.set('page', newFilters.page.toString());
-        setSearchParams(newParams);
-    };
+    // Debounced search
+    const searchTimeoutRef = useRef(null);
 
-    const handlePageChange = (newPage) => {
+    const handleSearchChange = useCallback((value) => {
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            handleFilterChange('search', value);
+        }, 300);
+    }, []);
+
+    const handleFilterChange = useCallback((key, value) => {
+        setFilters(prev => {
+            const newFilters = { ...prev, [key]: value };
+            if (key !== 'page') newFilters.page = 1;
+
+            const newParams = new URLSearchParams();
+            if (newFilters.category) newParams.set('category', newFilters.category);
+            if (newFilters.minPrice) newParams.set('min_price', newFilters.minPrice);
+            if (newFilters.maxPrice) newParams.set('max_price', newFilters.maxPrice);
+            if (newFilters.search) newParams.set('search', newFilters.search);
+            if (newFilters.ordering && newFilters.ordering !== '-created_at') newParams.set('ordering', newFilters.ordering);
+            if (newFilters.page > 1) newParams.set('page', newFilters.page.toString());
+            setSearchParams(newParams);
+
+            return newFilters;
+        });
+    }, [setSearchParams]);
+
+    const handlePageChange = useCallback((newPage) => {
         if (newPage >= 1 && newPage <= pagination.totalPages) {
             handleFilterChange('page', newPage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    };
+    }, [pagination.totalPages, handleFilterChange]);
 
-    const clearFilters = () => {
+    const clearFilters = useCallback(() => {
         setFilters({ category: '', minPrice: '', maxPrice: '', search: '', ordering: '-created_at', page: 1 });
         setSearchParams({});
-    };
+    }, [setSearchParams]);
 
-    const toggleCategory = (categoryId) => {
+    const toggleCategory = useCallback((categoryId) => {
         setExpandedCategories(prev => ({ ...prev, [categoryId]: !prev[categoryId] }));
-    };
+    }, []);
 
     const hasActiveFilters = filters.category || filters.minPrice || filters.maxPrice || filters.search;
-    const organizedCategories = organizeCategories(categories);
 
-    const getPageNumbers = () => {
+    const getPageNumbers = useMemo(() => {
         const pages = [];
         const { totalPages } = pagination;
         const currentPage = filters.page;
@@ -182,36 +308,32 @@ const Products = () => {
             }
         }
         return pages;
-    };
+    }, [pagination.totalPages, filters.page]);
 
-    const getCurrentCategoryName = () => {
+    const getCurrentCategoryName = useCallback(() => {
         if (!filters.category) return 'All Products';
         const cat = categories.find(c => c.slug === filters.category);
         return cat ? cat.name : 'All Products';
-    };
+    }, [filters.category, categories]);
 
-    const activeFilterCount = [filters.category, filters.minPrice, filters.maxPrice, filters.search].filter(Boolean).length;
+    const activeFilterCount = useMemo(() =>
+            [filters.category, filters.minPrice, filters.maxPrice, filters.search].filter(Boolean).length,
+        [filters]);
 
     return (
         <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900">
-            {/* Page Header - Compact */}
+            {/* Page Header */}
             <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 text-white">
                 <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="text-center"
-                    >
+                    <div className="text-center">
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-0.5">
                             {getCurrentCategoryName()}
                         </h1>
                         <p className="text-white/80 text-xs md:text-sm">
                             Find the perfect products for you
                         </p>
-                    </motion.div>
+                    </div>
                 </div>
-                {/* Curved Bottom - Smaller */}
                 <div className="h-3 md:h-4">
                     <svg viewBox="0 0 1440 24" fill="none" className="w-full h-full" preserveAspectRatio="none">
                         <path d="M0 24h1440V0c-211.5 16-435.7 24-672 24S211.5 16 0 0v24z" className="fill-secondary-50 dark:fill-secondary-900" />
@@ -220,21 +342,16 @@ const Products = () => {
             </div>
 
             <div className="w-[95%] lg:w-[90%] max-w-7xl mx-auto px-3 md:px-4 py-3 md:py-4">
-                {/* Search and Filter Bar - Compact */}
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.1 }}
-                    className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm border border-secondary-100 dark:border-secondary-700 p-2 md:p-3 mb-3"
-                >
+                {/* Search and Filter Bar */}
+                <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm border border-secondary-100 dark:border-secondary-700 p-2 md:p-3 mb-3">
                     <div className="flex flex-row gap-1.5 md:gap-2">
-                        {/* Search */}
+                        {/* Search with debounce */}
                         <div className="relative flex-1">
                             <HiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
                             <input
                                 type="text"
-                                value={filters.search}
-                                onChange={(e) => handleFilterChange('search', e.target.value)}
+                                defaultValue={filters.search}
+                                onChange={(e) => handleSearchChange(e.target.value)}
                                 placeholder="Search..."
                                 className="w-full pl-8 pr-2 py-2 md:py-2.5 rounded-lg border border-secondary-200 dark:border-secondary-600 bg-secondary-50 dark:bg-secondary-700/50 text-secondary-900 dark:text-white text-xs md:text-sm placeholder-secondary-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             />
@@ -274,7 +391,7 @@ const Products = () => {
                         </button>
                     </div>
 
-                    {/* Active Filters - Compact */}
+                    {/* Active Filters */}
                     {hasActiveFilters && (
                         <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-2 border-t border-secondary-100 dark:border-secondary-700">
                             {filters.category && (
@@ -300,15 +417,10 @@ const Products = () => {
                             </button>
                         </div>
                     )}
-                </motion.div>
+                </div>
 
-                {/* Featured Categories - Compact */}
-                <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.15 }}
-                    className="mb-3 md:mb-4"
-                >
+                {/* Featured Categories */}
+                <div className="mb-3 md:mb-4">
                     <div className="flex items-center justify-between mb-2">
                         <h2 className="text-sm md:text-base font-bold text-secondary-900 dark:text-white">
                             Categories
@@ -322,11 +434,10 @@ const Products = () => {
 
                     <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5 md:gap-2">
                         {featuredCategories.map((cat) => (
-                            <motion.button
+                            <button
                                 key={cat.slug}
                                 onClick={() => handleFilterChange('category', cat.slug)}
-                                whileTap={{ scale: 0.97 }}
-                                className={`relative p-1.5 md:p-2 rounded-lg text-center transition-all ${
+                                className={`relative p-1.5 md:p-2 rounded-lg text-center transition-all active:scale-95 ${
                                     filters.category === cat.slug
                                         ? 'bg-gradient-to-br ' + cat.color + ' text-white shadow-md'
                                         : 'bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 hover:border-primary-300 hover:shadow-sm'
@@ -338,15 +449,20 @@ const Products = () => {
                                 }`}>
                                     {cat.name}
                                 </div>
-                            </motion.button>
+                            </button>
                         ))}
                     </div>
-                </motion.div>
+                </div>
 
-                {/* Results Info - Compact */}
+                {/* Results Info */}
                 <div className="flex items-center justify-between mb-2 md:mb-3">
                     <p className="text-[10px] md:text-xs text-secondary-500 dark:text-secondary-400">
-                        {isLoading ? 'Loading...' : (
+                        {isLoading ? (
+                            <span className="flex items-center gap-1.5">
+                                <span className="w-3 h-3 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></span>
+                                Loading...
+                            </span>
+                        ) : (
                             <>
                                 <span className="font-medium text-secondary-900 dark:text-white">{pagination.count}</span> products
                                 {pagination.totalPages > 1 && <span className="ml-1">• Page {filters.page}/{pagination.totalPages}</span>}
@@ -375,7 +491,6 @@ const Products = () => {
                     <AnimatePresence>
                         {showFilters && (
                             <>
-                                {/* Mobile Overlay */}
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -384,7 +499,6 @@ const Products = () => {
                                     className="fixed inset-0 bg-black/50 z-40 md:hidden"
                                 />
 
-                                {/* Sidebar Content */}
                                 <motion.aside
                                     initial={{ x: -280, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
@@ -392,7 +506,6 @@ const Products = () => {
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                                     className="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-secondary-800 overflow-y-auto shadow-2xl md:static md:z-0 md:w-52 lg:w-56 md:flex-shrink-0 md:shadow-none md:rounded-lg md:border md:border-secondary-100 md:dark:border-secondary-700"
                                 >
-                                    {/* Mobile Header */}
                                     <div className="flex justify-between items-center p-3 border-b border-secondary-100 dark:border-secondary-700 md:hidden">
                                         <h2 className="text-sm font-bold text-secondary-900 dark:text-white flex items-center gap-1.5">
                                             <HiFilter className="w-4 h-4 text-primary-600" />
@@ -404,7 +517,6 @@ const Products = () => {
                                     </div>
 
                                     <div className="p-3 space-y-3">
-                                        {/* Clear Filters */}
                                         {hasActiveFilters && (
                                             <button
                                                 onClick={clearFilters}
@@ -414,7 +526,6 @@ const Products = () => {
                                             </button>
                                         )}
 
-                                        {/* Category Filter */}
                                         <div>
                                             <h4 className="font-semibold text-secondary-900 dark:text-white mb-2 text-xs">Categories</h4>
                                             <div className="space-y-0.5 max-h-[200px] md:max-h-[250px] overflow-y-auto">
@@ -467,7 +578,6 @@ const Products = () => {
 
                                         <div className="border-t border-secondary-100 dark:border-secondary-700"></div>
 
-                                        {/* Price Filter */}
                                         <div>
                                             <h4 className="font-semibold text-secondary-900 dark:text-white mb-2 text-xs">Price Range</h4>
                                             <div className="flex gap-1.5 items-center mb-2">
@@ -496,7 +606,6 @@ const Products = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Quick Price Filters */}
                                             <div className="grid grid-cols-2 gap-1">
                                                 {[
                                                     { label: '<$25', min: '', max: '25' },
@@ -519,7 +628,6 @@ const Products = () => {
                                             </div>
                                         </div>
 
-                                        {/* Mobile Apply */}
                                         <button
                                             onClick={() => setShowFilters(false)}
                                             className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg flex items-center justify-center gap-1.5 md:hidden"
@@ -535,78 +643,73 @@ const Products = () => {
 
                     {/* Products Section */}
                     <main className="flex-1 min-w-0">
-                        <ProductGrid products={products} isLoading={isLoading} />
+                        {isLoading ? (
+                            <ProductSkeleton count={12} />
+                        ) : products.length > 0 ? (
+                            <>
+                                <ProductGrid products={products} />
 
-                        {/* Pagination - Compact */}
-                        {!isLoading && pagination.totalPages > 1 && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mt-4 md:mt-6"
-                            >
-                                <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm border border-secondary-100 dark:border-secondary-700 p-3">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <p className="text-[10px] text-secondary-500 dark:text-secondary-400">
-                                            Showing {((filters.page - 1) * pagination.pageSize) + 1}-{Math.min(filters.page * pagination.pageSize, pagination.count)} of {pagination.count}
-                                        </p>
+                                {/* Pagination */}
+                                {pagination.totalPages > 1 && (
+                                    <div className="mt-4 md:mt-6">
+                                        <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm border border-secondary-100 dark:border-secondary-700 p-3">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <p className="text-[10px] text-secondary-500 dark:text-secondary-400">
+                                                    Showing {((filters.page - 1) * pagination.pageSize) + 1}-{Math.min(filters.page * pagination.pageSize, pagination.count)} of {pagination.count}
+                                                </p>
 
-                                        <div className="flex items-center gap-0.5">
-                                            <button
-                                                onClick={() => handlePageChange(filters.page - 1)}
-                                                disabled={filters.page === 1}
-                                                className={`p-1.5 rounded border transition-all ${
-                                                    filters.page === 1
-                                                        ? 'border-secondary-200 text-secondary-300 cursor-not-allowed'
-                                                        : 'border-secondary-200 text-secondary-600 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600'
-                                                }`}
-                                            >
-                                                <HiChevronLeft className="w-4 h-4" />
-                                            </button>
+                                                <div className="flex items-center gap-0.5">
+                                                    <button
+                                                        onClick={() => handlePageChange(filters.page - 1)}
+                                                        disabled={filters.page === 1}
+                                                        className={`p-1.5 rounded border transition-all ${
+                                                            filters.page === 1
+                                                                ? 'border-secondary-200 text-secondary-300 cursor-not-allowed'
+                                                                : 'border-secondary-200 text-secondary-600 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600'
+                                                        }`}
+                                                    >
+                                                        <HiChevronLeft className="w-4 h-4" />
+                                                    </button>
 
-                                            <div className="flex items-center gap-0.5">
-                                                {getPageNumbers().map((page, index) => (
-                                                    page === '...' ? (
-                                                        <span key={`ellipsis-${index}`} className="px-1.5 text-secondary-400 text-xs">···</span>
-                                                    ) : (
-                                                        <button
-                                                            key={page}
-                                                            onClick={() => handlePageChange(page)}
-                                                            className={`min-w-[28px] h-7 rounded text-xs font-medium transition-all ${
-                                                                filters.page === page
-                                                                    ? 'bg-primary-600 text-white'
-                                                                    : 'text-secondary-600 hover:bg-secondary-100'
-                                                            }`}
-                                                        >
-                                                            {page}
-                                                        </button>
-                                                    )
-                                                ))}
+                                                    <div className="flex items-center gap-0.5">
+                                                        {getPageNumbers.map((page, index) => (
+                                                            page === '...' ? (
+                                                                <span key={`ellipsis-${index}`} className="px-1.5 text-secondary-400 text-xs">···</span>
+                                                            ) : (
+                                                                <button
+                                                                    key={page}
+                                                                    onClick={() => handlePageChange(page)}
+                                                                    className={`min-w-[28px] h-7 rounded text-xs font-medium transition-all ${
+                                                                        filters.page === page
+                                                                            ? 'bg-primary-600 text-white'
+                                                                            : 'text-secondary-600 hover:bg-secondary-100'
+                                                                    }`}
+                                                                >
+                                                                    {page}
+                                                                </button>
+                                                            )
+                                                        ))}
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => handlePageChange(filters.page + 1)}
+                                                        disabled={filters.page === pagination.totalPages}
+                                                        className={`p-1.5 rounded border transition-all ${
+                                                            filters.page === pagination.totalPages
+                                                                ? 'border-secondary-200 text-secondary-300 cursor-not-allowed'
+                                                                : 'border-secondary-200 text-secondary-600 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600'
+                                                        }`}
+                                                    >
+                                                        <HiChevronRight className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             </div>
-
-                                            <button
-                                                onClick={() => handlePageChange(filters.page + 1)}
-                                                disabled={filters.page === pagination.totalPages}
-                                                className={`p-1.5 rounded border transition-all ${
-                                                    filters.page === pagination.totalPages
-                                                        ? 'border-secondary-200 text-secondary-300 cursor-not-allowed'
-                                                        : 'border-secondary-200 text-secondary-600 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600'
-                                                }`}
-                                            >
-                                                <HiChevronRight className="w-4 h-4" />
-                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {/* No Products */}
-                        {!isLoading && products.length === 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm border border-secondary-100 dark:border-secondary-700 p-6 text-center"
-                            >
+                                )}
+                            </>
+                        ) : (
+                            <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm border border-secondary-100 dark:border-secondary-700 p-6 text-center">
                                 <div className="w-12 h-12 mx-auto mb-3 bg-secondary-100 dark:bg-secondary-700 rounded-full flex items-center justify-center">
                                     <HiSearch className="w-6 h-6 text-secondary-400" />
                                 </div>
@@ -618,7 +721,7 @@ const Products = () => {
                                 >
                                     <HiX className="w-3.5 h-3.5" /> Clear filters
                                 </button>
-                            </motion.div>
+                            </div>
                         )}
                     </main>
                 </div>
