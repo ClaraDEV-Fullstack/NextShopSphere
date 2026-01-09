@@ -264,20 +264,16 @@ class Product(models.Model):
         return 0
 
 
-class ProductImage(models.Model):
-    """Multiple images for each product"""
+from cloudinary.models import CloudinaryField
 
+class ProductImage(models.Model):
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
         related_name='images',
         help_text="Select the product this image belongs to"
     )
-    image = CloudinaryField('image')  # ✅ Must be CloudinaryField
-    image = models.ImageField(
-        upload_to='products/',
-        help_text="Product image (recommended: 800x800px, JPG or PNG)"
-    )
+    image = CloudinaryField('image')  # This stores the Cloudinary URL automatically
     alt_text = models.CharField(
         max_length=200,
         blank=True,
@@ -306,6 +302,7 @@ class ProductImage(models.Model):
                 is_primary=True
             ).update(is_primary=False)
         super().save(*args, **kwargs)
+
 
 
 class ProductSpecification(models.Model):

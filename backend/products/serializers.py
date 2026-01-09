@@ -197,10 +197,18 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'image_url', 'alt_text', 'is_primary', 'order']
+        fields = [
+            'id',
+            'image_url',
+            'alt_text',
+            'is_primary',
+            'order'
+        ]
 
     def get_image_url(self, obj):
-        return get_image_url(obj.image, self.context.get('request'))
+        if obj.image:
+            return obj.image.url  # ✅ THIS LINE FIXES EVERYTHING
+        return None
 
 
 # ============ PRODUCT SPECIFICATION SERIALIZER ============
